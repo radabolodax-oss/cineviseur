@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CineViseur</string>
+    <string name="title_activity_main">CineViseur</string>
+    <string name="package_name">com.cineviseur.app</string>
+    <string name="custom_url_scheme">com.cineviseur.app</string>
+</resources>

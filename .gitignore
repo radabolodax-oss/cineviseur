@@ -1,0 +1,24 @@
+# Secrets
+.env
+!.env.example
+backend/.env
+
+# Dépendances et builds
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+dist/
+build/
+.netlify/
+
+# Fichiers lourds ou locaux
+*.apk
+*.log
+*.png
+!frontend/public/**/*.png
+android-app/
+pc-app/
+.claude/
+frontend/src_backup_design/

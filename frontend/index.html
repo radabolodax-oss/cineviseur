@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineViseur - Suivez vos films et séries</title>
+    <meta name="description" content="CineViseur garde la mémoire de vos écrans : listes de films et séries, alertes de sortie et cinémas près de chez vous." />
+    <meta name="theme-color" content="#06070f" />
+
+    <!-- Icônes -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Partage sur les réseaux sociaux (Open Graph / X) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CineViseur" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content="CineViseur - Suivez vos films et séries" />
+    <meta property="og:description" content="Listes de films et séries, alertes de sortie et cinémas près de chez vous." />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="CineViseur, suivez tout ce que vous regardez" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CineViseur - Suivez vos films et séries" />
+    <meta name="twitter:description" content="Listes de films et séries, alertes de sortie et cinémas près de chez vous." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.jpg" />
+
+    <!-- Les affiches viennent de TMDB : connexion ouverte dès le départ. -->
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin />
+    <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

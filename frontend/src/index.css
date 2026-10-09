@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Polices hébergées par le site (aucune requête vers Google Fonts ou Fontshare). */
+@font-face {
+  font-family: "Clash Display";
+  src: url("./assets/fonts/ClashDisplay-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Clash Display";
+  src: url("./assets/fonts/ClashDisplay-600.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Clash Display";
+  src: url("./assets/fonts/ClashDisplay-700.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/*
+  Système visuel CineViseur
+  - Thème : sombre uniquement (identité "salle de cinéma").
+  - Accent : un seul, cine-violet. Le vert n'apparaît que dans le logo.
+  - Rayons : boutons et puces en pilule, affiches et champs 12px (rounded-xl), panneaux 16px+ (rounded-2xl).
+  - Z-index : navigation 40, menus/modales 50, grain 60.
+*/
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Direction artistique (skill ui-ux-pro-max, style « Dark Mode (OLED) ») : noir bleu nuit,
+   l'ambiance lumineuse est portée par <AuroraBackground />. */
+body {
+  margin: 0;
+  background-color: #06070f;
+  color-scheme: dark;
+  color: #f4f4f6;
+  font-family: "Outfit Variable", "Outfit", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain de pellicule, fixe et non interactif */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1, h2, h3, .font-display {
+  font-family: "Clash Display", sans-serif;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+select {
+  color-scheme: dark;
+}
+
+::selection {
+  background: rgba(124, 92, 224, 0.5);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold rounded-full transition duration-200 ease-out active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft focus-visible:ring-offset-2 focus-visible:ring-offset-cine-ink;
+  }
+  .btn-primary {
+    @apply btn px-6 py-3 text-white bg-cine-violet hover:bg-[#8a6ce8] shadow-[0_8px_24px_-12px_rgba(124,92,224,0.6)];
+  }
+  .btn-light {
+    @apply btn px-6 py-3 text-cine-ink bg-[#f4f4f6] hover:bg-white;
+  }
+  .btn-ghost {
+    @apply btn px-5 py-3 text-[#f4f4f6] bg-white/[0.07] ring-1 ring-inset ring-white/[0.12] hover:bg-white/[0.13] hover:ring-white/20 backdrop-blur-md;
+  }
+  .btn-icon {
+    @apply flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/75 hover:bg-white/[0.13] hover:text-white active:scale-[0.96] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft;
+  }
+  .link {
+    /* Toujours souligné : un lien ne doit pas se distinguer du texte par la seule couleur (WCAG 1.4.1). */
+    @apply text-cine-soft underline underline-offset-4 decoration-cine-soft/40 hover:decoration-cine-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft rounded-sm;
+  }
+  .label {
+    @apply block text-sm font-medium text-white/80;
+  }
+  .input {
+    @apply w-full bg-white/[0.05] ring-1 ring-inset ring-white/[0.14] rounded-xl px-4 py-3 outline-none text-[#f4f4f6] placeholder:text-white/50 transition focus:ring-2 focus:ring-cine-soft/70 focus:bg-white/[0.07];
+  }
+  .panel {
+    @apply bg-[#111116]/80 ring-1 ring-inset ring-white/[0.08] rounded-2xl backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05)];
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/80;
+  }
+  /* Chargement : un reflet balaie la forme du futur contenu (transform uniquement). */
+  .skeleton {
+    @apply relative overflow-hidden bg-white/[0.05];
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+    animation: shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Aurora (Aceternity UI, adapté) : bandes floutées qui dérivent en transform, pas en background-position. */
+.aurora-layer {
+  background-image:
+    repeating-linear-gradient(100deg, #06070f 0%, #06070f 7%, transparent 10%, transparent 12%, #06070f 16%),
+    repeating-linear-gradient(100deg, #4338ca 10%, #7c5ce0 15%, #312e81 20%, #ab98f2 25%, #4f46e5 30%);
+  background-size: 50% 100%, 50% 100%;
+  filter: blur(14px) saturate(1.1);
+  will-change: transform;
+  animation: aurora-drift 48s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-45%, 0, 0);
+  }
+}
+
+/* Glowing Effect (Aceternity UI, adapté) : un arc de lumière suit le curseur le long du contour. */
+.glowing-effect::after {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--glow-border));
+  border-radius: inherit;
+  border: var(--glow-border) solid transparent;
+  background: conic-gradient(from 0deg, #7c5ce0, #ab98f2, #4f46e5, #7c5ce0) border-box;
+  opacity: var(--active);
+  transition: opacity 0.3s;
+  mask-clip: padding-box, border-box;
+  mask-composite: intersect;
+  mask-image: linear-gradient(#0000, #0000),
+    conic-gradient(from calc((var(--start) - var(--spread)) * 1deg), #0000 0deg, #fff, #0000 calc(var(--spread) * 2deg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- Changements de page (View Transitions) --------------------------------------------- */
+/* Fondu au noir : l'ancienne page s'éteint, la nouvelle s'allume, comme entre deux plans. */
+::view-transition-old(root) {
+  animation: vt-out 0.32s cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 0.45s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Clic sur une affiche : le reste se fond vite, l'affiche vole jusqu'à la fiche. */
+html[data-vt="poster"]::view-transition-old(root) {
+  animation-duration: 0.25s;
+}
+html[data-vt="poster"]::view-transition-new(root) {
+  animation: vt-in 0.4s 0.2s ease-out both;
+}
+::view-transition-group(poster-hero) {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 50;
+}
+::view-transition-old(poster-hero),
+::view-transition-new(poster-hero) {
+  animation: none;
+  mix-blend-mode: normal;
+  height: 100%;
+  object-fit: cover;
+  overflow: clip;
+  border-radius: 16px;
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    filter: brightness(0.3);
+    transform: scale(0.985);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+}
+/* Navigateurs sans View Transitions : simple apparition. */
+@supports not (view-transition-name: none) {
+  .page-in {
+    animation: page-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Bouton principal : une bande de pellicule perforée traverse le bouton au survol. */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) top / 100% 4px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) bottom / 100% 4px no-repeat;
+  transform: translateX(-101%);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-primary:hover::before {
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Perforations de pellicule au-dessus et au-dessous d'une bobine (filmographie, roulette). */
+.reel-perforations {
+  height: 14px;
+  margin: 0 0 -2px;
+  background:
+    radial-gradient(circle at center, transparent 0, transparent 0) ,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 10px, transparent 10px 22px) center / 100% 7px no-repeat,
+    linear-gradient(rgba(10, 14, 39, 0.9), rgba(10, 14, 39, 0.9));
+  border-block: 1px solid rgba(255, 255, 255, 0.06);
+}
+.reel-perforations--bottom {
+  margin: -2px 0 0;
+}
