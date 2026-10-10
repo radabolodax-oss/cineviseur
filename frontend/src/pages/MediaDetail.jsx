@@ -328,6 +328,18 @@ export default function MediaDetail() {
     }
   }
 
+  function getMiawUrl() {
+    const slug = title
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^\w\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
+    return `https://miaw.tv/film/${slug}`;
+  }
+
   return (
     <div className="pb-16">
       <div ref={heroRef} className="relative -mt-16 h-[50dvh] md:h-[65dvh] w-full overflow-hidden" aria-hidden="true">
@@ -430,6 +442,10 @@ export default function MediaDetail() {
           </motion.p>
 
           <motion.div variants={riseItem} className="flex flex-wrap items-center gap-3">
+            <a href={getMiawUrl()} target="_blank" rel="noopener noreferrer" className="btn-primary group">
+              <Icon name="play" weight="fill" className="w-4 h-4 transition-transform duration-300 group-hover:scale-125" /> Regarder
+            </a>
+
             {trailer && (
               <motion.button onClick={() => setShowTrailer(true)} className="btn-light group">
                 <Icon name="play" weight="fill" className="w-4 h-4 transition-transform duration-300 group-hover:scale-125" /> Bande-annonce
