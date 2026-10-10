@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
 import CinemaLayer from "./components/CinemaLayer";
+import { InstallProvider } from "./components/InstallGuide";
 import { ScrollProgress } from "./components/effects";
 import { AuroraBackground } from "./components/backgrounds";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -103,38 +104,40 @@ function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-[100dvh] flex flex-col">
-        <AuroraBackground />
-        <ScrollProgress />
-        <Navbar />
-        <main id="contenu" tabIndex={-1} className="flex-1 outline-none">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={page(<Home />)} />
-            <Route path="/login" element={page(<Login />)} />
-            <Route path="/register" element={page(<Register />)} />
-            <Route path="/discover" element={page(<Discover />)} />
-            <Route path="/search" element={page(<Search />)} />
-            <Route path="/title/:mediaType/:id" element={page(<MediaDetail />)} />
-            <Route path="/person/:id" element={page(<Person />)} />
-            <Route path="/ce-soir" element={page(<Roulette />)} />
-            <Route path="/swipe" element={member(<Swipe />)} />
-            <Route path="/recap" element={member(<Recap />)} />
-            <Route path="/cinemas" element={page(<Cinemas />)} />
-            <Route path="/watchlist" element={member(<Watchlist />)} />
-            <Route path="/profile" element={member(<Profile />)} />
-            <Route path="/confidentialite" element={page(<Privacy />)} />
-            <Route path="/cgu" element={page(<Terms />)} />
-            <Route path="/mentions-legales" element={page(<LegalNotice />)} />
-            <Route path="*" element={page(<NotFound />)} />
-          </Routes>
-        </main>
-        <Footer />
-        <CinemaLayer />
-        <Suspense fallback={null}>
-          <QuickPreview />
-        </Suspense>
-        <CookieConsent />
-      </div>
+      <InstallProvider>
+        <div className="min-h-[100dvh] flex flex-col">
+          <AuroraBackground />
+          <ScrollProgress />
+          <Navbar />
+          <main id="contenu" tabIndex={-1} className="flex-1 outline-none">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={page(<Home />)} />
+              <Route path="/login" element={page(<Login />)} />
+              <Route path="/register" element={page(<Register />)} />
+              <Route path="/discover" element={page(<Discover />)} />
+              <Route path="/search" element={page(<Search />)} />
+              <Route path="/title/:mediaType/:id" element={page(<MediaDetail />)} />
+              <Route path="/person/:id" element={page(<Person />)} />
+              <Route path="/ce-soir" element={page(<Roulette />)} />
+              <Route path="/swipe" element={member(<Swipe />)} />
+              <Route path="/recap" element={member(<Recap />)} />
+              <Route path="/cinemas" element={page(<Cinemas />)} />
+              <Route path="/watchlist" element={member(<Watchlist />)} />
+              <Route path="/profile" element={member(<Profile />)} />
+              <Route path="/confidentialite" element={page(<Privacy />)} />
+              <Route path="/cgu" element={page(<Terms />)} />
+              <Route path="/mentions-legales" element={page(<LegalNotice />)} />
+              <Route path="*" element={page(<NotFound />)} />
+            </Routes>
+          </main>
+          <Footer />
+          <CinemaLayer />
+          <Suspense fallback={null}>
+            <QuickPreview />
+          </Suspense>
+          <CookieConsent />
+        </div>
+      </InstallProvider>
     </MotionConfig>
   );
 }

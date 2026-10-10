@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { analyticsEnabled } from "../lib/site";
+import { useInstall } from "./InstallGuide";
 
 export default function Footer() {
+  const { openGuide, installed } = useInstall();
   // py-1.5 : zone tactile d'au moins 24 px de haut (WCAG 2.5.8).
   const link = "inline-block py-1.5 hover:text-white transition-colors";
   return (
@@ -10,6 +12,9 @@ export default function Footer() {
         <Link to="/confidentialite" className={link}>Confidentialité</Link>
         <Link to="/cgu" className={link}>Conditions d'utilisation</Link>
         <Link to="/mentions-legales" className={link}>Mentions légales</Link>
+        {!installed && (
+          <button onClick={openGuide} className={link}>Installer l'application</button>
+        )}
         {analyticsEnabled && (
           <button onClick={() => window.dispatchEvent(new Event("cv:open-consent"))} className={link}>
             Gérer les cookies

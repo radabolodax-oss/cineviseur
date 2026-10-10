@@ -28,6 +28,10 @@ import {
   Popcorn,
   ArrowRight,
   SortAscending,
+  AppleLogo,
+  Export,
+  DotsThreeVertical,
+  DeviceMobile,
 } from "@phosphor-icons/react";
 
 // Une seule famille d'icônes (Phosphor) pour tout le site, graisse "regular" par défaut.
@@ -61,6 +65,10 @@ const ICONS = {
   aperture: Aperture,
   popcorn: Popcorn,
   sort: SortAscending,
+  apple: AppleLogo,
+  share: Export,
+  dots: DotsThreeVertical,
+  mobile: DeviceMobile,
 };
 
 export default function Icon({ name, className = "w-4 h-4", weight = "regular" }) {

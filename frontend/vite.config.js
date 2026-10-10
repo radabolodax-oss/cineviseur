@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -68,6 +69,33 @@ function launchFiles(env) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    plugins: [react(), launchFiles(env)],
+    plugins: [
+      react(),
+      // Service worker : sans lui, les navigateurs ne proposent pas « Installer ».
+      // Le manifeste reste public/site.webmanifest, déjà référencé dans index.html.
+      VitePWA({
+        registerType: 'autoUpdate',
+        manifest: false,
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,svg,png,jpg,woff2}'],
+          navigateFallback: '/index.html',
+          // L'API est sur un autre domaine et les réponses dépendent du compte connecté :
+          // rien de tout cela ne doit être mis en cache.
+          navigateFallbackDenylist: [/^\/api\//],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/image\.tmdb\.org\//,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'affiches-tmdb',
+                expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 14 },
+                cacheableResponse: { statuses: [0, 200] },
+              },
+            },
+          ],
+        },
+      }),
+      launchFiles(env),
+    ],
   }
 })

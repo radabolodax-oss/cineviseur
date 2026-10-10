@@ -11,7 +11,7 @@ import {
 } from "motion/react";
 import { useAuth } from "../context/AuthContext";
 import { getNowPlaying, getTrending, tmdbImage, tmdbSrcSet } from "../lib/tmdb";
-import DownloadButton from "../components/DownloadButton";
+import InstallButton from "../components/InstallButton";
 import CarouselRow from "../components/CarouselRow";
 import Icon from "../components/Icon";
 import WhenNear from "../components/WhenNear";
@@ -199,9 +199,10 @@ function FeatureBento({ images }) {
             <Icon name="list" className="w-7 h-7 text-cine-soft mb-5" />
             <h3 className="font-display font-semibold text-2xl md:text-3xl tracking-tight mb-3">Une liste, tous vos écrans</h3>
             <p className="text-white/65 leading-relaxed mb-7">
-              À voir, déjà vu : votre liste se synchronise entre le site, Windows et Android.
+              À voir, déjà vu : votre liste vous suit sur tous vos appareils. Installez CineViseur
+              depuis votre navigateur, sur téléphone comme sur ordinateur.
             </p>
-            <DownloadButton />
+            <InstallButton />
           </div>
         </GlowCard>
 
