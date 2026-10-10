@@ -3,6 +3,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "motion/react";
+import { EASE_OUT, SPRING } from "../lib/motionTokens";
 import { tmdbImage } from "../lib/tmdb";
 import Icon from "./Icon";
 
@@ -35,28 +37,38 @@ export default function CastCarousel({ cast = [] }) {
     <div className="relative max-w-[1440px] mx-auto">
       <div
         ref={scroller}
-        className="flex gap-4 overflow-x-auto scroll-smooth px-4 sm:px-6 md:px-10 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-4 overflow-x-auto scroll-smooth px-4 sm:px-6 md:px-10 pb-4 pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {cast.map((person) => (
-          <Link
+        {cast.map((person, i) => (
+          <motion.div
             key={person.id}
-            to={`/person/${person.id}`}
-            className="shrink-0 flex flex-col items-center gap-2 w-20 group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft"
+            className="shrink-0 w-20"
+            initial={{ opacity: 0, x: 40, scale: 0.8 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: Math.min(i, 10) * 0.06, ease: EASE_OUT }}
           >
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-white/[0.06] ring-1 ring-white/10 group-hover:ring-cine-soft/60 group-hover:shadow-[0_0_18px_rgba(124,92,224,0.45)] transition-shadow duration-300">
-              {person.profile_path ? (
-                <img src={tmdbImage(person.profile_path, "profile")} alt="" loading="lazy" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full grid place-items-center text-white/40 text-xl font-display font-semibold">
-                  {person.name?.[0]?.toUpperCase()}
+            <motion.div whileHover={{ y: -6, scale: 1.08 }} whileTap={{ scale: 0.95 }} transition={SPRING}>
+              <Link
+                to={`/person/${person.id}`}
+                className="flex flex-col items-center gap-2 group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft"
+              >
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-white/[0.06] ring-1 ring-white/10 group-hover:ring-2 group-hover:ring-cine-soft group-hover:shadow-[0_0_22px_rgba(124,92,224,0.6)] transition-shadow duration-300">
+                  {person.profile_path ? (
+                    <img src={tmdbImage(person.profile_path, "profile")} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  ) : (
+                    <div className="w-full h-full grid place-items-center text-white/40 text-xl font-display font-semibold">
+                      {person.name?.[0]?.toUpperCase()}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="text-center w-full">
-              <p className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors leading-tight line-clamp-2">{person.name}</p>
-              {person.character && <p className="text-[10px] text-white/55 leading-tight line-clamp-1 mt-0.5">{person.character}</p>}
-            </div>
-          </Link>
+                <div className="text-center w-full">
+                  <p className="text-xs font-semibold text-white/90 group-hover:text-white transition-colors leading-tight line-clamp-2">{person.name}</p>
+                  {person.character && <p className="text-[10px] text-white/55 leading-tight line-clamp-1 mt-0.5">{person.character}</p>}
+                </div>
+              </Link>
+            </motion.div>
+          </motion.div>
         ))}
       </div>
       {!edge.start && (

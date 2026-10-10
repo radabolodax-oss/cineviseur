@@ -132,16 +132,15 @@ export default function CinemaFinder({ filmTitle }) {
           ) : (
             <>
               {formats.length > 0 && (
-                <div className="mb-6 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]" role="group" aria-label="Filtrer par format">
+                <div className="mb-6 flex gap-3 overflow-x-auto px-1 pt-1 pb-3 -mx-1 [scrollbar-width:none]" role="group" aria-label="Filtrer par format">
                   {[null, ...formats].map((f) => (
                     <button
                       key={f || "all"}
                       onClick={() => setFormat(f)}
                       aria-pressed={format === f}
-                      className={`relative btn shrink-0 px-4 py-2 ${format === f ? "text-white" : "text-white/70 hover:text-white ring-1 ring-inset ring-white/10"}`}
+                      className="btn-chip"
                     >
-                      {format === f && <motion.span layoutId="format-pill" transition={SPRING} className="absolute inset-0 rounded-full bg-cine-violet" />}
-                      <span className="relative">{f || "Tous les cinémas"}</span>
+                      {f || "Tous les cinémas"}
                     </button>
                   ))}
                 </div>

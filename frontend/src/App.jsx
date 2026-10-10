@@ -48,7 +48,7 @@ function Page({ children }) {
  */
 function useTactileButtons() {
   useEffect(() => {
-    const SELECTOR = ".btn, .btn-primary, .btn-ghost, .btn-light, .btn-icon";
+    const SELECTOR = ".btn-primary, .btn-ghost, .btn-light, .btn-danger, .btn-chip, .btn-icon";
 
     function nearest(el) {
       return el?.closest?.(SELECTOR) ?? null;

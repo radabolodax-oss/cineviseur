@@ -175,7 +175,7 @@ export default function Profile() {
           ) : (
             <motion.div key="confirm" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex flex-wrap items-center gap-3">
               <p className="w-full text-sm font-medium text-rose-200">Cette action est irréversible. Confirmer ?</p>
-              <button onClick={handleDelete} disabled={deleting} className="btn px-5 py-3 bg-rose-500 text-white hover:bg-rose-400">
+              <button onClick={handleDelete} disabled={deleting} className="btn-danger">
                 {deleting ? "Suppression..." : "Oui, supprimer définitivement"}
               </button>
               <button onClick={() => setConfirming(false)} disabled={deleting} className="btn-ghost">

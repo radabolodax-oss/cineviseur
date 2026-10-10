@@ -165,7 +165,7 @@ export default function Swipe() {
         <motion.button onClick={() => decide("watched")} disabled={!top} className="btn-icon !w-12 !h-12" aria-label="Déjà vu">
           <Icon name="eye" className="h-5 w-5" weight="bold" />
         </motion.button>
-        <motion.button onClick={() => decide("to_watch")} disabled={!top} className="btn btn-primary !w-14 !h-14 !p-0" aria-label="À voir">
+        <motion.button onClick={() => decide("to_watch")} disabled={!top} className="btn-primary !w-14 !h-14 !p-0" aria-label="À voir">
           <Icon name="plus" className="h-6 w-6" weight="bold" />
         </motion.button>
       </div>

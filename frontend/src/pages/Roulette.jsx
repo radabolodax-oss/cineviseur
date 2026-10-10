@@ -8,7 +8,7 @@ import { play, vibrate } from "../lib/feedback";
 import useLibrary from "../hooks/useLibrary";
 import useSeo from "../hooks/useSeo";
 import Icon from "../components/Icon";
-import { KineticTitle } from "../components/motion";
+import { KineticTitle, Magnetic } from "../components/motion";
 import { EASE_OUT, SPRING } from "../lib/motionTokens";
 
 const GENRES = [
@@ -122,7 +122,7 @@ export default function Roulette() {
           Choisis une envie, lance la bobine. On écarte les titres que tu as déjà vus.
         </motion.p>
 
-        <div className="flex flex-wrap items-center gap-2 mb-3" role="group" aria-label="Type">
+        <div className="inline-flex p-1 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 backdrop-blur-md mb-4" role="group" aria-label="Type">
           {[
             { id: "movie", label: "Un film" },
             { id: "tv", label: "Une série" },
@@ -138,13 +138,13 @@ export default function Roulette() {
             </button>
           ))}
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:flex-wrap" role="group" aria-label="Genre">
+        <div className="flex gap-3 overflow-x-auto px-1 pt-1 pb-3 -mx-1 [scrollbar-width:none] md:flex-wrap" role="group" aria-label="Genre">
           {GENRES.map((g) => (
             <button
               key={g.label}
               onClick={() => setGenre(g.id)}
               aria-pressed={genre === g.id}
-              className={`btn shrink-0 px-4 py-2 ring-1 ring-inset ${genre === g.id ? "bg-cine-violet text-white ring-white/15" : "bg-white/[0.06] text-white/75 ring-white/10 hover:bg-white/[0.12]"}`}
+              className="btn-chip"
             >
               {g.label}
             </button>
@@ -185,8 +185,8 @@ export default function Roulette() {
       </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-8 flex flex-col items-center text-center">
+        <Magnetic>
         <motion.button
-          
           onClick={spin}
           disabled={spinning || loading || !pool.length}
           className="btn-primary !px-10 !py-4 text-base"
@@ -196,6 +196,7 @@ export default function Roulette() {
           </motion.span>
           {winner ? "Relancer" : "Lancer la bobine"}
         </motion.button>
+        </Magnetic>
 
         <AnimatePresence mode="wait">
           {winner && (

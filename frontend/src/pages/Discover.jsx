@@ -46,7 +46,7 @@ function InfiniteTagRow({ items, onSelect, activeLabel }) {
 
   return (
     <div
-      className={`select-none ${reduce ? "overflow-x-auto [scrollbar-width:none] px-4 sm:px-6 md:px-10" : "overflow-hidden"}`}
+      className={`select-none py-1.5 ${reduce ? "overflow-x-auto [scrollbar-width:none] px-4 sm:px-6 md:px-10" : "overflow-hidden"}`}
       onMouseEnter={() => { paused.current = true; }}
       onMouseLeave={() => { paused.current = false; }}
       onFocus={() => { paused.current = true; }}
@@ -60,11 +60,8 @@ function InfiniteTagRow({ items, onSelect, activeLabel }) {
               onClick={() => onSelect(cat.label)}
               aria-hidden={copy > 0 || undefined}
               tabIndex={copy > 0 ? -1 : undefined}
-              className={`btn shrink-0 !font-medium px-4 py-2 ring-1 ring-inset ${
-                activeLabel === cat.label
-                  ? "bg-cine-violet text-white ring-cine-violet shadow-[0_0_16px_rgba(124,92,224,0.5)]"
-                  : "bg-white/[0.06] text-white/75 ring-white/10 hover:bg-white/[0.13] hover:text-white"
-              }`}
+              aria-pressed={activeLabel === cat.label}
+              className="btn-chip"
             >
               {cat.label}
             </button>
