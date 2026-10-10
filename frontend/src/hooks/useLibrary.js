@@ -4,7 +4,7 @@ import { libraryIndex, loadLibrary, subscribeLibrary } from "../lib/library";
 
 /** La liste de l'utilisateur connecté, tenue à jour quand une autre partie du site la modifie. */
 export default function useLibrary() {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const [list, setList] = useState([]);
   const [ready, setReady] = useState(false);
 
@@ -14,13 +14,13 @@ export default function useLibrary() {
       return;
     }
     const unsubscribe = subscribeLibrary(setList);
-    loadLibrary(token)
+    loadLibrary(user.id)
       .then(setList)
       .catch(() => setList([]))
       .finally(() => setReady(true));
     return unsubscribe;
-  }, [token, user]);
+  }, [user]);
 
   const index = useMemo(() => libraryIndex(list), [list]);
-  return { list, index, token, user, ready };
+  return { list, index, user, ready };
 }

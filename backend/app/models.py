@@ -22,12 +22,6 @@ class UserOut(BaseModel):
     email: EmailStr
 
 
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    user: UserOut
-
-
 class WatchlistItemIn(BaseModel):
     media_id: int
     media_type: str = Field(pattern="^(movie|tv)$")

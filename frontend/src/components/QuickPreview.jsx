@@ -51,7 +51,7 @@ function SwipePoster({ item, onSwipe, disabled }) {
 }
 
 export default function QuickPreview() {
-  const { index, token, user } = useLibrary();
+  const { index, user } = useLibrary();
   const navigate = useNavigate();
   const [target, setTarget] = useState(null);
   const [details, setDetails] = useState(null);
@@ -88,7 +88,7 @@ export default function QuickPreview() {
     }
     setBusy(true);
     try {
-      await setLibraryStatus(token, { item, mediaType: type, existing }, existing?.status === status ? null : status);
+      await setLibraryStatus({ item, mediaType: type, existing }, existing?.status === status ? null : status);
     } finally {
       setBusy(false);
     }

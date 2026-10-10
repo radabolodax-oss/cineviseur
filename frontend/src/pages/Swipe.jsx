@@ -69,7 +69,7 @@ function TopCard({ item, onDecide }) {
 
 export default function Swipe() {
   useSeo("Trier en swipant", "Fais défiler les films populaires et range-les dans ta liste d'un geste.");
-  const { index, token, ready } = useLibrary();
+  const { index, ready } = useLibrary();
   const [deck, setDeck] = useState([]);
   const [page, setPage] = useState(1);
   const [direction, setDirection] = useState(null);
@@ -117,12 +117,12 @@ export default function Swipe() {
         return;
       }
       try {
-        await setLibraryStatus(token, { item: top, mediaType: top.media_type, existing: index.get(libraryKey(top.media_type, top.id)) }, dir);
+        await setLibraryStatus({ item: top, mediaType: top.media_type, existing: index.get(libraryKey(top.media_type, top.id)) }, dir);
       } catch {
         // l'échec n'interrompt pas le tri
       }
     },
-    [top, token, index, pile.length]
+    [top, index, pile.length]
   );
 
   useEffect(() => {

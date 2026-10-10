@@ -5,42 +5,29 @@ import { resetLibrary } from "../lib/library";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem("cv_token"));
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
     api
-      .me(token)
+      .me()
       .then(setUser)
-      .catch(() => {
-        setToken(null);
-        localStorage.removeItem("cv_token");
-      })
+      .catch(() => setUser(null))
       .finally(() => setLoading(false));
-  }, [token]);
+  }, []);
 
-  function login(accessToken, userData) {
-    localStorage.setItem("cv_token", accessToken);
-    setToken(accessToken);
+  function login(userData) {
     setUser(userData);
   }
 
   async function logout() {
-    // Révoque le jeton côté serveur (incrémente token_version) avant de l'effacer localement.
-    try { await api.logout(token); } catch { /* déconnexion locale même si le réseau échoue */ }
-    localStorage.removeItem("cv_token");
+    try { await api.logout(); } catch { /* déconnexion locale même si le réseau échoue */ }
     resetLibrary();
-    setToken(null);
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

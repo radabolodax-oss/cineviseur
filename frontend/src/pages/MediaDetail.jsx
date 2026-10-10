@@ -202,7 +202,7 @@ function formatRuntime(item) {
 
 export default function MediaDetail() {
   const { mediaType, id } = useParams();
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const heroRef = useRef(null);
@@ -245,13 +245,13 @@ export default function MediaDetail() {
       return;
     }
     api
-      .libraryStatus(mediaType, id, token)
+      .libraryStatus(mediaType, id)
       .then((data) => {
         setWatchlistItem(data.watchlist_item);
         setAlert(data.alert);
       })
       .catch(() => {});
-  }, [mediaType, id, user, token]);
+  }, [mediaType, id, user]);
 
   useEffect(() => {
     if (!toast) return;
@@ -298,7 +298,7 @@ export default function MediaDetail() {
     setBusy(true);
     try {
       // Passe par la liste partagée : « Vu » déclenche le ticket tamponné, pas de toast en doublon.
-      const result = await setLibraryStatus(token, { item, mediaType, existing: watchlistItem }, nextStatus);
+      const result = await setLibraryStatus({ item, mediaType, existing: watchlistItem }, nextStatus);
       setWatchlistItem(result);
       if (!nextStatus) setToast("Retiré de ta liste");
       else if (nextStatus === "to_watch") setToast("Ajouté à ta liste");
@@ -312,13 +312,12 @@ export default function MediaDetail() {
     setBusy(true);
     try {
       if (alert) {
-        await api.removeAlert(alert.id, token);
+        await api.removeAlert(alert.id);
         setAlert(null);
         setToast("Alerte désactivée");
       } else {
         const result = await api.createAlert(
-          { media_id: item.id, media_type: mediaType, title, poster_path: item.poster_path, release_date: releaseDate },
-          token
+          { media_id: item.id, media_type: mediaType, title, poster_path: item.poster_path, release_date: releaseDate }
         );
         setAlert(result);
         setToast("On t'alertera à la sortie");
@@ -434,7 +433,7 @@ export default function MediaDetail() {
             ) : (
               <span className="text-sm text-white/55">Pas encore noté</span>
             )}
-            {user && isReleased && <RatingDial mediaId={item.id} mediaType={mediaType} token={token} />}
+            {user && isReleased && <RatingDial mediaId={item.id} mediaType={mediaType} />}
           </motion.div>
 
           <motion.p variants={riseItem} className="text-white/75 text-[15px] md:text-base max-w-[65ch] leading-relaxed mb-8">

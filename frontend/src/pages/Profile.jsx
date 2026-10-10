@@ -32,7 +32,7 @@ function TileBody({ to, children }) {
 }
 
 export default function Profile() {
-  const { user, token, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [confirming, setConfirming] = useState(false);
@@ -45,7 +45,7 @@ export default function Profile() {
     setDeleting(true);
     setDeleteError("");
     try {
-      await api.deleteAccount(token);
+      await api.deleteAccount();
       logout();
       navigate("/");
     } catch (err) {
@@ -55,8 +55,8 @@ export default function Profile() {
   }
 
   useEffect(() => {
-    if (!token) return;
-    Promise.all([api.watchlist(token), api.alerts(token).catch(() => [])])
+    if (!user) return;
+    Promise.all([api.watchlist(), api.alerts().catch(() => [])])
       .then(([list, alerts]) =>
         setStats({
           toWatch: list.filter((i) => i.status !== "watched").length,
@@ -65,7 +65,7 @@ export default function Profile() {
         })
       )
       .catch(() => setStats({ toWatch: 0, watched: 0, alerts: 0 }));
-  }, [token]);
+  }, [user]);
 
   if (!user) return null;
 

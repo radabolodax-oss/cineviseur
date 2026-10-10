@@ -36,8 +36,8 @@ export default function Login() {
     setServerError("");
     setLoading(true);
     try {
-      const data = await api.login({ email: values.email.trim(), password: values.password });
-      login(data.access_token, data.user);
+      const user = await api.login({ email: values.email.trim(), password: values.password });
+      login(user);
       navigate("/discover");
     } catch (err) {
       setServerError(err.message);

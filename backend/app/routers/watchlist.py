@@ -1,10 +1,9 @@
 from datetime import datetime, timezone
 
-from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.db import alerts_collection, ratings_collection, watchlist_collection
-from app.deps import get_current_user
+from app.deps import get_current_user, object_id_or_404
 from app.models import AlertIn, RatingIn, WatchlistItemIn, WatchlistStatusUpdate
 
 router = APIRouter(prefix="/api", tags=["watchlist"])
@@ -55,7 +54,7 @@ async def add_to_watchlist(payload: WatchlistItemIn, current_user: dict = Depend
 @router.patch("/watchlist/{item_id}")
 async def update_watchlist_status(item_id: str, payload: WatchlistStatusUpdate, current_user: dict = Depends(get_current_user)):
     result = await watchlist_collection.find_one_and_update(
-        {"_id": ObjectId(item_id), "user_id": current_user["_id"]},
+        {"_id": object_id_or_404(item_id), "user_id": current_user["_id"]},
         {"$set": _status_fields(payload.status)},
         return_document=True,
     )
@@ -66,7 +65,7 @@ async def update_watchlist_status(item_id: str, payload: WatchlistStatusUpdate, 
 
 @router.delete("/watchlist/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_from_watchlist(item_id: str, current_user: dict = Depends(get_current_user)):
-    result = await watchlist_collection.delete_one({"_id": ObjectId(item_id), "user_id": current_user["_id"]})
+    result = await watchlist_collection.delete_one({"_id": object_id_or_404(item_id), "user_id": current_user["_id"]})
     if result.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Élément introuvable")
 
@@ -120,7 +119,7 @@ async def list_due_alerts(current_user: dict = Depends(get_current_user)):
 @router.post("/alerts/{alert_id}/dismiss")
 async def dismiss_alert(alert_id: str, current_user: dict = Depends(get_current_user)):
     result = await alerts_collection.find_one_and_update(
-        {"_id": ObjectId(alert_id), "user_id": current_user["_id"]},
+        {"_id": object_id_or_404(alert_id), "user_id": current_user["_id"]},
         {"$set": {"notified": True}},
         return_document=True,
     )
@@ -137,7 +136,7 @@ async def list_alerts(current_user: dict = Depends(get_current_user)):
 
 @router.delete("/alerts/{alert_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_alert(alert_id: str, current_user: dict = Depends(get_current_user)):
-    result = await alerts_collection.delete_one({"_id": ObjectId(alert_id), "user_id": current_user["_id"]})
+    result = await alerts_collection.delete_one({"_id": object_id_or_404(alert_id), "user_id": current_user["_id"]})
     if result.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alerte introuvable")
 

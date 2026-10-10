@@ -1,12 +1,10 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-async function request(path, { method = "GET", body, token } = {}) {
-  const headers = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
-
+async function request(path, { method = "GET", body } = {}) {
   const res = await fetch(`${API_URL}${path}`, {
     method,
-    headers,
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
   });
 
@@ -22,9 +20,9 @@ async function request(path, { method = "GET", body, token } = {}) {
 export const api = {
   register: (payload) => request("/api/auth/register", { method: "POST", body: payload }),
   login: (payload) => request("/api/auth/login", { method: "POST", body: payload }),
-  me: (token) => request("/api/auth/me", { token }),
-  logout: (token) => request("/api/auth/logout", { method: "POST", token }),
-  deleteAccount: (token) => request("/api/auth/me", { method: "DELETE", token }),
+  me: () => request("/api/auth/me"),
+  logout: () => request("/api/auth/logout", { method: "POST" }),
+  deleteAccount: () => request("/api/auth/me", { method: "DELETE" }),
 
   trending: (lang = "fr") => request(`/api/tmdb/trending?lang=${lang}`),
   genres: (mediaType, lang = "fr") => request(`/api/tmdb/genres?media_type=${mediaType}&lang=${lang}`),
@@ -42,23 +40,23 @@ export const api = {
   details: (mediaType, id, lang = "fr") => request(`/api/tmdb/${mediaType}/${id}?lang=${lang}`),
   person: (id, lang = "fr") => request(`/api/tmdb/person/${id}?lang=${lang}`),
 
-  watchlist: (token) => request("/api/watchlist", { token }),
-  addToWatchlist: (payload, token) => request("/api/watchlist", { method: "POST", body: payload, token }),
-  updateWatchlistStatus: (id, statusValue, token) =>
-    request(`/api/watchlist/${id}`, { method: "PATCH", body: { status: statusValue }, token }),
-  removeFromWatchlist: (id, token) => request(`/api/watchlist/${id}`, { method: "DELETE", token }),
+  watchlist: () => request("/api/watchlist"),
+  addToWatchlist: (payload) => request("/api/watchlist", { method: "POST", body: payload }),
+  updateWatchlistStatus: (id, statusValue) =>
+    request(`/api/watchlist/${id}`, { method: "PATCH", body: { status: statusValue } }),
+  removeFromWatchlist: (id) => request(`/api/watchlist/${id}`, { method: "DELETE" }),
 
-  libraryStatus: (mediaType, id, token) =>
-    request(`/api/library/status?media_id=${id}&media_type=${mediaType}`, { token }),
+  libraryStatus: (mediaType, id) =>
+    request(`/api/library/status?media_id=${id}&media_type=${mediaType}`),
 
-  createAlert: (payload, token) => request("/api/alerts", { method: "POST", body: payload, token }),
-  removeAlert: (id, token) => request(`/api/alerts/${id}`, { method: "DELETE", token }),
-  alerts: (token) => request("/api/alerts", { token }),
-  dueAlerts: (token) => request("/api/alerts/due", { token }),
-  dismissAlert: (id, token) => request(`/api/alerts/${id}/dismiss`, { method: "POST", token }),
+  createAlert: (payload) => request("/api/alerts", { method: "POST", body: payload }),
+  removeAlert: (id) => request(`/api/alerts/${id}`, { method: "DELETE" }),
+  alerts: () => request("/api/alerts"),
+  dueAlerts: () => request("/api/alerts/due"),
+  dismissAlert: (id) => request(`/api/alerts/${id}/dismiss`, { method: "POST" }),
 
-  rate: (payload, token) => request("/api/ratings", { method: "PUT", body: payload, token }),
-  ratings: (token) => request("/api/ratings", { token }),
+  rate: (payload) => request("/api/ratings", { method: "PUT", body: payload }),
+  ratings: () => request("/api/ratings"),
 
   nearbyCinemas: (lat, lon, radiusKm = 20) =>
     request(`/api/cinemas/nearby?lat=${lat}&lon=${lon}&radius_km=${radiusKm}`),

@@ -1,11 +1,12 @@
 import asyncio
 
 import httpx
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.config import TMDB_API_KEY, TMDB_BASE_URL
+from app.ratelimit import public_data_limiter
 
-router = APIRouter(prefix="/api/tmdb", tags=["tmdb"])
+router = APIRouter(prefix="/api/tmdb", tags=["tmdb"], dependencies=[Depends(public_data_limiter)])
 
 
 _transport = httpx.AsyncHTTPTransport(retries=3)

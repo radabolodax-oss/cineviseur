@@ -28,7 +28,7 @@ const LOOPS = 6;
 
 export default function Roulette() {
   useSeo("Ce soir, je regarde quoi ?", "Fais tourner la bobine : CineViseur choisit un film ou une série pour ta soirée.");
-  const { index, token, user } = useLibrary();
+  const { index, user } = useLibrary();
   const navigate = useNavigate();
   const reduce = useReducedMotion();
   const [genre, setGenre] = useState(null);
@@ -110,7 +110,7 @@ export default function Roulette() {
 
   async function addWinner() {
     if (!user) return navigate("/login");
-    await setLibraryStatus(token, { item: winner, mediaType: kind, existing: index.get(libraryKey(kind, winner.id)) }, "to_watch");
+    await setLibraryStatus({ item: winner, mediaType: kind, existing: index.get(libraryKey(kind, winner.id)) }, "to_watch");
     setAdded(true);
   }
 

@@ -3,7 +3,7 @@ import { api } from "./api";
 import { emitWatched, play, vibrate } from "./feedback";
 
 let cache = null;
-let cacheToken = null;
+let cacheOwner = null;
 const listeners = new Set();
 
 function notify() {
@@ -18,15 +18,15 @@ export function subscribeLibrary(fn) {
 let inflight = null;
 
 // Un seul appel réseau même si vingt cartes demandent la liste en même temps.
-export async function loadLibrary(token, force = false) {
-  if (!token) return [];
-  if (cache && cacheToken === token && !force) return cache;
+export async function loadLibrary(ownerId, force = false) {
+  if (!ownerId) return [];
+  if (cache && cacheOwner === ownerId && !force) return cache;
   if (!inflight || force) {
     inflight = api
-      .watchlist(token)
+      .watchlist()
       .then((list) => {
         cache = list;
-        cacheToken = token;
+        cacheOwner = ownerId;
         notify();
         return list;
       })
@@ -49,17 +49,16 @@ export function libraryIndex(list) {
  * Place un titre dans un état : "to_watch", "watched" ou null (retirer).
  * Joue le tampon « VU » quand il devient vu.
  */
-export async function setLibraryStatus(token, { item, mediaType, existing }, status) {
+export async function setLibraryStatus({ item, mediaType, existing }, status) {
   const title = item.title || item.name;
   let result = null;
   if (!status) {
-    if (existing) await api.removeFromWatchlist(existing.id, token);
+    if (existing) await api.removeFromWatchlist(existing.id);
   } else if (existing) {
-    result = await api.updateWatchlistStatus(existing.id, status, token);
+    result = await api.updateWatchlistStatus(existing.id, status);
   } else {
     result = await api.addToWatchlist(
-      { media_id: item.id, media_type: mediaType, title, poster_path: item.poster_path, status },
-      token
+      { media_id: item.id, media_type: mediaType, title, poster_path: item.poster_path, status }
     );
   }
   if (cache) {
@@ -80,5 +79,5 @@ export async function setLibraryStatus(token, { item, mediaType, existing }, sta
 
 export function resetLibrary() {
   cache = null;
-  cacheToken = null;
+  cacheOwner = null;
 }

@@ -3,9 +3,11 @@ import re
 from urllib.parse import quote_plus
 
 import httpx
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
-router = APIRouter(prefix="/api/cinemas", tags=["cinemas"])
+from app.ratelimit import public_data_limiter
+
+router = APIRouter(prefix="/api/cinemas", tags=["cinemas"], dependencies=[Depends(public_data_limiter)])
 
 OVERPASS_URLS = [
     "https://overpass-api.de/api/interpreter",

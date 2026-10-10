@@ -44,7 +44,7 @@ export default function Register() {
         accepted_terms: values.terms,
         website: values.website,
       });
-      login(data.access_token, data.user);
+      login(data);
       navigate("/discover");
     } catch (err) {
       setServerError(err.message);

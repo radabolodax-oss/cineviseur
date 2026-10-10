@@ -105,7 +105,7 @@ function TicketCard({ item, i }) {
 
 export default function Watchlist() {
   useSeo("Ma liste", "Ta file d'attente de films et séries, et ton mur de tickets des titres déjà vus.");
-  const { list, token, ready: loaded } = useLibrary();
+  const { list, ready: loaded } = useLibrary();
   const [tab, setTab] = useState("queue");
   const [queue, setQueue] = useState([]);
 
@@ -141,8 +141,8 @@ export default function Watchlist() {
   }
 
   const asItem = (w) => ({ id: w.media_id, title: w.title, poster_path: w.poster_path });
-  const markWatched = (w) => setLibraryStatus(token, { item: asItem(w), mediaType: w.media_type, existing: w }, "watched");
-  const remove = (w) => setLibraryStatus(token, { item: asItem(w), mediaType: w.media_type, existing: w }, null);
+  const markWatched = (w) => setLibraryStatus({ item: asItem(w), mediaType: w.media_type, existing: w }, "watched");
+  const remove = (w) => setLibraryStatus({ item: asItem(w), mediaType: w.media_type, existing: w }, null);
 
   const tabs = [
     { key: "queue", label: "File d'attente", count: toWatch.length },

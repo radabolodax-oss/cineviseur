@@ -12,7 +12,7 @@ import { SPRING } from "../lib/motionTokens";
 const POLL_MS = 5 * 60 * 1000;
 
 export default function NotificationBell() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -26,21 +26,21 @@ export default function NotificationBell() {
     let cancelled = false;
     function refresh() {
       api
-        .dueAlerts(token)
+        .dueAlerts()
         .then((data) => { if (!cancelled) setItems(data); })
         .catch(() => {});
     }
     refresh();
     const interval = setInterval(refresh, POLL_MS);
     return () => { cancelled = true; clearInterval(interval); };
-  }, [user, token]);
+  }, [user]);
 
   if (!user) return null;
 
   async function handleDismiss(id) {
     setItems((prev) => prev.filter((i) => i.id !== id));
     try {
-      await api.dismissAlert(id, token);
+      await api.dismissAlert(id);
     } catch {
       // no-op: next poll will re-sync
     }

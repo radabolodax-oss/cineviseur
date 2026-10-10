@@ -10,7 +10,7 @@ import { TiltCard } from "./motion";
 import { SPRING } from "../lib/motionTokens";
 
 export default function MediaCard({ item, mediaType: typeOverride }) {
-  const { index, token, user } = useLibrary();
+  const { index, user } = useLibrary();
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
   const title = mediaTitle(item);
@@ -26,7 +26,7 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
     if (!user || existing || busy) return;
     setBusy(true);
     try {
-      await setLibraryStatus(token, { item, mediaType: type, existing }, "to_watch");
+      await setLibraryStatus({ item, mediaType: type, existing }, "to_watch");
     } finally {
       setBusy(false);
     }

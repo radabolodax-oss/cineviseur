@@ -1,12 +1,15 @@
-"""Limitation simple du nombre de requêtes (anti-spam / anti-bruteforce).
+"""Limitation du nombre de requêtes, stockée dans MongoDB (partagée entre instances, survit aux redémarrages).
 
-Stockage en mémoire : suffisant pour une seule instance d'API. Derrière plusieurs instances,
-il faudrait un stockage partagé (Redis, Mongo).
+Fenêtre fixe : un compteur par clé et par tranche de temps. Les compteurs expirés sont supprimés
+automatiquement par un index TTL (créé au démarrage, voir main.py).
 """
 import time
-from collections import defaultdict, deque
+from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, Request, status
+from pymongo import ReturnDocument
+
+from app.db import rate_limits_collection
 
 
 def client_ip(request: Request) -> str:
@@ -22,34 +25,40 @@ def client_ip(request: Request) -> str:
 
 
 class RateLimiter:
-    def __init__(self, max_requests: int, window_seconds: int):
+    def __init__(self, name: str, max_requests: int, window_seconds: int):
+        self.name = name
         self.max_requests = max_requests
         self.window = window_seconds
-        self.hits: dict[str, deque] = defaultdict(deque)
 
-    def hit(self, key: str) -> None:
-        now = time.monotonic()
-        hits = self.hits[key]
-        while hits and now - hits[0] > self.window:
-            hits.popleft()
-        if not hits:
-            self.hits.pop(key, None)
-            hits = self.hits[key]
-        if len(hits) >= self.max_requests:
-            retry = int(self.window - (now - hits[0])) + 1
+    async def hit(self, key: str) -> None:
+        now = time.time()
+        bucket = int(now // self.window)
+        doc = await rate_limits_collection.find_one_and_update(
+            {"_id": f"{self.name}:{key}:{bucket}"},
+            {
+                "$inc": {"count": 1},
+                "$setOnInsert": {"expires_at": datetime.now(timezone.utc) + timedelta(seconds=self.window * 2)},
+            },
+            upsert=True,
+            return_document=ReturnDocument.AFTER,
+        )
+        if doc["count"] > self.max_requests:
+            retry = int(self.window - (now % self.window)) + 1
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail="Trop de tentatives. Réessaie dans quelques minutes.",
                 headers={"Retry-After": str(retry)},
             )
-        hits.append(now)
 
-    def __call__(self, request: Request) -> None:
-        self.hit(f"{request.url.path}:{client_ip(request)}")
+    async def __call__(self, request: Request) -> None:
+        await self.hit(client_ip(request))
 
 
-# 10 connexions / 5 min et 5 inscriptions / heure par IP.
-login_limiter = RateLimiter(max_requests=10, window_seconds=300)
-register_limiter = RateLimiter(max_requests=5, window_seconds=3600)
-# Par compte visé, quelle que soit l'IP : bloque une attaque répartie sur beaucoup d'adresses.
-account_limiter = RateLimiter(max_requests=10, window_seconds=900)
+# Par IP : 10 connexions / 5 min, 5 inscriptions / heure.
+login_limiter = RateLimiter("login", max_requests=10, window_seconds=300)
+register_limiter = RateLimiter("register", max_requests=5, window_seconds=3600)
+# Par couple (compte visé, IP) : freine le devinage de mot de passe sans permettre à un tiers
+# de bloquer le compte d'un utilisateur depuis une autre adresse.
+login_account_limiter = RateLimiter("login_account", max_requests=10, window_seconds=900)
+# Routes publiques qui consomment la clé TMDB ou l'API Overpass.
+public_data_limiter = RateLimiter("public_data", max_requests=240, window_seconds=60)

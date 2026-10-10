@@ -17,7 +17,7 @@ function angleToScore(deg) {
 }
 
 /** Molette de note personnelle, de 1 à 10 : on la tourne au doigt, à la souris ou aux flèches. */
-export default function RatingDial({ mediaId, mediaType, token }) {
+export default function RatingDial({ mediaId, mediaType }) {
   const ref = useRef(null);
   const [score, setScoreState] = useState(null);
   // Valeur toujours à jour, même si plusieurs touches arrivent avant le prochain rendu.
@@ -35,13 +35,13 @@ export default function RatingDial({ mediaId, mediaType, token }) {
 
   useEffect(() => {
     api
-      .ratings(token)
+      .ratings()
       .then((list) => {
         const mine = list.find((r) => r.media_id === Number(mediaId) && r.media_type === mediaType);
         if (mine) setScore(mine.score);
       })
       .catch(() => {});
-  }, [mediaId, mediaType, token]);
+  }, [mediaId, mediaType]);
 
   useEffect(() => {
     progress.set(score ? (score - 1) / 9 : 0);
@@ -64,7 +64,7 @@ export default function RatingDial({ mediaId, mediaType, token }) {
   async function save(value) {
     if (!value) return;
     try {
-      await api.rate({ media_id: Number(mediaId), media_type: mediaType, score: value }, token);
+      await api.rate({ media_id: Number(mediaId), media_type: mediaType, score: value });
       setSaved(true);
       setTimeout(() => setSaved(false), 1600);
     } catch {
