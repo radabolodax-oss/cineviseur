@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, Request, status
 from pymongo import ReturnDocument
+from pymongo.errors import PyMongoError
 
 from app.db import rate_limits_collection
 
@@ -33,15 +34,20 @@ class RateLimiter:
     async def hit(self, key: str) -> None:
         now = time.time()
         bucket = int(now // self.window)
-        doc = await rate_limits_collection.find_one_and_update(
-            {"_id": f"{self.name}:{key}:{bucket}"},
-            {
-                "$inc": {"count": 1},
-                "$setOnInsert": {"expires_at": datetime.now(timezone.utc) + timedelta(seconds=self.window * 2)},
-            },
-            upsert=True,
-            return_document=ReturnDocument.AFTER,
-        )
+        try:
+            doc = await rate_limits_collection.find_one_and_update(
+                {"_id": f"{self.name}:{key}:{bucket}"},
+                {
+                    "$inc": {"count": 1},
+                    "$setOnInsert": {"expires_at": datetime.now(timezone.utc) + timedelta(seconds=self.window * 2)},
+                },
+                upsert=True,
+                return_document=ReturnDocument.AFTER,
+            )
+        except PyMongoError:
+            # Compter est une protection, pas une condition de bon fonctionnement :
+            # si la base tombe, on laisse passer plutôt que de rendre le site inutilisable.
+            return
         if doc["count"] > self.max_requests:
             retry = int(self.window - (now % self.window)) + 1
             raise HTTPException(
