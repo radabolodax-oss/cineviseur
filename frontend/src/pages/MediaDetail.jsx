@@ -6,6 +6,7 @@ import { tmdbImage, tmdbSrcSet } from "../lib/tmdb";
 import { useAuth } from "../context/AuthContext";
 import MediaCard from "../components/MediaCard";
 import PosterGrid from "../components/PosterGrid";
+import GlassCarousel from "../components/GlassCarousel";
 import Toast from "../components/Toast";
 import Icon from "../components/Icon";
 import SectionTitle from "../components/SectionTitle";
@@ -13,6 +14,7 @@ import useSeo from "../hooks/useSeo";
 import { setLibraryStatus } from "../lib/library";
 import RatingDial from "../components/RatingDial";
 import CastConstellation from "../components/CastConstellation";
+import CastRing from "../components/CastRing";
 import CinemaFinder from "../components/CinemaFinder";
 import { KineticTitle, Reveal, TiltCard } from "../components/motion";
 import { EASE_OUT, SPRING, riseItem, stagger } from "../lib/motionTokens";
@@ -514,7 +516,12 @@ export default function MediaDetail() {
           <Reveal y={16}>
             <SectionTitle className="px-4 sm:px-6 md:px-10">Casting</SectionTitle>
           </Reveal>
-          <CastConstellation cast={cast} />
+          {/* Carrousel 3D cylindrique pour 5+ acteurs, constellation pour les petits castings */}
+          {cast.length >= 5 ? (
+            <CastRing cast={cast} />
+          ) : (
+            <CastConstellation cast={cast} />
+          )}
         </section>
       )}
 
@@ -523,7 +530,7 @@ export default function MediaDetail() {
           <Reveal y={16}>
             <SectionTitle>Titres similaires</SectionTitle>
           </Reveal>
-          <PosterGrid items={similar} getKey={(s) => s.id} render={(s) => <MediaCard item={s} mediaType={mediaType} />} />
+          <GlassCarousel items={similar} mediaType={mediaType} />
         </section>
       )}
 
