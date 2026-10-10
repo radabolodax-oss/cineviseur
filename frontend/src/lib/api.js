@@ -23,6 +23,7 @@ export const api = {
   register: (payload) => request("/api/auth/register", { method: "POST", body: payload }),
   login: (payload) => request("/api/auth/login", { method: "POST", body: payload }),
   me: (token) => request("/api/auth/me", { token }),
+  logout: (token) => request("/api/auth/logout", { method: "POST", token }),
   deleteAccount: (token) => request("/api/auth/me", { method: "DELETE", token }),
 
   trending: (lang = "fr") => request(`/api/tmdb/trending?lang=${lang}`),

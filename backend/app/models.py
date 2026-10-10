@@ -4,7 +4,8 @@ from pydantic import BaseModel, EmailStr, Field
 class RegisterRequest(BaseModel):
     name: str = Field(min_length=1, max_length=80)
     email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
+    # bcrypt ignore tout ce qui dépasse 72 octets : on refuse plutôt que de tronquer en silence.
+    password: str = Field(min_length=8, max_length=72)
     accepted_terms: bool = False
     # Champ piège anti-robots, laissé vide par les humains.
     website: str | None = None
@@ -12,7 +13,7 @@ class RegisterRequest(BaseModel):
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(max_length=256)
 
 
 class UserOut(BaseModel):

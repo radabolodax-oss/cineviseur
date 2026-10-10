@@ -15,9 +15,10 @@ async def get_current_user(
     if credentials is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Non authentifié")
 
-    user_id = decode_access_token(credentials.credentials)
-    if user_id is None:
+    decoded = decode_access_token(credentials.credentials)
+    if decoded is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
+    user_id, version = decoded
 
     try:
         object_id = ObjectId(user_id)
@@ -27,5 +28,8 @@ async def get_current_user(
     user = await users_collection.find_one({"_id": object_id})
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utilisateur introuvable")
+    # Jeton émis avant une déconnexion : révoqué.
+    if version != user.get("token_version", 0):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expirée")
 
     return user

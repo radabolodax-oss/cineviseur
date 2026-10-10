@@ -30,7 +30,9 @@ export function AuthProvider({ children }) {
     setUser(userData);
   }
 
-  function logout() {
+  async function logout() {
+    // Révoque le jeton côté serveur (incrémente token_version) avant de l'effacer localement.
+    try { await api.logout(token); } catch { /* déconnexion locale même si le réseau échoue */ }
     localStorage.removeItem("cv_token");
     resetLibrary();
     setToken(null);

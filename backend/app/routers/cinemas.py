@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/cinemas", tags=["cinemas"])
 OVERPASS_URLS = [
     "https://overpass-api.de/api/interpreter",
     "https://lz4.overpass-api.de/api/interpreter",
-    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+    # maps.mail.ru retiré : serveur russe, RGPD incertain, pas nécessaire avec deux miroirs EU.
 ]
 
 # Formats premium proposés par les grands réseaux français. Indicatif : tous les cinémas d'un réseau
