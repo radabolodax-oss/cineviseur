@@ -1,10 +1,63 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import CarouselRow from "../components/CarouselRow";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useAnimationFrame, useMotionValue, useReducedMotion } from "motion/react";
 import Icon from "../components/Icon";
 import { SPRING, riseItem, stagger } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
+
+/** Ligne de tags qui défile en boucle infinie. Pause au survol. Les items restent cliquables. */
+function InfiniteTagRow({ items, onSelect, activeLabel }) {
+  const reduce = useReducedMotion();
+  const x = useMotionValue(0);
+  const paused = useRef(false);
+  // Vitesse en px/s
+  const SPEED = 60;
+
+  // Largeur d'un exemplaire de la liste : estimée à 130px par item en moyenne
+  const trackRef = useRef(null);
+
+  useAnimationFrame((_, delta) => {
+    if (reduce || paused.current) return;
+    const track = trackRef.current;
+    if (!track) return;
+    const halfW = track.scrollWidth / 2;
+    let next = x.get() - (SPEED * delta) / 1000;
+    if (next <= -halfW) next += halfW;
+    x.set(next);
+  });
+
+  // Items dupliqués pour la boucle sans couture
+  const doubled = [...items, ...items];
+
+  return (
+    <div
+      className="overflow-hidden select-none"
+      onMouseEnter={() => { paused.current = true; }}
+      onMouseLeave={() => { paused.current = false; }}
+    >
+      <motion.div
+        ref={trackRef}
+        className="inline-flex gap-2 whitespace-nowrap"
+        style={{ x }}
+      >
+        {doubled.map((cat, i) => (
+          <button
+            key={`${cat.label}-${i}`}
+            onClick={() => onSelect(cat.label)}
+            className={`btn shrink-0 !font-medium px-4 py-2 ring-1 ring-inset transition-all
+              ${activeLabel === cat.label
+                ? "bg-cine-violet text-white ring-cine-violet shadow-[0_0_16px_rgba(124,92,224,0.5)]"
+                : "bg-white/[0.06] text-white/75 ring-white/10 hover:bg-white/[0.13] hover:text-white"
+              }`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
 
 const CATEGORIES = [
   { label: "Action", movie: 28 },
@@ -76,6 +129,7 @@ export default function Discover() {
   const [minRating, setMinRating] = useState("");
   const [year, setYear] = useState("");
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
+  const [activeCategory, setActiveCategory] = useState(null);
   const isFiltered = Boolean(sort !== "popularity" || minRating || year);
   const sentinelRef = useRef(null);
 
@@ -118,6 +172,7 @@ export default function Discover() {
   }, [rows.length]);
 
   function jumpTo(label) {
+    setActiveCategory(label);
     const id = slug(label);
     const index = rows.findIndex((r) => r.id === id);
     if (index >= 0 && index >= visibleCount) {
@@ -145,24 +200,9 @@ export default function Discover() {
         </motion.div>
       </motion.div>
 
-      <motion.div
-        className="flex gap-2 overflow-x-auto px-4 sm:px-6 md:px-10 pb-1 mb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap"
-        initial="hidden"
-        animate="show"
-        variants={stagger(0.025, 0.15)}
-      >
-        {CATEGORIES.map((cat) => (
-          <motion.button
-            key={cat.label}
-            variants={{ hidden: { opacity: 0, y: 10, scale: 0.95 }, show: { opacity: 1, y: 0, scale: 1, transition: SPRING } }}
-            
-            onClick={() => jumpTo(cat.label)}
-            className="btn shrink-0 !font-medium px-4 py-2 bg-white/[0.06] text-white/75 ring-1 ring-inset ring-white/10 hover:bg-white/[0.12] hover:text-white"
-          >
-            {cat.label}
-          </motion.button>
-        ))}
-      </motion.div>
+      <div className="mb-5">
+        <InfiniteTagRow items={CATEGORIES} onSelect={jumpTo} activeLabel={activeCategory} />
+      </div>
 
       <div className="px-4 sm:px-6 md:px-10 flex flex-wrap items-center gap-2.5 mb-12 pb-8 border-b border-white/[0.08]">
         <FilterSelect icon="sort" label="Trier par" value={sort} onChange={(e) => setSort(e.target.value)} options={SORTS} />

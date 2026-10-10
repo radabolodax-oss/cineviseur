@@ -52,7 +52,7 @@ export default function GlassCarousel({ items = [], mediaType = "movie", title }
       {title && <h3 className="font-display text-xl font-semibold mb-4">{title}</h3>}
       <div
         ref={trackRef}
-        className="overflow-hidden cursor-grab active:cursor-grabbing"
+        className="[overflow-x:clip] py-5 -my-5 cursor-grab active:cursor-grabbing"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

@@ -114,7 +114,7 @@ export default function CarouselRow({ title, mediaType, genre, sort, minRating, 
       <div className="relative group/row">
         <div
           ref={scrollerRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scroll-px-4 sm:scroll-px-6 md:scroll-px-10 px-4 sm:px-6 md:px-10 pt-2 pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scroll-px-4 sm:scroll-px-6 md:scroll-px-10 px-4 sm:px-6 md:px-10 pt-3 pb-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           <span ref={startRef} aria-hidden="true" className="shrink-0 w-px -mr-4" />
           {loading

@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
 import CinemaLayer from "./components/CinemaLayer";
+import DotCursor from "./components/DotCursor";
 import { ScrollProgress } from "./components/effects";
 import { AuroraBackground } from "./components/backgrounds";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -134,6 +135,7 @@ function App() {
           <QuickPreview />
         </Suspense>
         <CookieConsent />
+        <DotCursor />
       </div>
     </MotionConfig>
   );

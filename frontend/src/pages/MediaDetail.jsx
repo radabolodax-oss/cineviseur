@@ -13,8 +13,7 @@ import SectionTitle from "../components/SectionTitle";
 import useSeo from "../hooks/useSeo";
 import { setLibraryStatus } from "../lib/library";
 import RatingDial from "../components/RatingDial";
-import CastConstellation from "../components/CastConstellation";
-import CastRing from "../components/CastRing";
+import CastCarousel from "../components/CastCarousel";
 import CinemaFinder from "../components/CinemaFinder";
 import { KineticTitle, Reveal, TiltCard } from "../components/motion";
 import { EASE_OUT, SPRING, riseItem, stagger } from "../lib/motionTokens";
@@ -516,12 +515,7 @@ export default function MediaDetail() {
           <Reveal y={16}>
             <SectionTitle className="px-4 sm:px-6 md:px-10">Casting</SectionTitle>
           </Reveal>
-          {/* Carrousel 3D cylindrique pour 5+ acteurs, constellation pour les petits castings */}
-          {cast.length >= 5 ? (
-            <CastRing cast={cast} />
-          ) : (
-            <CastConstellation cast={cast} />
-          )}
+          <CastCarousel cast={cast} />
         </section>
       )}
 

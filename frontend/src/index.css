@@ -159,6 +159,31 @@ select {
   .chip {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/80;
   }
+  /* ── Harmonisation : mise en page cohérente sur toutes les pages ─────────────── */
+
+  /* En-tête de section : titre + sous-titre optionnel */
+  .section-heading {
+    @apply font-display font-semibold text-2xl md:text-3xl tracking-tight leading-tight;
+  }
+  .section-subheading {
+    @apply mt-1 text-sm text-white/55;
+  }
+
+  /* Wrapper de page standard : largeur max + padding horizontal adaptatif */
+  .page-wrapper {
+    @apply max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10;
+  }
+
+  /* Section standard : espacement vertical entre blocs de contenu */
+  .page-section {
+    @apply py-10 md:py-14;
+  }
+
+  /* Séparateur visuel discret */
+  .section-divider {
+    @apply border-t border-white/[0.07] my-8 md:my-12;
+  }
+
   /* Chargement : un reflet balaie la forme du futur contenu (transform uniquement). */
   .skeleton {
     @apply relative overflow-hidden bg-white/[0.05];
@@ -321,6 +346,60 @@ html[data-vt="poster"]::view-transition-new(root) {
     animation: none !important;
   }
 }
+
+/* ─── Dot Cursor ─────────────────────────────────────────────────────────────── */
+/* Masquage du curseur natif géré par JS (cursor: none sur <html>).
+   Les deux éléments sont en position fixe ; translate() leur donne la position réelle. */
+@media (pointer: fine) {
+  .cursor-dot {
+    position: fixed;
+    top: 0; left: 0;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ffffff;
+    pointer-events: none;
+    z-index: 9999;
+    margin: -3.5px 0 0 -3.5px;
+    transition: opacity 0.2s;
+    mix-blend-mode: difference;
+  }
+
+  .cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(124, 92, 224, 0.75);
+    pointer-events: none;
+    z-index: 9998;
+    margin: -18px 0 0 -18px;
+    transition:
+      opacity 0.25s,
+      width 0.22s cubic-bezier(0.22,1,0.36,1),
+      height 0.22s cubic-bezier(0.22,1,0.36,1),
+      border-color 0.22s,
+      background-color 0.22s;
+    background: transparent;
+  }
+
+  .cursor-ring--hover {
+    width: 52px;
+    height: 52px;
+    margin: -26px 0 0 -26px;
+    border-color: rgba(171, 152, 242, 0.9);
+    background: rgba(124, 92, 224, 0.08);
+  }
+
+  .cursor-ring--pressed {
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    background: rgba(124, 92, 224, 0.18);
+    border-color: #ab98f2;
+  }
+}
+
+/* ─── Classes d'harmonisation ────────────────────────────────────────────────── */
 
 /* Perforations de pellicule au-dessus et au-dessous d'une bobine (filmographie, roulette). */
 .reel-perforations {
