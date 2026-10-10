@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { MotionConfig } from "motion/react";
 import Navbar from "./components/Navbar";
@@ -41,9 +41,62 @@ function Page({ children }) {
   );
 }
 
+/** Tactile Button global — inspiré d'Originkit Tactile Keycap Button.
+ *  Délégation d'événements sur document : capte tous les boutons présents et à venir.
+ *  La touche descend en 50 ms, remonte avec un ressort à dépassement.
+ */
+function useTactileButtons() {
+  useEffect(() => {
+    const SELECTOR = ".btn, .btn-primary, .btn-ghost, .btn-light, .btn-icon";
+
+    function nearest(el) {
+      return el?.closest?.(SELECTOR) ?? null;
+    }
+
+    function press(btn) {
+      if (!btn || btn.disabled) return;
+      btn.classList.remove("tk-spring");
+      btn.classList.add("tk-pressed");
+    }
+
+    function release(btn) {
+      if (!btn) return;
+      if (!btn.classList.contains("tk-pressed")) return;
+      btn.classList.remove("tk-pressed");
+      btn.classList.add("tk-spring");
+    }
+
+    function onDown(e) { press(nearest(e.target)); }
+    function onUp(e)   { release(nearest(e.target)); }
+    function onLeave(e) {
+      // Libère si le pointeur sort du bouton pendant un appui
+      const btn = nearest(e.target);
+      if (btn && !btn.contains(e.relatedTarget)) release(btn);
+    }
+    function onAnimEnd(e) {
+      const btn = nearest(e.target);
+      if (btn) btn.classList.remove("tk-spring");
+    }
+
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("pointerup", onUp);
+    document.addEventListener("pointercancel", onUp);
+    document.addEventListener("pointerout", onLeave);
+    document.addEventListener("animationend", onAnimEnd);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("pointerup", onUp);
+      document.removeEventListener("pointercancel", onUp);
+      document.removeEventListener("pointerout", onLeave);
+      document.removeEventListener("animationend", onAnimEnd);
+    };
+  }, []);
+}
+
 function App() {
   const location = useLocation();
   useCinematicNavigation();
+  useTactileButtons();
 
   const page = (el) => <Page>{el}</Page>;
   const member = (el) => page(<ProtectedRoute>{el}</ProtectedRoute>);

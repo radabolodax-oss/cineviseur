@@ -155,7 +155,7 @@ export default function Discover() {
           <motion.button
             key={cat.label}
             variants={{ hidden: { opacity: 0, y: 10, scale: 0.95 }, show: { opacity: 1, y: 0, scale: 1, transition: SPRING } }}
-            whileTap={{ scale: 0.95 }}
+            
             onClick={() => jumpTo(cat.label)}
             className="btn shrink-0 !font-medium px-4 py-2 bg-white/[0.06] text-white/75 ring-1 ring-inset ring-white/10 hover:bg-white/[0.12] hover:text-white"
           >

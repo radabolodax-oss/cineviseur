@@ -159,13 +159,13 @@ export default function Swipe() {
       </div>
 
       <div className="mt-8 flex items-center gap-4">
-        <motion.button whileTap={{ scale: 0.88 }} onClick={() => decide("skip")} disabled={!top} className="btn-icon !w-14 !h-14" aria-label="Passer">
+        <motion.button onClick={() => decide("skip")} disabled={!top} className="btn-icon !w-14 !h-14" aria-label="Passer">
           <Icon name="x" className="h-6 w-6" weight="bold" />
         </motion.button>
-        <motion.button whileTap={{ scale: 0.88 }} onClick={() => decide("watched")} disabled={!top} className="btn-icon !w-12 !h-12" aria-label="Déjà vu">
+        <motion.button onClick={() => decide("watched")} disabled={!top} className="btn-icon !w-12 !h-12" aria-label="Déjà vu">
           <Icon name="eye" className="h-5 w-5" weight="bold" />
         </motion.button>
-        <motion.button whileTap={{ scale: 0.88 }} onClick={() => decide("to_watch")} disabled={!top} className="flex h-14 w-14 items-center justify-center rounded-full bg-cine-violet text-white shadow-lg" aria-label="À voir">
+        <motion.button onClick={() => decide("to_watch")} disabled={!top} className="btn btn-primary !w-14 !h-14 !p-0" aria-label="À voir">
           <Icon name="plus" className="h-6 w-6" weight="bold" />
         </motion.button>
       </div>

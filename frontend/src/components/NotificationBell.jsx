@@ -51,7 +51,7 @@ export default function NotificationBell() {
   return (
     <div className="relative" ref={ref}>
       <motion.button
-        whileTap={{ scale: 0.92 }}
+        
         onClick={() => setOpen((o) => !o)}
         aria-label={count ? `Notifications, ${count} nouvelle${count > 1 ? "s" : ""} sortie${count > 1 ? "s" : ""}` : "Notifications"}
         aria-expanded={open}

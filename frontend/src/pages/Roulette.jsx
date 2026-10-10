@@ -186,7 +186,7 @@ export default function Roulette() {
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-8 flex flex-col items-center text-center">
         <motion.button
-          whileTap={{ scale: 0.94 }}
+          
           onClick={spin}
           disabled={spinning || loading || !pool.length}
           className="btn-primary !px-10 !py-4 text-base"

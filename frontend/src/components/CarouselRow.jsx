@@ -150,7 +150,7 @@ export default function CarouselRow({ title, mediaType, genre, sort, minRating, 
                     initial={{ scale: 0.6, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.6, opacity: 0 }}
-                    whileTap={{ scale: 0.9 }}
+                    
                     transition={SPRING}
                     onClick={() => scrollBy("left")}
                     className={arrow}
@@ -169,7 +169,7 @@ export default function CarouselRow({ title, mediaType, genre, sort, minRating, 
                     initial={{ scale: 0.6, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.6, opacity: 0 }}
-                    whileTap={{ scale: 0.9 }}
+                    
                     transition={SPRING}
                     onClick={() => scrollBy("right")}
                     className={arrow}

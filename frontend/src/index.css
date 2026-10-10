@@ -90,19 +90,58 @@ select {
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold rounded-full transition duration-200 ease-out active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft focus-visible:ring-offset-2 focus-visible:ring-offset-cine-ink;
+    /* Supprime active:scale — remplacé par la translation tactile */
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold rounded-full disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft focus-visible:ring-offset-2 focus-visible:ring-offset-cine-ink;
+    position: relative;
+    isolation: isolate;
+    /* Plaque de base : offset de 0px jusqu'au press */
+    --plate-x: 3px;
+    --plate-y: 4px;
+    --plate-color: rgba(0, 0, 0, 0.45);
+    transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out, transform 50ms ease-out;
+    transform: translate(0, 0);
+  }
+  /* Plaque de base fixe (le "keycap base" d'Originkit) */
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--plate-color);
+    transform: translate(var(--plate-x), var(--plate-y));
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 200ms;
+  }
+  /* État enfoncé : la touche descend sur la plaque */
+  .btn.tk-pressed {
+    transform: translate(var(--plate-x), var(--plate-y));
+    transition-duration: 50ms;
+    transition-timing-function: ease-out;
+  }
+  /* Rebond ressort avec dépassement (Originkit : spring with overshoot) */
+  .btn.tk-spring {
+    animation: tactile-spring 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
   .btn-primary {
     @apply btn px-6 py-3 text-white bg-cine-violet hover:bg-[#8a6ce8] shadow-[0_8px_24px_-12px_rgba(124,92,224,0.6)];
+    --plate-color: #3d2a7e;
   }
   .btn-light {
     @apply btn px-6 py-3 text-cine-ink bg-[#f4f4f6] hover:bg-white;
+    --plate-color: #bbbbc8;
   }
   .btn-ghost {
     @apply btn px-5 py-3 text-[#f4f4f6] bg-white/[0.07] ring-1 ring-inset ring-white/[0.12] hover:bg-white/[0.13] hover:ring-white/20 backdrop-blur-md;
+    --plate-color: rgba(0, 0, 0, 0.55);
+    --plate-x: 2px;
+    --plate-y: 3px;
   }
   .btn-icon {
-    @apply flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/75 hover:bg-white/[0.13] hover:text-white active:scale-[0.96] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft;
+    @apply flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/75 hover:bg-white/[0.13] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft;
+    --plate-color: rgba(0, 0, 0, 0.50);
+    --plate-x: 2px;
+    --plate-y: 3px;
   }
   .link {
     /* Toujours souligné : un lien ne doit pas se distinguer du texte par la seule couleur (WCAG 1.4.1). */
@@ -132,6 +171,18 @@ select {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
     animation: shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
+}
+
+/* Tactile Button : rebond ressort avec léger dépassement (spring overshoot) */
+@keyframes tactile-spring {
+  0%   { transform: translate(var(--plate-x), var(--plate-y)); }
+  100% { transform: translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn.tk-pressed  { transform: translate(0, 0) !important; }
+  .btn.tk-spring   { animation: none !important; }
+  .btn::after      { display: none; }
 }
 
 @keyframes shimmer {

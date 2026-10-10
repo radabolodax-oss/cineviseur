@@ -55,7 +55,7 @@ function UserMenu({ user, onLogout }) {
   return (
     <div className="relative" ref={ref}>
       <motion.button
-        whileTap={{ scale: 0.92 }}
+        
         onClick={() => setOpen((o) => !o)}
         aria-label="Menu du compte"
         aria-expanded={open}

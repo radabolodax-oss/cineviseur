@@ -59,10 +59,10 @@ function QueueRow({ item, position, onWatched, onRemove }) {
         <Link to={href} className="block truncate font-medium hover:text-cine-soft transition-colors">{item.title}</Link>
         <p className="text-xs text-white/55">{item.media_type === "tv" ? "Série" : "Film"}</p>
       </div>
-      <motion.button whileTap={{ scale: 0.92 }} onClick={() => onWatched(item)} className="btn-ghost !px-4 !py-2 !text-xs">
+      <motion.button onClick={() => onWatched(item)} className="btn-ghost !px-4 !py-2 !text-xs">
         <Icon name="eye" weight="bold" /> Vu
       </motion.button>
-      <motion.button whileTap={{ scale: 0.9 }} onClick={() => onRemove(item)} className="btn-icon !w-8 !h-8" aria-label={`Retirer ${item.title}`}>
+      <motion.button onClick={() => onRemove(item)} className="btn-icon !w-8 !h-8" aria-label={`Retirer ${item.title}`}>
         <Icon name="x" className="h-3.5 w-3.5" />
       </motion.button>
     </Reorder.Item>

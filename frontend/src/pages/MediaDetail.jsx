@@ -434,7 +434,7 @@ export default function MediaDetail() {
 
           <motion.div variants={riseItem} className="flex flex-wrap items-center gap-3">
             {trailer && (
-              <motion.button whileTap={{ scale: 0.96 }} onClick={() => setShowTrailer(true)} className="btn-light group">
+              <motion.button onClick={() => setShowTrailer(true)} className="btn-light group">
                 <Icon name="play" weight="fill" className="w-4 h-4 transition-transform duration-300 group-hover:scale-125" /> Bande-annonce
               </motion.button>
             )}
@@ -454,7 +454,7 @@ export default function MediaDetail() {
             )}
 
             {!isReleased && (
-              <motion.button whileTap={{ scale: 0.96 }} onClick={handleToggleAlert} disabled={busy} className={alert ? "btn-primary" : "btn-ghost"}>
+              <motion.button onClick={handleToggleAlert} disabled={busy} className={alert ? "btn-primary" : "btn-ghost"}>
                 <Icon name="bell" className="w-4 h-4" weight={alert ? "fill" : "regular"} />
                 {alert ? "Alerte activée" : "M'alerter à la sortie"}
               </motion.button>
