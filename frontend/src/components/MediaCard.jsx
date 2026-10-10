@@ -55,7 +55,8 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
             alt={`Affiche de ${title}`}
             loading="lazy"
             onLoad={() => setLoaded(true)}
-            className={`w-full h-full object-cover transition-[opacity,transform] duration-700 ease-out group-hover:scale-[1.05] ${loaded ? "opacity-100" : "opacity-0"}`}
+            data-sharp={loaded || undefined}
+            className="w-full h-full object-cover focus-in group-hover:scale-[1.05]"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-white/55 text-xs px-3 text-center">

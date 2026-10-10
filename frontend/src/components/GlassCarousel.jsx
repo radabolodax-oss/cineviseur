@@ -102,7 +102,13 @@ export default function GlassCarousel({ items = [], mediaType = "movie", title }
                       alt={mediaTitle(item)}
                       draggable={false}
                       loading="lazy"
-                      className="h-full w-full object-cover"
+                      // Attribut DOM plutot qu'un etat : ce carrousel se redessine deja
+                      // beaucoup pendant le glissement.
+                      onLoad={(e) => e.currentTarget.setAttribute("data-sharp", "")}
+                      ref={(el) => {
+                        if (el?.complete) el.setAttribute("data-sharp", "");
+                      }}
+                      className="h-full w-full object-cover focus-in"
                     />
                   ) : (
                     <div className="h-full w-full bg-white/[0.07] rounded-2xl flex items-center justify-center">

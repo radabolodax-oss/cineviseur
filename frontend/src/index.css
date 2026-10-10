@@ -179,6 +179,20 @@ select {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
     animation: shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
+
+  /* Mise au point : l'affiche se precise en arrivant, comme un objectif qui fait le point.
+     data-sharp est pose au chargement de l'image ; une image deja en cache l'a des le depart,
+     donc elle s'affiche nette sans transition. Le mouvement reduit neutralise la transition. */
+  .focus-in {
+    opacity: 0;
+    filter: blur(12px);
+    transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), filter 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .focus-in[data-sharp] {
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 
 /* Tactile Button : rebond ressort avec léger dépassement (spring overshoot) */
