@@ -478,21 +478,11 @@ export default function MediaDetail() {
         </motion.div>
       </div>
 
-      <section className="scroll-mt-24 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16">
-        <Reveal y={16}>
-          <SectionTitle>Regarder la bande annonce</SectionTitle>
-        </Reveal>
-        <div className="flex gap-3">
-          <a href={getMiawUrl()} target="_blank" rel="noopener noreferrer" className="btn-primary group">
-            <Icon name="play" weight="fill" className="w-4 h-4 transition-transform duration-300 group-hover:scale-125" /> Regarder sur MIAW
-          </a>
-          {trailer && (
-            <motion.button onClick={() => setShowTrailer(true)} className="btn-light group">
-              <Icon name="play" weight="fill" className="w-4 h-4 transition-transform duration-300 group-hover:scale-125" /> Bande-annonce YouTube
-            </motion.button>
-          )}
-        </div>
-      </section>
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16 mb-12">
+        <a href={getMiawUrl()} target="_blank" rel="noopener noreferrer" className="inline-block text-cine-soft font-medium hover:text-cine-soft/80 transition-colors">
+          <Icon name="play" weight="fill" className="inline w-4 h-4 mr-2" />Regarder maintenant
+        </a>
+      </div>
 
       {inTheaters && (
         <section id="seances" className="scroll-mt-24 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16">
