@@ -88,7 +88,7 @@ export default function Profile() {
           {initial}
         </motion.span>
         <div className="min-w-0">
-          <h1 className="font-display font-semibold text-3xl md:text-4xl tracking-tight truncate">{user.name}</h1>
+          <h1 className="page-title truncate">{user.name}</h1>
           <p className="text-white/55 truncate">{user.email}</p>
         </div>
       </motion.div>
@@ -127,7 +127,7 @@ export default function Profile() {
       </motion.div>
 
       <motion.section variants={riseItem} className="mt-14 max-w-xl">
-        <h2 className="font-display font-semibold text-xl tracking-tight mb-4">Réglages</h2>
+        <h2 className="section-title mb-4">Réglages</h2>
         <label className="flex items-center justify-between gap-6 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-inset ring-white/[0.07] cursor-pointer">
           <span>
             <span className="block font-medium">Sons du projecteur</span>
@@ -156,7 +156,7 @@ export default function Profile() {
       </motion.section>
 
       <motion.section variants={riseItem} className="mt-16 pt-8 border-t border-white/[0.08] max-w-xl">
-        <h2 className="font-display font-semibold text-xl tracking-tight mb-2">Supprimer mon compte</h2>
+        <h2 className="section-title mb-2">Supprimer mon compte</h2>
         <p className="text-sm text-white/65 leading-relaxed mb-5">
           Ton compte, ta liste, tes alertes et tes notes seront effacés immédiatement et définitivement.
         </p>

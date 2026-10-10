@@ -140,7 +140,7 @@ export default function Swipe() {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pt-12 pb-16 flex flex-col items-center">
-      <KineticTitle text="Trier en swipant" className="font-display font-semibold text-4xl md:text-5xl tracking-tighter mb-2 text-center" />
+      <KineticTitle text="Trier en swipant" className="page-title mb-2 text-center" />
       <p className="text-white/65 text-center mb-8 max-w-[46ch]">
         À droite : à voir. À gauche : passer. Vers le haut : déjà vu. Les flèches du clavier marchent aussi.
       </p>

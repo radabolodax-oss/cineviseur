@@ -18,11 +18,11 @@ export default function DotCursor() {
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
-    document.documentElement.style.cursor = "none";
+    document.documentElement.classList.add("has-dot-cursor");
 
     let mx = -200, my = -200;
     let rx = -200, ry = -200;
-    const LERP = 0.13;
+    const LERP = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 0.13;
 
     let raf;
 
@@ -35,15 +35,20 @@ export default function DotCursor() {
       raf = requestAnimationFrame(animate);
     }
 
+    function show() {
+      dot.style.opacity  = "1";
+      ring.style.opacity = "1";
+    }
+
     function onMove(e) {
+      if (dot.style.opacity !== "1") {
+        rx = e.clientX;
+        ry = e.clientY;
+        show();
+      }
       mx = e.clientX;
       my = e.clientY;
       dot.style.transform = `translate(${mx}px, ${my}px)`;
-    }
-
-    function onEnter() {
-      dot.style.opacity  = "1";
-      ring.style.opacity = "1";
     }
 
     function onLeave() {
@@ -65,18 +70,16 @@ export default function DotCursor() {
 
     raf = requestAnimationFrame(animate);
     document.addEventListener("mousemove",  onMove,  { passive: true });
-    document.addEventListener("mouseenter", onEnter, { passive: true });
-    document.addEventListener("mouseleave", onLeave, { passive: true });
+    document.documentElement.addEventListener("mouseleave", onLeave, { passive: true });
     document.addEventListener("mousedown",  onDown,  { passive: true });
     document.addEventListener("mouseup",    onUp,    { passive: true });
     document.addEventListener("mouseover",  onOver,  { passive: true });
 
     return () => {
       cancelAnimationFrame(raf);
-      document.documentElement.style.cursor = "";
+      document.documentElement.classList.remove("has-dot-cursor");
       document.removeEventListener("mousemove",  onMove);
-      document.removeEventListener("mouseenter", onEnter);
-      document.removeEventListener("mouseleave", onLeave);
+      document.documentElement.removeEventListener("mouseleave", onLeave);
       document.removeEventListener("mousedown",  onDown);
       document.removeEventListener("mouseup",    onUp);
       document.removeEventListener("mouseover",  onOver);

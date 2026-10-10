@@ -167,7 +167,7 @@ function FeatureBento({ images }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.6 }}
         transition={{ duration: 0.7, ease: EASE_OUT }}
-        className="font-display font-semibold text-3xl md:text-4xl tracking-tight mb-8"
+        className="section-title !text-2xl md:!text-3xl mb-8"
       >
         Votre liste, vos alertes, vos salles
       </motion.h2>

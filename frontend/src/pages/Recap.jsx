@@ -261,7 +261,7 @@ export default function Recap() {
     return (
       <div className="max-w-xl mx-auto px-4 pt-24 pb-24 text-center">
         <Icon name="popcorn" className="mx-auto mb-6 h-12 w-12 text-cine-soft" weight="light" />
-        <h1 className="font-display text-4xl font-semibold tracking-tight mb-3">Ton année ciné {yearValue}</h1>
+        <h1 className="page-title mb-3">Ton année ciné {yearValue}</h1>
         <p className="text-white/65 mb-8">Marque des films comme « vus » pour que ton récap prenne forme.</p>
         <Link to="/swipe" className="btn-primary">Trier des films</Link>
       </div>

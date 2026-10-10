@@ -5,7 +5,7 @@
  */
 import { useRef, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { motion, useMotionValue, useTransform, useSpring } from "motion/react";
+import { motion, useMotionValue, useSpring } from "motion/react";
 import { tmdbImage, mediaTitle, mediaYear } from "../lib/tmdb";
 import { SPRING } from "../lib/motionTokens";
 
@@ -25,38 +25,43 @@ export default function GlassCarousel({ items = [], mediaType = "movie", title }
     [items.length]
   );
 
-  // Drag
+  // Drag : le pointeur n'est capturé qu'une fois le seuil franchi, sinon le clic sur un lien serait avalé.
   const dragX = useRef(0);
   const startX = useRef(0);
-  const isDragging = useRef(false);
+  const pressed = useRef(false);
+  const didDrag = useRef(false);
 
   function onPointerDown(e) {
-    isDragging.current = false;
+    if (e.button !== 0) return;
+    pressed.current = true;
+    didDrag.current = false;
     startX.current = e.clientX;
     dragX.current = x.get();
-    e.currentTarget.setPointerCapture(e.pointerId);
   }
   function onPointerMove(e) {
+    if (!pressed.current) return;
     const dx = e.clientX - startX.current;
-    if (Math.abs(dx) > 4) isDragging.current = true;
-    if (!isDragging.current) return;
-    const next = Math.min(0, Math.max(maxOffset(), dragX.current + dx));
-    x.set(next);
+    if (!didDrag.current) {
+      if (Math.abs(dx) < 6) return;
+      didDrag.current = true;
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    x.set(Math.min(0, Math.max(maxOffset(), dragX.current + dx)));
   }
-  function onPointerUp() { isDragging.current = false; }
+  function onPointerUp() { pressed.current = false; }
 
   if (!items.length) return null;
 
   return (
     <div>
-      {title && <h3 className="font-display text-xl font-semibold mb-4">{title}</h3>}
+      {title && <h3 className="section-title mb-4">{title}</h3>}
       <div
         ref={trackRef}
-        className="[overflow-x:clip] py-5 -my-5 cursor-grab active:cursor-grabbing"
+        className="[overflow-x:clip] py-5 -my-5 cursor-grab active:cursor-grabbing touch-pan-y"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
+        onPointerCancel={onPointerUp}
       >
         <motion.div
           className="flex gap-3 will-change-transform"
@@ -69,7 +74,7 @@ export default function GlassCarousel({ items = [], mediaType = "movie", title }
                 key={`${item.id}-${i}`}
                 to={`/title/${mediaType}/${item.id}`}
                 draggable={false}
-                onClick={(e) => { if (isDragging.current) e.preventDefault(); }}
+                onClick={(e) => { if (didDrag.current) e.preventDefault(); }}
                 onMouseEnter={() => setHoverIdx(i)}
                 onMouseLeave={() => setHoverIdx(null)}
                 className="shrink-0 outline-none"

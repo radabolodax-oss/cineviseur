@@ -61,7 +61,7 @@ export default function Search() {
         initial="hidden"
         animate="show"
         variants={riseItem}
-        className="font-display font-semibold text-3xl md:text-4xl tracking-tight mb-8"
+        className="page-title mb-8"
       >
         {query ? (
           <>

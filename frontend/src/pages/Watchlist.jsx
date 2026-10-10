@@ -152,7 +152,7 @@ export default function Watchlist() {
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pt-12 pb-16">
       <motion.div initial="hidden" animate="show" variants={stagger(0.06)} className="flex flex-wrap items-end justify-between gap-4 mb-8">
-        <motion.h1 variants={riseItem} className="font-display font-semibold text-4xl md:text-5xl tracking-tighter">
+        <motion.h1 variants={riseItem} className="page-title">
           Ma liste
         </motion.h1>
         <motion.div variants={riseItem} className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">

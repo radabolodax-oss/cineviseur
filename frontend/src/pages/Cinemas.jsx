@@ -9,7 +9,7 @@ export default function Cinemas() {
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pt-12 pb-16">
       <motion.div initial="hidden" animate="show" variants={stagger(0.08)} className="mb-10 max-w-2xl">
-        <motion.h1 variants={riseItem} className="font-display font-semibold text-4xl md:text-5xl tracking-tighter mb-3">
+        <motion.h1 variants={riseItem} className="page-title mb-3">
           Cinémas à proximité
         </motion.h1>
         <motion.p variants={riseItem} className="text-white/60">

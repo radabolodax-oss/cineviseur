@@ -147,7 +147,7 @@ export default function Person() {
 
       <section className="mt-14">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 flex flex-wrap items-end justify-between gap-3">
-          <h2 className="font-display font-semibold text-2xl md:text-3xl tracking-tight">Filmographie</h2>
+          <h2 className="section-title">Filmographie</h2>
           <p className="text-sm text-white/60 tabular-nums">
             {credits.length} titres
             {seenCount > 0 && <span className="text-cine-soft"> · tu en as vu {seenCount}</span>}

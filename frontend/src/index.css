@@ -159,29 +159,12 @@ select {
   .chip {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/80;
   }
-  /* ── Harmonisation : mise en page cohérente sur toutes les pages ─────────────── */
-
-  /* En-tête de section : titre + sous-titre optionnel */
-  .section-heading {
-    @apply font-display font-semibold text-2xl md:text-3xl tracking-tight leading-tight;
+  /* Harmonisation : un seul gabarit pour les titres de page (h1) et de section (h2). */
+  .page-title {
+    @apply font-display font-semibold text-4xl md:text-5xl tracking-tighter;
   }
-  .section-subheading {
-    @apply mt-1 text-sm text-white/55;
-  }
-
-  /* Wrapper de page standard : largeur max + padding horizontal adaptatif */
-  .page-wrapper {
-    @apply max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10;
-  }
-
-  /* Section standard : espacement vertical entre blocs de contenu */
-  .page-section {
-    @apply py-10 md:py-14;
-  }
-
-  /* Séparateur visuel discret */
-  .section-divider {
-    @apply border-t border-white/[0.07] my-8 md:my-12;
+  .section-title {
+    @apply font-display font-semibold text-xl md:text-2xl tracking-tight;
   }
 
   /* Chargement : un reflet balaie la forme du futur contenu (transform uniquement). */
@@ -205,9 +188,9 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn.tk-pressed  { transform: translate(0, 0) !important; }
-  .btn.tk-spring   { animation: none !important; }
-  .btn::after      { display: none; }
+  .btn.tk-pressed, .btn-icon.tk-pressed { transform: translate(0, 0) !important; }
+  .btn.tk-spring, .btn-icon.tk-spring   { animation: none !important; }
+  .btn::after, .btn-icon::after         { display: none; }
 }
 
 @keyframes shimmer {
@@ -318,25 +301,45 @@ html[data-vt="poster"]::view-transition-new(root) {
   }
 }
 
-/* Bouton principal : une bande de pellicule perforée traverse le bouton au survol. */
-.btn-primary {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
+/* Bouton principal : une bande de pellicule perforée traverse le bouton au survol.
+   Animée via background-position (clippée par le rayon du ::before) : pas d'overflow:hidden,
+   sinon la plaque tactile du ::after serait rognée. */
 .btn-primary::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
+  border-radius: inherit;
   background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) top / 100% 4px no-repeat,
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) bottom / 100% 4px no-repeat;
-  transform: translateX(-101%);
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) -400px 0 / 100% 4px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) -400px 100% / 100% 4px no-repeat;
+  transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .btn-primary:hover::before {
-  transform: translateX(0);
+  background-position: 0 0, 0 100%;
+}
+
+/* Bouton rond : même plaque tactile que .btn */
+.btn-icon {
+  position: relative;
+  isolation: isolate;
+  transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out, transform 50ms ease-out;
+}
+.btn-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--plate-color);
+  transform: translate(var(--plate-x), var(--plate-y));
+  z-index: -1;
+  pointer-events: none;
+}
+.btn-icon.tk-pressed {
+  transform: translate(var(--plate-x), var(--plate-y));
+}
+.btn-icon.tk-spring {
+  animation: tactile-spring 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -351,6 +354,11 @@ html[data-vt="poster"]::view-transition-new(root) {
 /* Masquage du curseur natif géré par JS (cursor: none sur <html>).
    Les deux éléments sont en position fixe ; translate() leur donne la position réelle. */
 @media (pointer: fine) {
+  html.has-dot-cursor,
+  html.has-dot-cursor * {
+    cursor: none !important;
+  }
+
   .cursor-dot {
     position: fixed;
     top: 0; left: 0;
@@ -399,7 +407,6 @@ html[data-vt="poster"]::view-transition-new(root) {
   }
 }
 
-/* ─── Classes d'harmonisation ────────────────────────────────────────────────── */
 
 /* Perforations de pellicule au-dessus et au-dessous d'une bobine (filmographie, roulette). */
 .reel-perforations {

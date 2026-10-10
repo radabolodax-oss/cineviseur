@@ -4,8 +4,6 @@ import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
 import { api } from "../lib/api";
 import { tmdbImage, tmdbSrcSet } from "../lib/tmdb";
 import { useAuth } from "../context/AuthContext";
-import MediaCard from "../components/MediaCard";
-import PosterGrid from "../components/PosterGrid";
 import GlassCarousel from "../components/GlassCarousel";
 import Toast from "../components/Toast";
 import Icon from "../components/Icon";
