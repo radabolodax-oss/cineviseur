@@ -45,7 +45,10 @@ function launchFiles(env) {
       const robots = ['User-agent: *', 'Disallow: /profile', 'Disallow: /watchlist', 'Allow: /']
       if (siteUrl) robots.push(`Sitemap: ${siteUrl}/sitemap.xml`)
       fs.writeFileSync(path.join(out, 'robots.txt'), robots.join('\n') + '\n')
-      fs.writeFileSync(path.join(out, '_redirects'), '/*    /index.html    200\n')
+      fs.writeFileSync(
+        path.join(out, '_redirects'),
+        '/api/*    https://cineviseur-api.onrender.com/api/:splat    200\n/*    /index.html    200\n'
+      )
       fs.writeFileSync(
         path.join(out, '_headers'),
         [
