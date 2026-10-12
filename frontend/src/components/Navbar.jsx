@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { useAuth } from "../context/AuthContext";
@@ -8,12 +8,40 @@ import Icon from "./Icon";
 import { Popover } from "./motion";
 import { SPRING } from "../lib/motionTokens";
 
+const CLAP = "[transform-origin:88px_182px] -rotate-[14deg] group-hover:rotate-0 transition-transform duration-300 ease-[cubic-bezier(0.3,1.6,0.5,1)] motion-reduce:transition-none motion-reduce:rotate-0";
+const PLAY = "origin-center [transform-box:fill-box] transition-transform duration-300 ease-out group-hover:scale-125 motion-reduce:transition-none motion-reduce:transform-none";
+
+function LogoMark() {
+  const id = `lg${useId().replace(/:/g, "")}`;
+  const paint = `url(#${id})`;
+  return (
+    <svg viewBox="36 16 440 440" className="w-9 h-9 overflow-visible" aria-hidden="true">
+      <defs>
+        <linearGradient id={id} gradientUnits="userSpaceOnUse" x1="64" y1="40" x2="448" y2="440">
+          <stop offset="0" stopColor="#22c55e" />
+          <stop offset="1" stopColor="#7c5ce0" />
+        </linearGradient>
+      </defs>
+      <g fill="none" stroke={paint} strokeWidth="30" strokeLinejoin="round" strokeLinecap="round">
+        <rect x="88" y="226" width="336" height="200" rx="30" />
+        <g className={CLAP}>
+          <rect x="88" y="120" width="336" height="62" rx="18" />
+          <g strokeWidth="18" strokeLinecap="butt">
+            <path d="M174 166l26-30" />
+            <path d="M262 166l26-30" />
+            <path d="M350 166l26-30" />
+          </g>
+        </g>
+      </g>
+      <path className={PLAY} d="M228 284v84l72-42z" fill={paint} stroke={paint} strokeWidth="14" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function Logo() {
   return (
     <Link to="/" className="flex items-center gap-2.5 group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft">
-      <span className="flex items-center justify-center w-8 h-8 rounded-[10px] bg-gradient-to-br from-cine-green to-cine-violet text-white transition-transform duration-500 ease-out group-hover:-rotate-90">
-        <Icon name="aperture" className="w-5 h-5" weight="bold" />
-      </span>
+      <LogoMark />
       <span className="font-display font-semibold text-lg tracking-tight">
         CINE<span className="bg-gradient-to-r from-cine-green to-cine-violet bg-clip-text text-transparent">VISEUR</span>
       </span>
