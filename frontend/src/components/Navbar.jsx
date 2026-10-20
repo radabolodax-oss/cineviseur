@@ -1,10 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import useDismiss from "../hooks/useDismiss";
 import NotificationBell from "./NotificationBell";
 import Icon from "./Icon";
-import { Popover } from "./motion";
 import { SPRING } from "../lib/motionTokens";
 
 const CLAP = "[transform-origin:88px_182px] -rotate-[14deg] group-hover:rotate-0 transition-transform duration-300 ease-[cubic-bezier(0.3,1.6,0.5,1)] motion-reduce:transition-none motion-reduce:rotate-0";
@@ -68,42 +66,6 @@ function DesktopLink({ to, children, ...rest }) {
         </>
       )}
     </NavLink>
-  );
-}
-
-function UserMenu() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  useDismiss(ref, open, () => setOpen(false));
-
-  const item = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/75 hover:bg-white/[0.06] hover:text-white transition";
-
-  return (
-    <div className="relative" ref={ref}>
-      <motion.button
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Mon espace"
-        aria-expanded={open}
-        className="flex items-center justify-center w-9 h-9 rounded-[12px] bg-cine-violet text-sm font-semibold text-white ring-1 ring-inset ring-white/20 hover:brightness-110 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft"
-      >
-        <Icon name="user" className="w-4 h-4" />
-      </motion.button>
-      <Popover open={open} className="absolute right-0 mt-2 w-56 panel p-1.5 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.7)] z-50">
-        <div className="px-3 py-2.5 mb-1 border-b border-white/[0.08]">
-          <p className="text-sm font-semibold">Mon espace</p>
-          <p className="text-xs text-white/50">Cache local du navigateur</p>
-        </div>
-        <Link to="/watchlist" onClick={() => setOpen(false)} className={item}>
-          <Icon name="list" /> Ma liste
-        </Link>
-        <Link to="/recap" onClick={() => setOpen(false)} className={item}>
-          <Icon name="sparkle" /> Mon année ciné
-        </Link>
-        <Link to="/profile" onClick={() => setOpen(false)} className={item}>
-          <Icon name="gear" /> Réglages & données
-        </Link>
-      </Popover>
-    </div>
   );
 }
 
@@ -214,9 +176,6 @@ export default function Navbar() {
 
           <div className="flex items-center gap-2.5 shrink-0">
             <NotificationBell />
-            <div className="hidden sm:block">
-              <UserMenu />
-            </div>
           </div>
         </div>
       </header>
