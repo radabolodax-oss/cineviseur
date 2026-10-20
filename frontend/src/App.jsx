@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
 import CinemaLayer from "./components/CinemaLayer";
+import UpdatePrompt from "./components/UpdatePrompt";
 import { InstallProvider } from "./components/InstallGuide";
 import { ScrollProgress } from "./components/effects";
 import { AuroraBackground } from "./components/backgrounds";
@@ -132,6 +133,7 @@ function App() {
           </main>
           <Footer />
           <CinemaLayer />
+          <UpdatePrompt />
           <Suspense fallback={null}>
             <QuickPreview />
           </Suspense>

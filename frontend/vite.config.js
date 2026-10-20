@@ -69,6 +69,15 @@ function launchFiles(env) {
           '/assets/*',
           '  Cache-Control: public, max-age=31536000, immutable',
           '',
+          '/sw.js',
+          '  Cache-Control: no-cache, no-store, must-revalidate',
+          '',
+          '/registerSW.js',
+          '  Cache-Control: no-cache, no-store, must-revalidate',
+          '',
+          '/index.html',
+          '  Cache-Control: no-cache, no-store, must-revalidate',
+          '',
         ].join('\n')
       )
     },
@@ -82,9 +91,10 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       // Service worker : sans lui, les navigateurs ne proposent pas « Installer ».
-      // Le manifeste reste public/site.webmanifest, déjà référencé dans index.html.
+      // Mode prompt : alerte l'utilisateur dès qu'un patch/mise à jour est disponible
+      // sans l'obliger à vider son cache ou perdre ses données locales.
       VitePWA({
-        registerType: 'autoUpdate',
+        registerType: 'prompt',
         manifest: false,
         devOptions: {
           enabled: true,

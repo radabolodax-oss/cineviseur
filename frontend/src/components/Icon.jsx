@@ -32,6 +32,8 @@ import {
   Export,
   DotsThreeVertical,
   DeviceMobile,
+  ArrowsClockwise,
+  Sparkle,
 } from "@phosphor-icons/react";
 
 // Une seule famille d'icônes (Phosphor) pour tout le site, graisse "regular" par défaut.
@@ -48,6 +50,8 @@ const ICONS = {
   compass: Compass,
   home: House,
   list: ListBullets,
+  refresh: ArrowsClockwise,
+  sparkle: Sparkle,
   user: User,
   logout: SignOut,
   download: DownloadSimple,

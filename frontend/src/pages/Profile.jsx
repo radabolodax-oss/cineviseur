@@ -136,6 +136,20 @@ export default function Profile() {
             <motion.span layout transition={SPRING} className={`absolute top-1 h-5 w-5 rounded-full bg-white ${sounds ? "right-1" : "left-1"}`} />
           </button>
         </label>
+        <div className="mt-4 flex items-center justify-between gap-4 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-inset ring-white/[0.07]">
+          <div>
+            <span className="block font-medium">Mises à jour de l'application</span>
+            <span className="block text-sm text-white/60">Vérifier si un nouveau patch ou de nouvelles fonctionnalités sont prêts.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("cv:check-update"))}
+            className="btn-light !py-2 !px-3.5 !text-xs !font-semibold flex items-center gap-1.5 shrink-0"
+          >
+            <Icon name="refresh" className="w-3.5 h-3.5" />
+            <span>Vérifier</span>
+          </button>
+        </div>
         <Link to="/recap" className="mt-4 flex items-center justify-between rounded-2xl bg-[radial-gradient(120%_120%_at_0%_0%,rgba(124,92,224,0.3),transparent_60%)] p-4 ring-1 ring-inset ring-white/[0.08] hover:ring-white/20 transition">
           <span>
             <span className="block font-medium">Ton année ciné {new Date().getFullYear()}</span>
