@@ -51,7 +51,6 @@ function launchFiles(env) {
           '/api/tmdb/*    /.netlify/functions/api/tmdb/:splat             200',
           '/api/cinemas/* /.netlify/functions/api/cinemas/:splat          200',
           '/api/health    /.netlify/functions/api/health                  200',
-          '/api/*         https://cineviseur-api.onrender.com/api/:splat  200',
           '/*             /index.html                                     200',
           '',
         ].join('\n')

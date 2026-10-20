@@ -17,7 +17,7 @@ const SORT_FIELDS = {
   },
 };
 
-// --- Stockage local chiffré/haché de secours (si le serveur MongoDB est en veille ou absent) ---
+// --- Stockage local sécurisé (hachage PBKDF2-SHA256, 100% autonome sans serveur MongoDB / Render) ---
 const LS_KEYS = {
   users: "cv_local_users_v2",
   session: "cv_local_session_v2",
@@ -110,6 +110,20 @@ async function directTmdb(tmdbPath, params = {}) {
 }
 
 async function request(path, { method = "GET", body, fallback } = {}) {
+  // En mode autonome (Netlify sans serveur backend distant), les opérations
+  // de compte et de listes utilisent directement le stockage local sécurisé (0 latence, 100% autonome).
+  if (
+    !API_URL &&
+    fallback &&
+    (path.startsWith("/api/auth") ||
+      path.startsWith("/api/watchlist") ||
+      path.startsWith("/api/alerts") ||
+      path.startsWith("/api/ratings") ||
+      path.startsWith("/api/library"))
+  ) {
+    return await fallback();
+  }
+
   try {
     const res = await fetch(`${API_URL}${path}`, {
       method,
