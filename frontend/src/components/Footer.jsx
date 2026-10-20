@@ -24,7 +24,7 @@ const Item = ({ to, children }) => (
 );
 
 export default function Footer() {
-  const { openGuide, installed } = useInstall();
+  const { handleInstall, installed } = useInstall();
 
   return (
     <footer className="border-t border-white/[0.07] mt-16">
@@ -36,7 +36,7 @@ export default function Footer() {
               Films, séries, notes et coups de cœur. CineViseur garde la mémoire de vos écrans.
             </p>
             {!installed && (
-              <button onClick={openGuide} className="btn-ghost mt-5 !py-2.5 !text-sm">
+              <button onClick={handleInstall} className="btn-ghost mt-5 !py-2.5 !text-sm">
                 <Icon name="download" className="w-4 h-4" />
                 Installer l'application
               </button>

@@ -1,8 +1,7 @@
 /**
- * Installation de l'application CineViseur (PWA) adaptée à chaque plateforme :
+ * Installation de CineViseur adaptée à chaque plateforme :
  * Windows, Mac, Android, iPhone & iPad.
- * Déclenche directement la fenêtre d'installation native du système (qui crée la vraie
- * application et le vrai raccourci sur le Bureau / Écran d'accueil, sans fichier .html).
+ * Crée le vrai raccourci sur le Bureau / Écran d'accueil selon l'appareil.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -11,54 +10,8 @@ import { SPRING } from "../lib/motionTokens";
 
 const DISMISS_KEY = "cv_install_hidden";
 
-const PLATFORMS = [
-  {
-    key: "windows",
-    label: "Windows",
-    icon: "windows",
-    title: "Application & Raccourci Bureau Windows",
-    description:
-      "Installe la vraie application CineViseur avec son raccourci directement sur ton Bureau Windows et dans le menu Démarrer.",
-    actionLabel: "Installer sur le Bureau Windows",
-    fallbackHint:
-      "Si la fenêtre d'installation ne s'ouvre pas automatiquement, clique sur l'icône d'installation (⊕) tout à droite de la barre d'adresse de Chrome ou Edge.",
-  },
-  {
-    key: "mac",
-    label: "Mac",
-    icon: "apple",
-    title: "Application & Raccourci Dock Mac",
-    description:
-      "Ajoute l'application CineViseur directement dans ton Dock macOS et dans ton dossier Applications.",
-    actionLabel: "Installer sur Mac",
-    fallbackHint:
-      "Sur Chrome ou Edge : clique sur l'icône d'installation (⊕) dans la barre d'adresse. Sur Safari : menu Fichier → « Ajouter au Dock ».",
-  },
-  {
-    key: "android",
-    label: "Android",
-    icon: "android",
-    title: "Application Android plein écran",
-    description:
-      "Installe l'application CineViseur en plein écran avec son icône sur l'écran d'accueil de ton téléphone ou ta tablette Android.",
-    actionLabel: "Installer sur Android",
-    fallbackHint:
-      "Sur ton téléphone Android : ouvre le menu ⋮ de Chrome en haut à droite puis appuie sur « Installer l'application ».",
-  },
-  {
-    key: "ios",
-    label: "iPhone & iPad",
-    icon: "apple",
-    title: "Application iPhone & iPad",
-    description:
-      "Ajoute CineViseur en plein écran avec son icône sur l'écran d'accueil de ton iPhone ou de ton iPad.",
-    actionLabel: "Ajouter sur iPhone / iPad",
-    fallbackHint:
-      "Dans le menu qui s'ouvre (ou via le bouton Partager de Safari en bas de l'écran), touche « Sur l'écran d'accueil » puis « Ajouter ».",
-  },
-];
-
-function detectPlatform() {
+export function detectPlatform() {
+  if (typeof navigator === "undefined") return "windows";
   const ua = navigator.userAgent;
   const iPadOS = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
   if (/iPhone|iPad|iPod/.test(ua) || iPadOS) return "ios";
@@ -67,11 +20,27 @@ function detectPlatform() {
   return "windows";
 }
 
-function isStandalone() {
+export function isStandalone() {
+  if (typeof window === "undefined") return false;
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true
   );
+}
+
+/** Génère et télécharge un vrai fichier raccourci internet Windows (.url). */
+export function downloadWindowsShortcut() {
+  const url = window.location.origin + "/";
+  const iconUrl = window.location.origin + "/favicon.ico";
+  const content = `[InternetShortcut]\r\nURL=${url}\r\nIconIndex=0\r\nIconFile=${iconUrl}\r\nHotKey=0\r\n[{000214A0-0000-0000-C000-000000000046}]\r\nProp3=19,0\r\n`;
+  const blob = new Blob([content], { type: "application/internet-shortcut" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "CineViseur.url";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 function readDismissed() {
@@ -87,10 +56,10 @@ const InstallContext = createContext({
   installed: false,
   canInstall: false,
   openGuide: () => {},
-  install: async () => false,
+  handleInstall: async () => false,
+  downloadShortcut: () => {},
 });
 
-/** Permet à n'importe quelle page d'ouvrir la fenêtre d'installation. */
 export function useInstall() {
   return useContext(InstallContext);
 }
@@ -108,6 +77,7 @@ export function InstallProvider({ children }) {
     setPlatform(detectPlatform());
     setInstalled(isStandalone());
     setHidden(readDismissed());
+
     if (window.__cvInstallPrompt) {
       setDeferred(window.__cvInstallPrompt);
     }
@@ -126,9 +96,11 @@ export function InstallProvider({ children }) {
       setInstalled(true);
       setOpen(false);
     }
+
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
     window.addEventListener("cv:install-ready", onInstallReady);
     window.addEventListener("appinstalled", onInstalled);
+
     return () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
       window.removeEventListener("cv:install-ready", onInstallReady);
@@ -136,14 +108,26 @@ export function InstallProvider({ children }) {
     };
   }, []);
 
-  const install = useCallback(async () => {
+  // Déclenche l'installation native en un clic si possible, sinon ouvre le guide adapté
+  const handleInstall = useCallback(async () => {
     const promptEvent = deferred || window.__cvInstallPrompt;
-    if (!promptEvent) return false;
-    promptEvent.prompt();
-    const { outcome } = await promptEvent.userChoice;
-    window.__cvInstallPrompt = null;
-    setDeferred(null);
-    return outcome === "accepted";
+    if (promptEvent) {
+      try {
+        promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
+        if (outcome === "accepted") {
+          window.__cvInstallPrompt = null;
+          setDeferred(null);
+          setInstalled(true);
+          setOpen(false);
+          return true;
+        }
+      } catch {
+        // En cas d'erreur de prompt, on ouvre le guide
+      }
+    }
+    setOpen(true);
+    return false;
   }, [deferred]);
 
   const openGuide = useCallback(() => {
@@ -155,7 +139,7 @@ export function InstallProvider({ children }) {
     try {
       localStorage.setItem(DISMISS_KEY, "1");
     } catch {
-      // refus du stockage : la pastille reviendra à la prochaine visite
+      // ignore
     }
   }, []);
 
@@ -165,9 +149,10 @@ export function InstallProvider({ children }) {
       installed,
       canInstall: Boolean(deferred),
       openGuide,
-      install,
+      handleInstall,
+      downloadShortcut: downloadWindowsShortcut,
     }),
-    [platform, installed, deferred, openGuide, install]
+    [platform, installed, deferred, openGuide, handleInstall]
   );
 
   return (
@@ -175,13 +160,13 @@ export function InstallProvider({ children }) {
       {children}
       {!installed && (
         <>
-          <InstallPill hidden={hidden} onOpen={openGuide} onDismiss={dismiss} />
+          <InstallPill hidden={hidden} onAction={handleInstall} onDismiss={dismiss} />
           <InstallModal
             open={open}
             onClose={() => setOpen(false)}
             platform={platform}
             canInstall={Boolean(deferred)}
-            onInstall={install}
+            onDirectInstall={handleInstall}
           />
         </>
       )}
@@ -190,7 +175,7 @@ export function InstallProvider({ children }) {
 }
 
 /** Pastille discrète en bas à droite. */
-function InstallPill({ hidden, onOpen, onDismiss }) {
+function InstallPill({ hidden, onAction, onDismiss }) {
   return (
     <AnimatePresence>
       {!hidden && (
@@ -201,11 +186,11 @@ function InstallPill({ hidden, onOpen, onDismiss }) {
           transition={SPRING}
           className="fixed z-30 right-4 sm:right-6 bottom-[calc(5rem+env(safe-area-inset-bottom))] sm:bottom-6 flex items-center gap-1 panel p-1.5 pl-3 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.7)]"
         >
-          <button onClick={onOpen} className="flex items-center gap-2 text-sm font-medium text-white/85 hover:text-white transition-colors">
+          <button onClick={onAction} className="flex items-center gap-2 text-sm font-medium text-white/85 hover:text-white transition-colors">
             <Icon name="download" className="w-4 h-4 text-cine-soft" weight="bold" />
-            Installer l'app
+            Installer l'application
           </button>
-          <button onClick={onDismiss} className="btn-icon !w-7 !h-7" aria-label="Masquer la proposition d'installation">
+          <button onClick={onDismiss} className="btn-icon !w-7 !h-7" aria-label="Masquer">
             <Icon name="x" className="w-3 h-3" />
           </button>
         </motion.div>
@@ -214,14 +199,41 @@ function InstallPill({ hidden, onOpen, onDismiss }) {
   );
 }
 
-function InstallModal({ open, onClose, platform, canInstall, onInstall }) {
-  const [tab, setTab] = useState(platform);
-  const [showHint, setShowHint] = useState(false);
+const PLATFORM_CONFIG = {
+  windows: {
+    label: "Windows",
+    icon: "windows",
+    title: "Installer sur le Bureau Windows",
+    subtitle: "Accédez à CineViseur directement depuis votre Bureau et votre menu Démarrer.",
+  },
+  mac: {
+    label: "Mac",
+    icon: "apple",
+    title: "Installer sur Mac",
+    subtitle: "Ajoutez CineViseur directement dans votre Dock macOS et votre dossier Applications.",
+  },
+  android: {
+    label: "Android",
+    icon: "android",
+    title: "Installer sur Android",
+    subtitle: "Ajoutez l'icône CineViseur en plein écran sur votre écran d'accueil Android.",
+  },
+  ios: {
+    label: "iPhone / iPad",
+    icon: "apple",
+    title: "Installer sur iPhone / iPad",
+    subtitle: "Ajoutez CineViseur en plein écran directement sur votre écran d'accueil Safari.",
+  },
+};
+
+function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) {
+  const [activePlatform, setActivePlatform] = useState(platform);
+  const [downloaded, setDownloaded] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setTab(platform);
-      setShowHint(false);
+      setActivePlatform(platform);
+      setDownloaded(false);
     }
   }, [open, platform]);
 
@@ -234,25 +246,12 @@ function InstallModal({ open, onClose, platform, canInstall, onInstall }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  const current = PLATFORMS.find((p) => p.key === tab) || PLATFORMS[0];
-  const isCurrentDeviceTab = tab === platform;
+  const cfg = PLATFORM_CONFIG[activePlatform] || PLATFORM_CONFIG.windows;
 
-  async function handleAction() {
-    if (canInstall) {
-      const accepted = await onInstall();
-      if (accepted) {
-        onClose();
-        return;
-      }
-    }
-    if (current.key === "ios" && navigator.share) {
-      try {
-        await navigator.share({ title: "CineViseur", url: window.location.origin });
-      } catch {
-        // Partage fermé par l'utilisateur
-      }
-    }
-    setShowHint(true);
+  function handleDownloadShortcut() {
+    downloadWindowsShortcut();
+    setDownloaded(true);
+    setTimeout(() => setDownloaded(false), 3000);
   }
 
   return (
@@ -266,74 +265,150 @@ function InstallModal({ open, onClose, platform, canInstall, onInstall }) {
           exit={{ opacity: 0 }}
           role="dialog"
           aria-modal="true"
-          aria-labelledby="install-title"
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
-            initial={{ scale: 0.92, y: 24, opacity: 0 }}
+            initial={{ scale: 0.94, y: 20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.96, opacity: 0 }}
             transition={SPRING}
             className="panel w-full max-w-lg p-6 my-auto shadow-[0_32px_64px_-16px_rgba(0,0,0,0.85)]"
           >
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <h2 id="install-title" className="section-title">Installer CineViseur</h2>
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <h2 className="section-title text-xl">{cfg.title}</h2>
+                <p className="text-xs text-white/55 mt-1">{cfg.subtitle}</p>
+              </div>
               <button onClick={onClose} className="btn-icon shrink-0" aria-label="Fermer">
                 <Icon name="x" className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-sm text-white/60 leading-relaxed mb-5">
-              Choisis ton système pour installer l'application et son raccourci directement sur ton appareil.
-            </p>
 
-            {/* Sélection de la plateforme : Windows, Mac, Android, iPhone & iPad */}
-            <div role="tablist" aria-label="Choisir un appareil" className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
-              {PLATFORMS.map((p) => (
+            {/* Onglets de sélection de système */}
+            <div className="flex items-center gap-1.5 p-1 bg-white/[0.04] ring-1 ring-inset ring-white/[0.08] rounded-xl mb-6">
+              {Object.entries(PLATFORM_CONFIG).map(([key, p]) => (
                 <button
-                  key={p.key}
-                  role="tab"
-                  aria-selected={tab === p.key}
-                  onClick={() => {
-                    setTab(p.key);
-                    setShowHint(false);
-                  }}
-                  className="btn-chip justify-center !px-3 !py-2.5"
+                  key={key}
+                  onClick={() => setActivePlatform(key)}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-medium transition-colors ${
+                    activePlatform === key
+                      ? "bg-cine-violet text-white font-semibold shadow-sm"
+                      : "text-white/60 hover:text-white"
+                  }`}
                 >
-                  <Icon name={p.icon} className="w-4 h-4 shrink-0" />
+                  <Icon name={p.icon} className="w-3.5 h-3.5" />
                   <span className="truncate">{p.label}</span>
                 </button>
               ))}
             </div>
 
-            {/* Carte d'installation adaptée à la plateforme */}
-            <div className="rounded-2xl bg-white/[0.04] ring-1 ring-inset ring-white/[0.08] p-5">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="w-9 h-9 rounded-xl bg-cine-violet/20 ring-1 ring-inset ring-cine-violet/40 text-cine-soft grid place-items-center shrink-0">
-                  <Icon name={current.icon} className="w-5 h-5" />
-                </span>
-                <div>
-                  <h3 className="font-display font-semibold text-base text-white">{current.title}</h3>
-                  {isCurrentDeviceTab && (
-                    <span className="text-[11px] text-cine-soft font-medium">Détecté sur cet appareil</span>
-                  )}
+            {/* CONTENU SPÉCIFIQUE SELON LA PLATEFORME */}
+            {activePlatform === "windows" && (
+              <div className="flex flex-col gap-4">
+                {canInstall ? (
+                  <button onClick={onDirectInstall} className="btn-primary w-full justify-center !py-3.5 text-sm">
+                    <Icon name="download" className="w-4 h-4" weight="bold" />
+                    Créer le raccourci sur le Bureau Windows
+                  </button>
+                ) : (
+                  <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3">
+                    <div className="flex items-start gap-3">
+                      <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
+                      <p className="text-xs text-white/80 leading-relaxed">
+                        Dans <strong>Chrome</strong> ou <strong>Edge</strong>, cliquez sur l'icône <strong>⊕ (Installer)</strong> tout à droite de votre barre d'adresse URL.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">2</span>
+                      <p className="text-xs text-white/80 leading-relaxed">
+                        Ou cliquez sur le bouton ci-dessous pour télécharger le fichier raccourci et le glisser sur votre Bureau :
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleDownloadShortcut}
+                  className="btn-ghost w-full justify-center !py-3 text-xs"
+                >
+                  <Icon name="download" className="w-4 h-4" />
+                  {downloaded ? "✓ Raccourci téléchargé (CineViseur.url)" : "Télécharger le fichier raccourci Bureau (.url)"}
+                </button>
+              </div>
+            )}
+
+            {activePlatform === "android" && (
+              <div className="flex flex-col gap-4">
+                {canInstall && (
+                  <button onClick={onDirectInstall} className="btn-primary w-full justify-center !py-3.5 text-sm">
+                    <Icon name="download" className="w-4 h-4" weight="bold" />
+                    Ajouter à l'écran d'accueil Android
+                  </button>
+                )}
+
+                <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3.5 text-xs text-white/80">
+                  <div className="flex items-start gap-3">
+                    <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
+                    <p className="leading-relaxed">
+                      Touchez le menu <strong>⋮ (les 3 points)</strong> en haut à droite de Chrome.
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">2</span>
+                    <p className="leading-relaxed">
+                      Appuyez sur <strong>« Installer l'application »</strong> ou <strong>« Ajouter à l'écran d'accueil »</strong>.
+                    </p>
+                  </div>
                 </div>
               </div>
+            )}
 
-              <p className="text-sm text-white/65 leading-relaxed mt-2 mb-5">
-                {current.description}
-              </p>
+            {activePlatform === "ios" && (
+              <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3.5 text-xs text-white/80">
+                <div className="flex items-start gap-3">
+                  <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
+                  <p className="leading-relaxed">
+                    Dans <strong>Safari</strong>, touchez le bouton <strong>Partager</strong> (le carré avec la flèche vers le haut ⎋) en bas de l'écran.
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">2</span>
+                  <p className="leading-relaxed">
+                    Faites défiler le menu vers le bas et touchez <strong>« Sur l'écran d'accueil »</strong> (icône ➕).
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">3</span>
+                  <p className="leading-relaxed">
+                    Touchez <strong>« Ajouter »</strong> en haut à droite : CineViseur s'ouvrira en plein écran !
+                  </p>
+                </div>
+              </div>
+            )}
 
-              <button onClick={handleAction} className="btn-primary w-full justify-center !py-3.5">
-                <Icon name="download" className="w-4 h-4" weight="bold" />
-                {current.actionLabel}
-              </button>
+            {activePlatform === "mac" && (
+              <div className="flex flex-col gap-4">
+                <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3 text-xs text-white/80">
+                  <p className="leading-relaxed">
+                    • <strong>Sur Safari :</strong> cliquez sur le menu <strong>Fichier</strong> en haut de l'écran, puis sur <strong>« Ajouter au Dock »</strong>.
+                  </p>
+                  <p className="leading-relaxed">
+                    • <strong>Sur Chrome :</strong> cliquez sur l'icône <strong>⊕ (Installer)</strong> tout à droite de la barre d'adresse.
+                  </p>
+                </div>
+                <button
+                  onClick={handleDownloadShortcut}
+                  className="btn-ghost w-full justify-center !py-3 text-xs"
+                >
+                  <Icon name="download" className="w-4 h-4" />
+                  {downloaded ? "✓ Raccourci téléchargé" : "Télécharger le raccourci (.url)"}
+                </button>
+              </div>
+            )}
 
-              {showHint && (
-                <p className="mt-4 text-xs text-cine-soft leading-relaxed text-center bg-cine-violet/10 ring-1 ring-inset ring-cine-violet/30 rounded-xl p-3">
-                  {current.fallbackHint}
-                </p>
-              )}
-            </div>
+            <button onClick={onClose} className="btn-light w-full justify-center mt-5 !py-2.5 text-xs">
+              Fermer
+            </button>
           </motion.div>
         </motion.div>
       )}
