@@ -39,7 +39,7 @@ export default function Footer() {
             </p>
             {!installed && (
               <button onClick={openGuide} className="btn-ghost mt-5 !py-2.5 !text-sm">
-                <Icon name="mobile" className="w-4 h-4" />
+                <Icon name="download" className="w-4 h-4" />
                 Installer l'application
               </button>
             )}

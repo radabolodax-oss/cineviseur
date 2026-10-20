@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 import {
   AnimatePresence,
   motion,
-  useMotionTemplate,
-  useMotionValue,
   useScroll,
-  useSpring,
   useTransform,
 } from "motion/react";
 import { useAuth } from "../context/AuthContext";
@@ -21,7 +18,7 @@ import { Letterbox, ScrambleText } from "../components/effects";
 // Sections sous la ligne de flottaison : chargées seulement quand on s'en approche.
 const UpcomingPan = lazy(() => import("../components/UpcomingPan"));
 const VelocityMarquee = lazy(() => import("../components/VelocityMarquee"));
-import { EASE_OUT, finePointer, riseItem, stagger } from "../lib/motionTokens";
+import { EASE_OUT, riseItem, stagger } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
 
 const GENRES = ["Action", "Drame", "Science-fiction", "Thriller", "Animation", "Comédie", "Horreur", "Romance", "Documentaire", "Western"];
@@ -33,30 +30,11 @@ function Hero({ featured }) {
   const { user } = useAuth();
   const ref = useRef(null);
 
-  // Parallaxe : l'image descend moins vite que la page, le texte s'efface en remontant.
+  // Parallaxe légère au scroll (transform/opacity uniquement, accéléré GPU).
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-
-  // Souris : l'image glisse légèrement à l'opposé du curseur (profondeur) et un faisceau
-  // de projecteur suit le pointeur. Valeurs Motion uniquement, aucun rendu React par mouvement.
-  const pointerX = useMotionValue(0.5);
-  const pointerY = useMotionValue(0.4);
-  const smoothX = useSpring(pointerX, { stiffness: 70, damping: 20 });
-  const smoothY = useSpring(pointerY, { stiffness: 70, damping: 20 });
-  const shiftX = useTransform(smoothX, [0, 1], ["1.5%", "-1.5%"]);
-  const shiftY = useTransform(smoothY, [0, 1], ["1.5%", "-1.5%"]);
-  const beamX = useTransform(smoothX, (v) => `${v * 100}%`);
-  const beamY = useTransform(smoothY, (v) => `${v * 100}%`);
-  const beam = useMotionTemplate`radial-gradient(600px circle at ${beamX} ${beamY}, rgba(171,152,242,0.20), transparent 65%)`;
-
-  function handlePointer(e) {
-    if (!finePointer) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    pointerX.set((e.clientX - rect.left) / rect.width);
-    pointerY.set((e.clientY - rect.top) / rect.height);
-  }
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-18%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   useEffect(() => {
     if (featured.length < 2) return;
@@ -67,10 +45,9 @@ function Hero({ featured }) {
   const current = featured[index];
 
   return (
-    <section ref={ref} onPointerMove={handlePointer} className="relative -mt-16 min-h-[88dvh] flex items-end overflow-hidden">
+    <section ref={ref} className="relative -mt-16 min-h-[88dvh] flex items-end overflow-hidden">
       <Letterbox />
-      <motion.div className="absolute inset-0" style={{ y: imageY }} aria-hidden="true">
-      <motion.div className="absolute -inset-[3%]" style={{ x: shiftX, y: shiftY }}>
+      <motion.div className="absolute inset-0 will-change-transform" style={{ y: imageY }} aria-hidden="true">
         <AnimatePresence initial={false}>
           {current && (
             <motion.img
@@ -79,24 +56,18 @@ function Hero({ featured }) {
               alt=""
               fetchPriority={index === 0 ? "high" : "low"}
               className="absolute inset-0 w-full h-full object-cover"
-              initial={{ opacity: 0, scale: 1.12 }}
+              initial={{ opacity: 0 }}
               animate={{
                 opacity: 0.55,
-                scale: 1,
-                transition: {
-                  opacity: { duration: 1.6, ease: EASE_OUT },
-                  scale: { duration: ROTATE_MS / 1000 + 1.6, ease: "linear" },
-                },
+                transition: { duration: 1.1, ease: EASE_OUT },
               }}
-              exit={{ opacity: 0, transition: { duration: 1.6, ease: EASE_OUT } }}
+              exit={{ opacity: 0, transition: { duration: 1.1, ease: EASE_OUT } }}
             />
           )}
         </AnimatePresence>
       </motion.div>
-      </motion.div>
       <div className="absolute inset-0 bg-gradient-to-t from-cine-ink via-cine-ink/45 to-cine-ink/25" aria-hidden="true" />
       <div className="absolute inset-0 bg-gradient-to-r from-cine-ink via-cine-ink/55 to-transparent" aria-hidden="true" />
-      {finePointer && <motion.div aria-hidden="true" className="absolute inset-0 mix-blend-screen pointer-events-none" style={{ background: beam }} />}
 
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
@@ -200,7 +171,7 @@ function FeatureBento({ images }) {
             <h3 className="font-display font-semibold text-2xl md:text-3xl tracking-tight mb-3">Une liste, tous vos écrans</h3>
             <p className="text-white/65 leading-relaxed mb-7">
               À voir, déjà vu : votre liste vous suit sur tous vos appareils. Installez CineViseur
-              depuis votre navigateur, sur téléphone comme sur ordinateur.
+              directement sur votre Bureau en un clic.
             </p>
             <InstallButton />
           </div>

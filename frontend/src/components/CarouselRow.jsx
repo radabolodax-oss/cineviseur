@@ -5,7 +5,7 @@ import MediaCard from "./MediaCard";
 import SectionTitle from "./SectionTitle";
 import Icon from "./Icon";
 import { Reveal } from "./motion";
-import { EASE_OUT, SPRING } from "../lib/motionTokens";
+import { SPRING } from "../lib/motionTokens";
 
 const CARD_WIDTH = "shrink-0 w-32 sm:w-36 md:w-40 lg:w-44";
 
@@ -125,17 +125,13 @@ export default function CarouselRow({ title, mediaType, genre, sort, minRating, 
                   <div className="h-2.5 w-1/3 mt-1.5 rounded skeleton" />
                 </div>
               ))
-            : items.map((item, i) => (
-                <motion.div
+            : items.map((item) => (
+                <div
                   key={`${item.media_type || mediaType}-${item.id}`}
                   className={`${CARD_WIDTH} snap-start`}
-                  initial={{ opacity: 0, x: 32 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, amount: 0.1 }}
-                  transition={{ duration: 0.6, delay: (i % 8) * 0.045, ease: EASE_OUT }}
                 >
                   <MediaCard item={item} mediaType={mediaType || item.media_type} />
-                </motion.div>
+                </div>
               ))}
           <span ref={endRef} aria-hidden="true" className="shrink-0 w-px -ml-4" />
         </div>

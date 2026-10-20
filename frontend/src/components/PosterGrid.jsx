@@ -1,22 +1,13 @@
-import { motion } from "motion/react";
-import { EASE_OUT } from "../lib/motionTokens";
-
 export const GRID = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8";
 
-/** Grille d'affiches : chaque élément apparaît en cascade quand il entre dans l'écran. */
+/** Grille d'affiches fluide (sans dizaines d'IntersectionObservers simultanés). */
 export default function PosterGrid({ items, getKey, render }) {
   return (
     <div className={GRID}>
-      {items.map((item, i) => (
-        <motion.div
-          key={getKey(item)}
-          initial={{ opacity: 0, y: 24, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6, delay: (i % 6) * 0.05, ease: EASE_OUT }}
-        >
+      {items.map((item) => (
+        <div key={getKey(item)}>
           {render(item)}
-        </motion.div>
+        </div>
       ))}
     </div>
   );
