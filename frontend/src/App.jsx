@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { MotionConfig } from "motion/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -112,8 +112,8 @@ function App() {
           <main id="contenu" tabIndex={-1} className="flex-1 outline-none">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={page(<Home />)} />
-              <Route path="/login" element={page(<Login />)} />
-              <Route path="/register" element={page(<Register />)} />
+              <Route path="/login" element={<Navigate to="/watchlist" replace />} />
+              <Route path="/register" element={<Navigate to="/watchlist" replace />} />
               <Route path="/discover" element={page(<Discover />)} />
               <Route path="/search" element={page(<Search />)} />
               <Route path="/title/:mediaType/:id" element={page(<MediaDetail />)} />

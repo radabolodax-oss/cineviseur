@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { useAuth } from "../context/AuthContext";
 import useDismiss from "../hooks/useDismiss";
 import NotificationBell from "./NotificationBell";
 import Icon from "./Icon";
@@ -72,50 +71,49 @@ function DesktopLink({ to, children, ...rest }) {
   );
 }
 
-function UserMenu({ user, onLogout }) {
+function UserMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useDismiss(ref, open, () => setOpen(false));
 
-  const initial = (user.name || "?").trim()[0]?.toUpperCase();
   const item = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/75 hover:bg-white/[0.06] hover:text-white transition";
 
   return (
     <div className="relative" ref={ref}>
       <motion.button
-        
         onClick={() => setOpen((o) => !o)}
-        aria-label="Menu du compte"
+        aria-label="Mon espace"
         aria-expanded={open}
         className="flex items-center justify-center w-9 h-9 rounded-[12px] bg-cine-violet text-sm font-semibold text-white ring-1 ring-inset ring-white/20 hover:brightness-110 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft"
       >
-        {initial}
+        <Icon name="user" className="w-4 h-4" />
       </motion.button>
-      <Popover open={open} className="absolute right-0 mt-2 w-60 panel p-1.5 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.7)] z-50">
-        <div className="px-3 py-2.5 mb-1">
-          <p className="text-sm font-semibold truncate">{user.name}</p>
-          <p className="text-xs text-white/50 truncate">{user.email}</p>
+      <Popover open={open} className="absolute right-0 mt-2 w-56 panel p-1.5 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.7)] z-50">
+        <div className="px-3 py-2.5 mb-1 border-b border-white/[0.08]">
+          <p className="text-sm font-semibold">Mon espace</p>
+          <p className="text-xs text-white/50">Cache local du navigateur</p>
         </div>
-        <Link to="/profile" onClick={() => setOpen(false)} className={item}>
-          <Icon name="user" /> Profil
+        <Link to="/watchlist" onClick={() => setOpen(false)} className={item}>
+          <Icon name="list" /> Ma liste
         </Link>
-        <button onClick={() => { setOpen(false); onLogout(); }} className={`${item} w-full`}>
-          <Icon name="logout" /> Déconnexion
-        </button>
+        <Link to="/recap" onClick={() => setOpen(false)} className={item}>
+          <Icon name="sparkle" /> Mon année ciné
+        </Link>
+        <Link to="/profile" onClick={() => setOpen(false)} className={item}>
+          <Icon name="gear" /> Réglages & données
+        </Link>
       </Popover>
     </div>
   );
 }
 
-function MobileTabBar({ user }) {
+function MobileTabBar() {
   const tabs = [
     { to: "/", label: "Accueil", icon: "home", end: true },
     { to: "/discover", label: "Découvrir", icon: "compass" },
     { to: "/search", label: "Recherche", icon: "search" },
-    user
-      ? { to: "/watchlist", label: "Ma liste", icon: "list" }
-      : { to: "/cinemas", label: "Cinémas", icon: "pin" },
-    { to: user ? "/profile" : "/login", label: user ? "Profil" : "Connexion", icon: "user" },
+    { to: "/watchlist", label: "Ma liste", icon: "list" },
+    { to: "/cinemas", label: "Cinémas", icon: "pin" },
   ];
   return (
     <nav aria-label="Navigation principale" className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-white/[0.08] bg-cine-ink/85 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
@@ -151,7 +149,6 @@ function MobileTabBar({ user }) {
 }
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [query, setQuery] = useState("");
@@ -198,7 +195,7 @@ export default function Navbar() {
               <DesktopLink to="/discover">Découvrir</DesktopLink>
               <DesktopLink to="/ce-soir">Ce soir ?</DesktopLink>
               <DesktopLink to="/cinemas">Cinémas</DesktopLink>
-              {user && <DesktopLink to="/watchlist" data-ticket-target>Ma liste</DesktopLink>}
+              <DesktopLink to="/watchlist" data-ticket-target>Ma liste</DesktopLink>
             </nav>
           </div>
 
@@ -215,24 +212,15 @@ export default function Navbar() {
             </label>
           </form>
 
-          {/* Sur mobile, la barre d'onglets du bas porte déjà Connexion et Profil. */}
           <div className="flex items-center gap-2.5 shrink-0">
-            {user ? (
-              <>
-                <NotificationBell />
-                <div className="hidden sm:block">
-                  <UserMenu user={user} onLogout={() => { logout(); navigate("/"); }} />
-                </div>
-              </>
-            ) : (
-              <Link to="/login" className="btn-ghost !px-5 !py-2 hidden sm:inline-flex">
-                Connexion
-              </Link>
-            )}
+            <NotificationBell />
+            <div className="hidden sm:block">
+              <UserMenu />
+            </div>
           </div>
         </div>
       </header>
-      <MobileTabBar user={user} />
+      <MobileTabBar />
     </>
   );
 }

@@ -6,7 +6,6 @@ import {
   useScroll,
   useTransform,
 } from "motion/react";
-import { useAuth } from "../context/AuthContext";
 import { getNowPlaying, getTrending, tmdbImage, tmdbSrcSet } from "../lib/tmdb";
 import InstallButton from "../components/InstallButton";
 import CarouselRow from "../components/CarouselRow";
@@ -27,7 +26,6 @@ const ROTATE_MS = 8000;
 
 function Hero({ featured }) {
   const [index, setIndex] = useState(0);
-  const { user } = useAuth();
   const ref = useRef(null);
 
   // Parallaxe légère au scroll (transform/opacity uniquement, accéléré GPU).
@@ -112,8 +110,8 @@ function Hero({ featured }) {
             className="flex flex-wrap items-center gap-x-7 gap-y-4"
           >
             <Magnetic>
-              <Link to={user ? "/watchlist" : "/register"} className="btn-primary !px-7 !py-4 text-base group">
-                {user ? "Ouvrir ma liste" : "Commencer à suivre"}
+              <Link to="/watchlist" className="btn-primary !px-7 !py-4 text-base group">
+                Ouvrir ma liste
                 <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" weight="bold" />
               </Link>
             </Magnetic>

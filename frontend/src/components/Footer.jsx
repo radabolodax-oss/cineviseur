@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { analyticsEnabled } from "../lib/site";
-import { useAuth } from "../context/AuthContext";
 import { Logo } from "./Navbar";
 import { useInstall } from "./InstallGuide";
 import Icon from "./Icon";
@@ -26,7 +25,6 @@ const Item = ({ to, children }) => (
 
 export default function Footer() {
   const { openGuide, installed } = useInstall();
-  const { user } = useAuth();
 
   return (
     <footer className="border-t border-white/[0.07] mt-16">
@@ -53,19 +51,10 @@ export default function Footer() {
           </Column>
 
           <Column title="Mon espace">
-            {user ? (
-              <>
-                <Item to="/watchlist">Ma liste</Item>
-                <Item to="/swipe">Trier en swipant</Item>
-                <Item to="/recap">Mon année ciné</Item>
-                <Item to="/profile">Profil</Item>
-              </>
-            ) : (
-              <>
-                <Item to="/login">Se connecter</Item>
-                <Item to="/register">Créer un compte</Item>
-              </>
-            )}
+            <Item to="/watchlist">Ma liste</Item>
+            <Item to="/swipe">Trier en swipant</Item>
+            <Item to="/recap">Mon année ciné</Item>
+            <Item to="/profile">Réglages & données</Item>
           </Column>
 
           <Column title="Informations">

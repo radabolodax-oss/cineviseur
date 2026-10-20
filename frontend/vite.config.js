@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 // Pages publiques à référencer (les fiches films sont dynamiques et découvertes via les liens).
-const PUBLIC_ROUTES = ['/', '/discover', '/cinemas', '/register', '/login', '/confidentialite', '/cgu', '/mentions-legales']
+const PUBLIC_ROUTES = ['/', '/discover', '/cinemas', '/watchlist', '/ce-soir', '/confidentialite', '/cgu', '/mentions-legales']
 
 /**
  * Fichiers de mise en ligne générés au build :
@@ -42,7 +42,7 @@ function launchFiles(env) {
           `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
         )
       }
-      const robots = ['User-agent: *', 'Disallow: /profile', 'Disallow: /watchlist', 'Allow: /']
+      const robots = ['User-agent: *', 'Disallow: /profile', 'Allow: /']
       if (siteUrl) robots.push(`Sitemap: ${siteUrl}/sitemap.xml`)
       fs.writeFileSync(path.join(out, 'robots.txt'), robots.join('\n') + '\n')
       fs.writeFileSync(

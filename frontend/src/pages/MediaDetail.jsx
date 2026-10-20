@@ -239,11 +239,6 @@ export default function MediaDetail() {
   }, [mediaType, id]);
 
   useEffect(() => {
-    if (!user) {
-      setWatchlistItem(null);
-      setAlert(null);
-      return;
-    }
     api
       .libraryStatus(mediaType, id)
       .then((data) => {
@@ -251,7 +246,7 @@ export default function MediaDetail() {
         setAlert(data.alert);
       })
       .catch(() => {});
-  }, [mediaType, id, user]);
+  }, [mediaType, id]);
 
   useEffect(() => {
     if (!toast) return;
@@ -285,19 +280,9 @@ export default function MediaDetail() {
   const trailer = findTrailer(item.videos);
   const similar = (item.similar?.results || []).filter((s) => s.poster_path).slice(0, 12);
 
-  function requireAuth() {
-    if (!user) {
-      navigate("/login");
-      return true;
-    }
-    return false;
-  }
-
   async function handleStatus(nextStatus) {
-    if (requireAuth()) return;
     setBusy(true);
     try {
-      // Passe par la liste partagée : « Vu » déclenche le ticket tamponné, pas de toast en doublon.
       const result = await setLibraryStatus({ item, mediaType, existing: watchlistItem }, nextStatus);
       setWatchlistItem(result);
       if (!nextStatus) setToast("Retiré de ta liste");
@@ -308,7 +293,6 @@ export default function MediaDetail() {
   }
 
   async function handleToggleAlert() {
-    if (requireAuth()) return;
     setBusy(true);
     try {
       if (alert) {
@@ -433,7 +417,7 @@ export default function MediaDetail() {
             ) : (
               <span className="text-sm text-white/55">Pas encore noté</span>
             )}
-            {user && isReleased && <RatingDial mediaId={item.id} mediaType={mediaType} />}
+            {isReleased && <RatingDial mediaId={item.id} mediaType={mediaType} />}
           </motion.div>
 
           <motion.p variants={riseItem} className="text-white/75 text-[15px] md:text-base max-w-[65ch] leading-relaxed mb-8">
@@ -469,11 +453,7 @@ export default function MediaDetail() {
             )}
           </motion.div>
 
-          {!user && (
-            <motion.p variants={riseItem} className="text-white/50 text-sm mt-4">
-              <Link to="/login" className="link">Connecte-toi</Link> pour suivre ce titre.
-            </motion.p>
-          )}
+
         </motion.div>
       </div>
 

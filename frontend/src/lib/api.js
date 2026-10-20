@@ -17,19 +17,19 @@ const SORT_FIELDS = {
   },
 };
 
-// --- Stockage local sécurisé (hachage PBKDF2-SHA256, 100% autonome sans serveur MongoDB / Render) ---
+// --- Stockage dans le cache local du navigateur (sans compte ni mot de passe) ---
 const LS_KEYS = {
-  users: "cv_local_users_v2",
-  session: "cv_local_session_v2",
   watchlist: "cv_local_watchlist",
   ratings: "cv_local_ratings",
   alerts: "cv_local_alerts",
 };
 
-// Nettoie toute ancienne clé de test éventuelle
+// Nettoyage de toute ancienne clé d'authentification ou session
 try {
   localStorage.removeItem("cv_local_users");
   localStorage.removeItem("cv_local_session");
+  localStorage.removeItem("cv_local_users_v2");
+  localStorage.removeItem("cv_local_session_v2");
 } catch {
   // ignore
 }
@@ -57,45 +57,18 @@ function uid() {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-function toHex(buffer) {
-  return Array.from(new Uint8Array(buffer), (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function fromHex(hex) {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-  }
-  return bytes;
-}
-
-/**
- * Hachage cryptographique PBKDF2-SHA256 (100 000 itérations + sel aléatoire 128 bits).
- * Aucun mot de passe n'est jamais stocké en clair, même en mode hors-ligne.
- */
-async function hashPasswordPBKDF2(password, saltHex) {
-  const salt = saltHex ? fromHex(saltHex) : crypto.getRandomValues(new Uint8Array(16));
-  const enc = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
-  const derived = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
-    keyMaterial,
-    256
-  );
-  return { salt: toHex(salt), hash: toHex(derived) };
-}
+const LOCAL_USER = {
+  id: "local-visitor",
+  name: "Mon Espace",
+  email: "",
+};
 
 function currentLocalUser() {
-  const userId = readStore(LS_KEYS.session, null);
-  if (!userId) return null;
-  const users = readStore(LS_KEYS.users, []);
-  return users.find((u) => u.id === userId) || null;
+  return LOCAL_USER;
 }
 
 function requireLocalUser() {
-  const user = currentLocalUser();
-  if (!user) throw new Error("Non authentifié");
-  return user;
+  return LOCAL_USER;
 }
 
 async function directTmdb(tmdbPath, params = {}) {
@@ -155,91 +128,29 @@ async function request(path, { method = "GET", body, fallback } = {}) {
 }
 
 export const api = {
-  register: (payload) =>
-    request("/api/auth/register", {
-      method: "POST",
-      body: payload,
-      fallback: async () => {
-        if (payload.website) throw new Error("Inscription refusée");
-        if (!payload.accepted_terms) {
-          throw new Error("Tu dois accepter les conditions d'utilisation et la politique de confidentialité");
-        }
-        const users = readStore(LS_KEYS.users, []);
-        const email = (payload.email || "").trim().toLowerCase();
-        if (users.some((u) => u.email === email)) {
-          throw new Error("Un compte existe déjà avec cet email");
-        }
-        const { salt, hash } = await hashPasswordPBKDF2(payload.password);
-        const user = { id: uid(), name: payload.name.trim(), email, salt, password_hash: hash };
-        users.push(user);
-        writeStore(LS_KEYS.users, users);
-        writeStore(LS_KEYS.session, user.id);
-        return { id: user.id, name: user.name, email: user.email };
-      },
-    }),
+  register: () => {
+    throw new Error("L'inscription est désactivée : votre liste fonctionne directement dans votre navigateur.");
+  },
 
-  login: (payload) =>
-    request("/api/auth/login", {
-      method: "POST",
-      body: payload,
-      fallback: async () => {
-        const users = readStore(LS_KEYS.users, []);
-        const email = (payload.email || "").trim().toLowerCase();
-        const user = users.find((u) => u.email === email);
-        if (!user || !user.salt || !user.password_hash) {
-          throw new Error("Email ou mot de passe incorrect");
-        }
-        const { hash } = await hashPasswordPBKDF2(payload.password, user.salt);
-        if (hash !== user.password_hash) {
-          throw new Error("Email ou mot de passe incorrect");
-        }
-        writeStore(LS_KEYS.session, user.id);
-        return { id: user.id, name: user.name, email: user.email };
-      },
-    }),
+  login: () => Promise.resolve(LOCAL_USER),
 
-  me: () =>
-    request("/api/auth/me", {
-      fallback: () => {
-        const user = requireLocalUser();
-        return { id: user.id, name: user.name, email: user.email };
-      },
-    }),
+  me: () => Promise.resolve(LOCAL_USER),
 
-  logout: () =>
-    request("/api/auth/logout", {
-      method: "POST",
-      fallback: () => {
-        writeStore(LS_KEYS.session, null);
-        return null;
-      },
-    }),
+  logout: () => Promise.resolve(null),
 
-  deleteAccount: () =>
-    request("/api/auth/me", {
-      method: "DELETE",
-      fallback: () => {
-        const user = requireLocalUser();
-        writeStore(
-          LS_KEYS.users,
-          readStore(LS_KEYS.users, []).filter((u) => u.id !== user.id)
-        );
-        writeStore(
-          LS_KEYS.watchlist,
-          readStore(LS_KEYS.watchlist, []).filter((w) => w.user_id !== user.id)
-        );
-        writeStore(
-          LS_KEYS.ratings,
-          readStore(LS_KEYS.ratings, []).filter((r) => r.user_id !== user.id)
-        );
-        writeStore(
-          LS_KEYS.alerts,
-          readStore(LS_KEYS.alerts, []).filter((a) => a.user_id !== user.id)
-        );
-        writeStore(LS_KEYS.session, null);
-        return null;
-      },
-    }),
+  clearLocalData: () => {
+    writeStore(LS_KEYS.watchlist, []);
+    writeStore(LS_KEYS.ratings, []);
+    writeStore(LS_KEYS.alerts, []);
+    return Promise.resolve(null);
+  },
+
+  deleteAccount: () => {
+    writeStore(LS_KEYS.watchlist, []);
+    writeStore(LS_KEYS.ratings, []);
+    writeStore(LS_KEYS.alerts, []);
+    return Promise.resolve(null);
+  },
 
   trending: (lang = "fr") =>
     request(`/api/tmdb/trending?lang=${lang}`, {
@@ -324,10 +235,9 @@ export const api = {
   watchlist: () =>
     request("/api/watchlist", {
       fallback: () => {
-        const user = requireLocalUser();
-        return readStore(LS_KEYS.watchlist, [])
-          .filter((w) => w.user_id === user.id)
-          .sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
+        return readStore(LS_KEYS.watchlist, []).sort(
+          (a, b) => new Date(b.added_at) - new Date(a.added_at)
+        );
       },
     }),
 
@@ -336,12 +246,11 @@ export const api = {
       method: "POST",
       body: payload,
       fallback: () => {
-        const user = requireLocalUser();
         const items = readStore(LS_KEYS.watchlist, []);
         const statusValue = payload.status || "to_watch";
         const watchedAt = statusValue === "watched" ? new Date().toISOString() : null;
         const existing = items.find(
-          (w) => w.user_id === user.id && w.media_id === payload.media_id && w.media_type === payload.media_type
+          (w) => w.media_id === payload.media_id && w.media_type === payload.media_type
         );
         if (existing) {
           existing.status = statusValue;
@@ -351,7 +260,7 @@ export const api = {
         }
         const doc = {
           id: uid(),
-          user_id: user.id,
+          user_id: "local-visitor",
           media_id: payload.media_id,
           media_type: payload.media_type,
           title: payload.title,
@@ -371,9 +280,8 @@ export const api = {
       method: "PATCH",
       body: { status: statusValue },
       fallback: () => {
-        const user = requireLocalUser();
         const items = readStore(LS_KEYS.watchlist, []);
-        const item = items.find((w) => w.id === id && w.user_id === user.id);
+        const item = items.find((w) => w.id === id);
         if (!item) throw new Error("Élément introuvable");
         item.status = statusValue;
         item.watched_at = statusValue === "watched" ? new Date().toISOString() : null;
@@ -386,11 +294,10 @@ export const api = {
     request(`/api/watchlist/${id}`, {
       method: "DELETE",
       fallback: () => {
-        const user = requireLocalUser();
         const items = readStore(LS_KEYS.watchlist, []);
         writeStore(
           LS_KEYS.watchlist,
-          items.filter((w) => !(w.id === id && w.user_id === user.id))
+          items.filter((w) => w.id !== id)
         );
         return null;
       },
@@ -399,15 +306,14 @@ export const api = {
   libraryStatus: (mediaType, id) =>
     request(`/api/library/status?media_id=${id}&media_type=${mediaType}`, {
       fallback: () => {
-        const user = requireLocalUser();
         const mid = Number(id);
         const watchlistItem =
           readStore(LS_KEYS.watchlist, []).find(
-            (w) => w.user_id === user.id && Number(w.media_id) === mid && w.media_type === mediaType
+            (w) => Number(w.media_id) === mid && w.media_type === mediaType
           ) || null;
         const alert =
           readStore(LS_KEYS.alerts, []).find(
-            (a) => a.user_id === user.id && Number(a.media_id) === mid && a.media_type === mediaType
+            (a) => Number(a.media_id) === mid && a.media_type === mediaType
           ) || null;
         return { watchlist_item: watchlistItem, alert };
       },
@@ -418,15 +324,14 @@ export const api = {
       method: "POST",
       body: payload,
       fallback: () => {
-        const user = requireLocalUser();
         const alerts = readStore(LS_KEYS.alerts, []);
         const existing = alerts.find(
-          (a) => a.user_id === user.id && a.media_id === payload.media_id && a.media_type === payload.media_type
+          (a) => a.media_id === payload.media_id && a.media_type === payload.media_type
         );
         if (existing) return existing;
         const doc = {
           id: uid(),
-          user_id: user.id,
+          user_id: "local-visitor",
           media_id: payload.media_id,
           media_type: payload.media_type,
           title: payload.title,
@@ -445,10 +350,9 @@ export const api = {
     request(`/api/alerts/${id}`, {
       method: "DELETE",
       fallback: () => {
-        const user = requireLocalUser();
         writeStore(
           LS_KEYS.alerts,
-          readStore(LS_KEYS.alerts, []).filter((a) => !(a.id === id && a.user_id === user.id))
+          readStore(LS_KEYS.alerts, []).filter((a) => a.id !== id)
         );
         return null;
       },
@@ -457,18 +361,16 @@ export const api = {
   alerts: () =>
     request("/api/alerts", {
       fallback: () => {
-        const user = requireLocalUser();
-        return readStore(LS_KEYS.alerts, []).filter((a) => a.user_id === user.id);
+        return readStore(LS_KEYS.alerts, []);
       },
     }),
 
   dueAlerts: () =>
     request("/api/alerts/due", {
       fallback: () => {
-        const user = requireLocalUser();
         const today = new Date().toISOString().slice(0, 10);
         return readStore(LS_KEYS.alerts, []).filter(
-          (a) => a.user_id === user.id && !a.notified && a.release_date && a.release_date <= today
+          (a) => !a.notified && a.release_date && a.release_date <= today
         );
       },
     }),
@@ -477,9 +379,8 @@ export const api = {
     request(`/api/alerts/${id}/dismiss`, {
       method: "POST",
       fallback: () => {
-        const user = requireLocalUser();
         const alerts = readStore(LS_KEYS.alerts, []);
-        const alert = alerts.find((a) => a.id === id && a.user_id === user.id);
+        const alert = alerts.find((a) => a.id === id);
         if (!alert) throw new Error("Alerte introuvable");
         alert.notified = true;
         writeStore(LS_KEYS.alerts, alerts);
@@ -492,11 +393,10 @@ export const api = {
       method: "PUT",
       body: payload,
       fallback: () => {
-        const user = requireLocalUser();
         const ratings = readStore(LS_KEYS.ratings, []);
         const now = new Date().toISOString();
         const existing = ratings.find(
-          (r) => r.user_id === user.id && r.media_id === payload.media_id && r.media_type === payload.media_type
+          (r) => r.media_id === payload.media_id && r.media_type === payload.media_type
         );
         if (existing) {
           existing.score = payload.score;
@@ -504,7 +404,7 @@ export const api = {
         } else {
           ratings.push({
             id: uid(),
-            user_id: user.id,
+            user_id: "local-visitor",
             media_id: payload.media_id,
             media_type: payload.media_type,
             score: payload.score,
@@ -520,8 +420,7 @@ export const api = {
   ratings: () =>
     request("/api/ratings", {
       fallback: () => {
-        const user = requireLocalUser();
-        return readStore(LS_KEYS.ratings, []).filter((r) => r.user_id === user.id);
+        return readStore(LS_KEYS.ratings, []);
       },
     }),
 
