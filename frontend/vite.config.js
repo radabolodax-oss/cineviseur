@@ -47,7 +47,13 @@ function launchFiles(env) {
       fs.writeFileSync(path.join(out, 'robots.txt'), robots.join('\n') + '\n')
       fs.writeFileSync(
         path.join(out, '_redirects'),
-        '/api/*    https://cineviseur-api.onrender.com/api/:splat    200\n/*    /index.html    200\n'
+        [
+          '/api/tmdb/*    /.netlify/functions/api/tmdb/:splat    200',
+          '/api/cinemas/* /.netlify/functions/api/cinemas/:splat 200',
+          '/api/health    /.netlify/functions/api/health         200',
+          '/*             /index.html                            200',
+          '',
+        ].join('\n')
       )
       fs.writeFileSync(
         path.join(out, '_headers'),
@@ -58,6 +64,7 @@ function launchFiles(env) {
           '  Referrer-Policy: strict-origin-when-cross-origin',
           '  Permissions-Policy: geolocation=(self), camera=(), microphone=()',
           '  X-Frame-Options: DENY',
+          "  Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
           '',
           '/assets/*',
           '  Cache-Control: public, max-age=31536000, immutable',

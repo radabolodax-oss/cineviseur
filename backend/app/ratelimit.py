@@ -68,3 +68,5 @@ register_limiter = RateLimiter("register", max_requests=5, window_seconds=3600)
 login_account_limiter = RateLimiter("login_account", max_requests=10, window_seconds=900)
 # Routes publiques qui consomment la clé TMDB ou l'API Overpass.
 public_data_limiter = RateLimiter("public_data", max_requests=240, window_seconds=60)
+# Routes d'écriture authentifiées (évite le remplissage abusif de la base MongoDB).
+user_write_limiter = RateLimiter("user_write", max_requests=60, window_seconds=60)

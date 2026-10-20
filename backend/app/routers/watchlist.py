@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.db import alerts_collection, ratings_collection, watchlist_collection
 from app.deps import get_current_user, object_id_or_404
 from app.models import AlertIn, RatingIn, WatchlistItemIn, WatchlistStatusUpdate
+from app.ratelimit import user_write_limiter
 
 router = APIRouter(prefix="/api", tags=["watchlist"])
 
@@ -27,7 +28,7 @@ def _status_fields(status_value: str) -> dict:
     return {"status": status_value, "watched_at": datetime.now(timezone.utc) if status_value == "watched" else None}
 
 
-@router.post("/watchlist", status_code=status.HTTP_201_CREATED)
+@router.post("/watchlist", status_code=status.HTTP_201_CREATED, dependencies=[Depends(user_write_limiter)])
 async def add_to_watchlist(payload: WatchlistItemIn, current_user: dict = Depends(get_current_user)):
     existing = await watchlist_collection.find_one({
         "user_id": current_user["_id"],
@@ -88,7 +89,7 @@ async def library_status(
     }
 
 
-@router.post("/alerts", status_code=status.HTTP_201_CREATED)
+@router.post("/alerts", status_code=status.HTTP_201_CREATED, dependencies=[Depends(user_write_limiter)])
 async def create_alert(payload: AlertIn, current_user: dict = Depends(get_current_user)):
     existing = await alerts_collection.find_one({
         "user_id": current_user["_id"], "media_id": payload.media_id, "media_type": payload.media_type,
@@ -141,7 +142,7 @@ async def delete_alert(alert_id: str, current_user: dict = Depends(get_current_u
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alerte introuvable")
 
 
-@router.put("/ratings")
+@router.put("/ratings", dependencies=[Depends(user_write_limiter)])
 async def upsert_rating(payload: RatingIn, current_user: dict = Depends(get_current_user)):
     now = datetime.now(timezone.utc)
     await ratings_collection.update_one(

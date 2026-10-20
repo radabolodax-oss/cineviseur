@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from pymongo.errors import DuplicateKeyError
 
 from app.config import ACCESS_TOKEN_EXPIRE_MINUTES, COOKIE_SAMESITE, COOKIE_SECURE, SESSION_COOKIE
 from app.db import alerts_collection, ratings_collection, users_collection, watchlist_collection
@@ -54,7 +55,10 @@ async def register(payload: RegisterRequest, response: Response):
         "terms_accepted_at": datetime.now(timezone.utc),
         "token_version": 0,
     }
-    result = await users_collection.insert_one(doc)
+    try:
+        result = await users_collection.insert_one(doc)
+    except DuplicateKeyError:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Un compte existe déjà avec cet email")
     doc["_id"] = result.inserted_id
 
     _set_session(response, str(doc["_id"]), version=0)

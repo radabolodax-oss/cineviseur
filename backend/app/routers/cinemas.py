@@ -106,7 +106,12 @@ async def nearby(lat: float = Query(..., ge=-90, le=90), lon: float = Query(...,
         city = tags.get("addr:city")
         street_line = f"{number} {street}".strip() if number and street else street
         formats, brand, chain_site, source = _formats(tags)
-        website = tags.get("website") or tags.get("contact:website")
+        raw_website = tags.get("website") or tags.get("contact:website")
+        website = (
+            raw_website
+            if isinstance(raw_website, str) and raw_website.startswith(("https://", "http://"))
+            else None
+        )
         cinemas.append(
             {
                 "id": f'{el.get("type", "node")}-{el.get("id")}',

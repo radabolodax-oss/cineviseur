@@ -21,23 +21,30 @@ async def _tmdb_get(path: str, params: dict) -> dict:
             try:
                 resp = await client.get(f"{TMDB_BASE_URL}{path}", params=params)
                 break
-            except httpx.TransportError as exc:
-                last_error = exc
+            except httpx.TransportError:
                 await asyncio.sleep(0.3 * (attempt + 1))
         else:
-            raise HTTPException(status_code=502, detail=f"TMDB injoignable: {last_error}")
+            # Ne jamais inclure l'exception brute (qui peut contenir l'URL complète avec api_key).
+            raise HTTPException(status_code=502, detail="Service TMDB temporairement injoignable")
     if resp.status_code != 200:
         raise HTTPException(status_code=resp.status_code, detail="Erreur TMDB")
     return resp.json()
 
 
+_LANG_PATTERN = r"^[a-z]{2}(-[A-Z]{2})?$"
+
+
 @router.get("/trending")
-async def trending(lang: str = Query("fr"), media_type: str = Query("all"), window: str = Query("week")):
+async def trending(
+    lang: str = Query("fr", pattern=_LANG_PATTERN),
+    media_type: str = Query("all", pattern="^(all|movie|tv)$"),
+    window: str = Query("week", pattern="^(day|week)$"),
+):
     return await _tmdb_get(f"/trending/{media_type}/{window}", {"language": lang})
 
 
 @router.get("/genres")
-async def genres(media_type: str = Query(pattern="^(movie|tv)$"), lang: str = Query("fr")):
+async def genres(media_type: str = Query(pattern="^(movie|tv)$"), lang: str = Query("fr", pattern=_LANG_PATTERN)):
     return await _tmdb_get(f"/genre/{media_type}/list", {"language": lang})
 
 
@@ -60,7 +67,7 @@ _SORT_FIELDS = {
 @router.get("/discover")
 async def discover(
     media_type: str = Query(pattern="^(movie|tv)$"),
-    lang: str = Query("fr"),
+    lang: str = Query("fr", pattern=_LANG_PATTERN),
     page: int = Query(1, ge=1, le=500),
     genre: int | None = Query(None),
     sort: str = Query("popularity", pattern="^(popularity|rating|date|title)$"),
@@ -87,7 +94,7 @@ _LISTS = {
 
 
 @router.get("/lists/{kind}")
-async def lists(kind: str, lang: str = Query("fr"), page: int = Query(1, ge=1, le=500)):
+async def lists(kind: str, lang: str = Query("fr", pattern=_LANG_PATTERN), page: int = Query(1, ge=1, le=500)):
     if kind in _LISTS:
         return await _tmdb_get(_LISTS[kind], {"language": lang, "region": "FR", "page": page})
     if kind == "streaming":
@@ -105,18 +112,22 @@ async def lists(kind: str, lang: str = Query("fr"), page: int = Query(1, ge=1, l
 
 
 @router.get("/search")
-async def search(query: str, lang: str = Query("fr"), page: int = Query(1, ge=1, le=500)):
+async def search(
+    query: str = Query(..., min_length=1, max_length=200),
+    lang: str = Query("fr", pattern=_LANG_PATTERN),
+    page: int = Query(1, ge=1, le=500),
+):
     return await _tmdb_get("/search/multi", {"language": lang, "query": query, "page": page})
 
 
 @router.get("/person/{person_id}")
-async def person(person_id: int, lang: str = Query("fr")):
+async def person(person_id: int, lang: str = Query("fr", pattern=_LANG_PATTERN)):
     """Acteur : biographie + filmographie complète (films et séries)."""
     return await _tmdb_get(f"/person/{person_id}", {"language": lang, "append_to_response": "combined_credits"})
 
 
 @router.get("/{media_type}/{media_id}")
-async def details(media_type: str, media_id: int, lang: str = Query("fr")):
+async def details(media_type: str, media_id: int, lang: str = Query("fr", pattern=_LANG_PATTERN)):
     if media_type not in ("movie", "tv"):
         raise HTTPException(status_code=400, detail="media_type invalide")
     return await _tmdb_get(

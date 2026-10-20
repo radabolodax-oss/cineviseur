@@ -79,7 +79,7 @@ function isInTheaters(item) {
 }
 
 function findTrailer(videos) {
-  const results = videos?.results || [];
+  const results = (videos?.results || []).filter((v) => /^[\w-]{6,20}$/.test(v.key || ""));
   return (
     results.find((v) => v.site === "YouTube" && v.type === "Trailer") ||
     results.find((v) => v.site === "YouTube")

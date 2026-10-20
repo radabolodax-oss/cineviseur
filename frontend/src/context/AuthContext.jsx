@@ -2,7 +2,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { resetLibrary } from "../lib/library";
 
-const AuthContext = createContext(null);
+const AuthContext = createContext({
+  user: null,
+  loading: true,
+  login: () => {},
+  logout: async () => {},
+});
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
