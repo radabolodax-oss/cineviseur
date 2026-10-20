@@ -32,6 +32,14 @@
     <!-- Les affiches viennent de TMDB : connexion ouverte dès le départ. -->
     <link rel="preconnect" href="https://image.tmdb.org" crossorigin />
     <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
+    <script>
+      window.__cvInstallPrompt = null;
+      window.addEventListener("beforeinstallprompt", function (e) {
+        e.preventDefault();
+        window.__cvInstallPrompt = e;
+        window.dispatchEvent(new Event("cv:install-ready"));
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

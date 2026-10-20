@@ -17,14 +17,22 @@ const SORT_FIELDS = {
   },
 };
 
-// --- Stockage local de secours (quand le site tourne sur Netlify sans serveur MongoDB) ---
+// --- Stockage local chiffré/haché de secours (si le serveur MongoDB est en veille ou absent) ---
 const LS_KEYS = {
-  users: "cv_local_users",
-  session: "cv_local_session",
+  users: "cv_local_users_v2",
+  session: "cv_local_session_v2",
   watchlist: "cv_local_watchlist",
   ratings: "cv_local_ratings",
   alerts: "cv_local_alerts",
 };
+
+// Nettoie toute ancienne clé de test éventuelle
+try {
+  localStorage.removeItem("cv_local_users");
+  localStorage.removeItem("cv_local_session");
+} catch {
+  // ignore
+}
 
 function readStore(key, fallback) {
   try {
@@ -44,7 +52,37 @@ function writeStore(key, value) {
 }
 
 function uid() {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+  const bytes = new Uint8Array(12);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function toHex(buffer) {
+  return Array.from(new Uint8Array(buffer), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function fromHex(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
+
+/**
+ * Hachage cryptographique PBKDF2-SHA256 (100 000 itérations + sel aléatoire 128 bits).
+ * Aucun mot de passe n'est jamais stocké en clair, même en mode hors-ligne.
+ */
+async function hashPasswordPBKDF2(password, saltHex) {
+  const salt = saltHex ? fromHex(saltHex) : crypto.getRandomValues(new Uint8Array(16));
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
+  const derived = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
+    keyMaterial,
+    256
+  );
+  return { salt: toHex(salt), hash: toHex(derived) };
 }
 
 function currentLocalUser() {
@@ -86,7 +124,6 @@ async function request(path, { method = "GET", body, fallback } = {}) {
     const isJson = contentType.includes("application/json");
     const data = isJson ? await res.json().catch(() => null) : null;
 
-    // Si Netlify renvoie la page HTML ou une 404/502 faute de backend Python, on bascule sur le mode autonome.
     if ((!isJson || res.status === 404 || res.status === 502 || res.status === 503) && fallback) {
       return await fallback();
     }
@@ -96,7 +133,6 @@ async function request(path, { method = "GET", body, fallback } = {}) {
     }
     return data;
   } catch (err) {
-    // Erreur réseau (serveur Python éteint ou absent) : bascule sur le mode autonome s'il existe.
     if (fallback && (err instanceof TypeError || err.message === "Failed to fetch")) {
       return await fallback();
     }
@@ -109,7 +145,7 @@ export const api = {
     request("/api/auth/register", {
       method: "POST",
       body: payload,
-      fallback: () => {
+      fallback: async () => {
         if (payload.website) throw new Error("Inscription refusée");
         if (!payload.accepted_terms) {
           throw new Error("Tu dois accepter les conditions d'utilisation et la politique de confidentialité");
@@ -119,7 +155,8 @@ export const api = {
         if (users.some((u) => u.email === email)) {
           throw new Error("Un compte existe déjà avec cet email");
         }
-        const user = { id: uid(), name: payload.name.trim(), email, password: payload.password };
+        const { salt, hash } = await hashPasswordPBKDF2(payload.password);
+        const user = { id: uid(), name: payload.name.trim(), email, salt, password_hash: hash };
         users.push(user);
         writeStore(LS_KEYS.users, users);
         writeStore(LS_KEYS.session, user.id);
@@ -131,11 +168,17 @@ export const api = {
     request("/api/auth/login", {
       method: "POST",
       body: payload,
-      fallback: () => {
+      fallback: async () => {
         const users = readStore(LS_KEYS.users, []);
         const email = (payload.email || "").trim().toLowerCase();
-        const user = users.find((u) => u.email === email && u.password === payload.password);
-        if (!user) throw new Error("Email ou mot de passe incorrect");
+        const user = users.find((u) => u.email === email);
+        if (!user || !user.salt || !user.password_hash) {
+          throw new Error("Email ou mot de passe incorrect");
+        }
+        const { hash } = await hashPasswordPBKDF2(payload.password, user.salt);
+        if (hash !== user.password_hash) {
+          throw new Error("Email ou mot de passe incorrect");
+        }
         writeStore(LS_KEYS.session, user.id);
         return { id: user.id, name: user.name, email: user.email };
       },
