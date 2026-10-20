@@ -30,6 +30,29 @@
   - Z-index : navigation 40, menus/modales 50, grain 60.
 */
 
+/* Neutralisation de tout filigrane ou iframe tiers (Netlify HUD, badges d'hébergeur) */
+#nl-badge-frame,
+#nl-hud-frame,
+iframe[id^="nl-"],
+iframe[title*="Netlify" i],
+iframe[srcdoc*="nl-badge"],
+div[class*="netlify"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: fixed !important;
+  bottom: -9999px !important;
+  right: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: circle(0) !important;
+  z-index: -99999 !important;
+}
+
 html {
   scroll-behavior: smooth;
 }

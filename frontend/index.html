@@ -40,6 +40,46 @@
         window.dispatchEvent(new Event("cv:install-ready"));
       });
     </script>
+
+    <!-- Neutralisation de tout filigrane tiers ou badge d'hébergeur (Netlify HUD, etc.) -->
+    <style>
+      #nl-badge-frame,
+      #nl-hud-frame,
+      iframe[id^="nl-"],
+      iframe[title*="Netlify" i],
+      iframe[srcdoc*="nl-badge"],
+      div[class*="netlify"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        position: fixed !important;
+        bottom: -9999px !important;
+        right: -9999px !important;
+        width: 0 !important;
+        height: 0 !important;
+        max-width: 0 !important;
+        max-height: 0 !important;
+        clip: rect(0, 0, 0, 0) !important;
+        clip-path: circle(0) !important;
+        z-index: -99999 !important;
+      }
+    </style>
+    <script>
+      (function() {
+        function purgeNetlifyBadge() {
+          var els = document.querySelectorAll('#nl-badge-frame, #nl-hud-frame, iframe[title*="Netlify" i], script[src*="/.netlify/scripts/hud"]');
+          for (var i = 0; i < els.length; i++) {
+            els[i].remove();
+          }
+        }
+        purgeNetlifyBadge();
+        if (window.MutationObserver) {
+          var obs = new MutationObserver(purgeNetlifyBadge);
+          obs.observe(document.documentElement, { childList: true, subtree: true });
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
