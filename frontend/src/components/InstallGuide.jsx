@@ -1,7 +1,7 @@
 /**
  * Installation de CineViseur adaptée à chaque plateforme :
  * Windows, Mac, Android, iPhone & iPad.
- * Crée le vrai raccourci sur le Bureau / Écran d'accueil selon l'appareil.
+ * Déclenche l'installation officielle pour placer le vrai raccourci sur le Bureau / Écran d'accueil.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -28,21 +28,6 @@ export function isStandalone() {
   );
 }
 
-/** Génère et télécharge un vrai fichier raccourci internet Windows (.url). */
-export function downloadWindowsShortcut() {
-  const url = window.location.origin + "/";
-  const iconUrl = window.location.origin + "/favicon.ico";
-  const content = `[InternetShortcut]\r\nURL=${url}\r\nIconIndex=0\r\nIconFile=${iconUrl}\r\nHotKey=0\r\n[{000214A0-0000-0000-C000-000000000046}]\r\nProp3=19,0\r\n`;
-  const blob = new Blob([content], { type: "application/internet-shortcut" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "CineViseur.url";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-
 function readDismissed() {
   try {
     return localStorage.getItem(DISMISS_KEY) === "1";
@@ -57,7 +42,6 @@ const InstallContext = createContext({
   canInstall: false,
   openGuide: () => {},
   handleInstall: async () => false,
-  downloadShortcut: () => {},
 });
 
 export function useInstall() {
@@ -150,7 +134,6 @@ export function InstallProvider({ children }) {
       canInstall: Boolean(deferred),
       openGuide,
       handleInstall,
-      downloadShortcut: downloadWindowsShortcut,
     }),
     [platform, installed, deferred, openGuide, handleInstall]
   );
@@ -204,36 +187,34 @@ const PLATFORM_CONFIG = {
     label: "Windows",
     icon: "windows",
     title: "Installer sur le Bureau Windows",
-    subtitle: "Accédez à CineViseur directement depuis votre Bureau et votre menu Démarrer.",
+    subtitle: "Créez le raccourci CineViseur sur votre Bureau et dans le menu Démarrer.",
   },
   mac: {
     label: "Mac",
     icon: "apple",
     title: "Installer sur Mac",
-    subtitle: "Ajoutez CineViseur directement dans votre Dock macOS et votre dossier Applications.",
+    subtitle: "Ajoutez CineViseur directement dans votre Dock macOS et vos Applications.",
   },
   android: {
     label: "Android",
     icon: "android",
     title: "Installer sur Android",
-    subtitle: "Ajoutez l'icône CineViseur en plein écran sur votre écran d'accueil Android.",
+    subtitle: "Ajoutez l'icône CineViseur en plein écran sur votre écran d'accueil.",
   },
   ios: {
     label: "iPhone / iPad",
     icon: "apple",
     title: "Installer sur iPhone / iPad",
-    subtitle: "Ajoutez CineViseur en plein écran directement sur votre écran d'accueil Safari.",
+    subtitle: "Ajoutez CineViseur en plein écran sur votre écran d'accueil Safari.",
   },
 };
 
 function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) {
   const [activePlatform, setActivePlatform] = useState(platform);
-  const [downloaded, setDownloaded] = useState(false);
 
   useEffect(() => {
     if (open) {
       setActivePlatform(platform);
-      setDownloaded(false);
     }
   }, [open, platform]);
 
@@ -247,12 +228,6 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
   }, [open, onClose]);
 
   const cfg = PLATFORM_CONFIG[activePlatform] || PLATFORM_CONFIG.windows;
-
-  function handleDownloadShortcut() {
-    downloadWindowsShortcut();
-    setDownloaded(true);
-    setTimeout(() => setDownloaded(false), 3000);
-  }
 
   return (
     <AnimatePresence>
@@ -305,35 +280,31 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
             {/* CONTENU SPÉCIFIQUE SELON LA PLATEFORME */}
             {activePlatform === "windows" && (
               <div className="flex flex-col gap-4">
-                {canInstall ? (
+                {canInstall && (
                   <button onClick={onDirectInstall} className="btn-primary w-full justify-center !py-3.5 text-sm">
                     <Icon name="download" className="w-4 h-4" weight="bold" />
-                    Créer le raccourci sur le Bureau Windows
+                    Créer le raccourci officiel sur le Bureau Windows
                   </button>
-                ) : (
-                  <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3">
-                    <div className="flex items-start gap-3">
-                      <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
-                      <p className="text-xs text-white/80 leading-relaxed">
-                        Dans <strong>Chrome</strong> ou <strong>Edge</strong>, cliquez sur l'icône <strong>⊕ (Installer)</strong> tout à droite de votre barre d'adresse URL.
-                      </p>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">2</span>
-                      <p className="text-xs text-white/80 leading-relaxed">
-                        Ou cliquez sur le bouton ci-dessous pour télécharger le fichier raccourci et le glisser sur votre Bureau :
-                      </p>
-                    </div>
-                  </div>
                 )}
 
-                <button
-                  onClick={handleDownloadShortcut}
-                  className="btn-ghost w-full justify-center !py-3 text-xs"
-                >
-                  <Icon name="download" className="w-4 h-4" />
-                  {downloaded ? "✓ Raccourci téléchargé (CineViseur.url)" : "Télécharger le fichier raccourci Bureau (.url)"}
-                </button>
+                <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3 text-xs text-white/80">
+                  <div className="flex items-start gap-3">
+                    <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
+                    <p className="leading-relaxed">
+                      <strong>Via la barre d'adresse :</strong> Tout à droite de l'URL en haut (à côté de l'étoile des favoris), cliquez sur l'icône <strong>⊕ (Installer CineViseur)</strong>.
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">2</span>
+                    <p className="leading-relaxed">
+                      <strong>Via le menu Chrome :</strong> Cliquez sur le menu <strong>⋮ (3 points en haut à droite)</strong> → <strong>« Enregistrer et partager »</strong> → <strong>« Installer CineViseur »</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-white/45 bg-white/[0.02] p-3 rounded-lg border border-white/[0.05] leading-relaxed">
+                  💡 <strong>Astuce :</strong> Si vous êtes en fenêtre de <em>navigation privée</em>, Chrome bloque l'installation d'applications par sécurité. Ouvrez CineViseur dans une fenêtre classique pour créer le raccourci.
+                </p>
               </div>
             )}
 
@@ -368,7 +339,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                 <div className="flex items-start gap-3">
                   <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
                   <p className="leading-relaxed">
-                    Dans <strong>Safari</strong>, touchez le bouton <strong>Partager</strong> (le carré avec la flèche vers le haut ⎋) en bas de l'écran.
+                    Dans <strong>Safari</strong>, touchez le bouton <strong>Partager</strong> (le carré avec la flèche vers le haut ⎋) tout en bas de l'écran.
                   </p>
                 </div>
                 <div className="flex items-start gap-3">
@@ -380,29 +351,20 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                 <div className="flex items-start gap-3">
                   <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">3</span>
                   <p className="leading-relaxed">
-                    Touchez <strong>« Ajouter »</strong> en haut à droite : CineViseur s'ouvrira en plein écran !
+                    Touchez <strong>« Ajouter »</strong> en haut à droite : CineViseur apparaîtra directement sur votre écran d'accueil !
                   </p>
                 </div>
               </div>
             )}
 
             {activePlatform === "mac" && (
-              <div className="flex flex-col gap-4">
-                <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3 text-xs text-white/80">
-                  <p className="leading-relaxed">
-                    • <strong>Sur Safari :</strong> cliquez sur le menu <strong>Fichier</strong> en haut de l'écran, puis sur <strong>« Ajouter au Dock »</strong>.
-                  </p>
-                  <p className="leading-relaxed">
-                    • <strong>Sur Chrome :</strong> cliquez sur l'icône <strong>⊕ (Installer)</strong> tout à droite de la barre d'adresse.
-                  </p>
-                </div>
-                <button
-                  onClick={handleDownloadShortcut}
-                  className="btn-ghost w-full justify-center !py-3 text-xs"
-                >
-                  <Icon name="download" className="w-4 h-4" />
-                  {downloaded ? "✓ Raccourci téléchargé" : "Télécharger le raccourci (.url)"}
-                </button>
+              <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3 text-xs text-white/80">
+                <p className="leading-relaxed">
+                  • <strong>Sur Safari :</strong> cliquez sur le menu <strong>Fichier</strong> en haut de l'écran, puis sur <strong>« Ajouter au Dock »</strong>.
+                </p>
+                <p className="leading-relaxed">
+                  • <strong>Sur Chrome :</strong> cliquez sur l'icône <strong>⊕ (Installer)</strong> tout à droite de la barre d'adresse.
+                </p>
               </div>
             )}
 
