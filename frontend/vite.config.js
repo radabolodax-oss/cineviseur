@@ -48,10 +48,11 @@ function launchFiles(env) {
       fs.writeFileSync(
         path.join(out, '_redirects'),
         [
-          '/api/tmdb/*    /.netlify/functions/api/tmdb/:splat    200',
-          '/api/cinemas/* /.netlify/functions/api/cinemas/:splat 200',
-          '/api/health    /.netlify/functions/api/health         200',
-          '/*             /index.html                            200',
+          '/api/tmdb/*    /.netlify/functions/api/tmdb/:splat             200',
+          '/api/cinemas/* /.netlify/functions/api/cinemas/:splat          200',
+          '/api/health    /.netlify/functions/api/health                  200',
+          '/api/*         https://cineviseur-api.onrender.com/api/:splat  200',
+          '/*             /index.html                                     200',
           '',
         ].join('\n')
       )
