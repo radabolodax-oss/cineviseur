@@ -287,7 +287,35 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                   </button>
                 )}
 
+                {/* Bloc spécifique Opera */}
+                <div className="p-4 rounded-xl bg-cine-violet/10 ring-1 ring-inset ring-cine-violet/30 flex flex-col gap-2.5 text-xs text-white/85">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-cine-soft text-sm flex items-center gap-2">
+                      Navigateur Opera
+                    </span>
+                    {typeof navigator !== "undefined" && /OPR\/|Opera\//.test(navigator.userAgent) && (
+                      <span className="text-[10px] bg-cine-violet/30 px-2 py-0.5 rounded text-white font-medium">Détecté sur votre navigateur</span>
+                    )}
+                  </div>
+                  <p className="text-white/70 leading-relaxed">
+                    Opera désactive l'icône d'installation automatique pour privilégier sa barre latérale.
+                  </p>
+                  <div className="flex items-start gap-2.5 mt-1 bg-black/30 p-3 rounded-lg border border-white/[0.08]">
+                    <span className="text-lg shrink-0">🔒</span>
+                    <p className="leading-relaxed">
+                      <strong>Astuce en 1 seconde :</strong> Cliquez sur le <strong>cadenas 🔒</strong> (juste à gauche de l'adresse URL en haut) et <strong>glissez-le directement avec votre souris sur votre Bureau Windows</strong>. Le raccourci est créé instantanément !
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bloc pour Chrome et Edge */}
                 <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3 text-xs text-white/80">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-white text-xs">Sur Google Chrome ou Microsoft Edge :</span>
+                    {typeof navigator !== "undefined" && !/OPR\/|Opera\//.test(navigator.userAgent) && /Chrome\/|Edg\//.test(navigator.userAgent) && (
+                      <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-white font-medium">Détecté sur votre navigateur</span>
+                    )}
+                  </div>
                   <div className="flex items-start gap-3">
                     <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
                     <p className="leading-relaxed">
@@ -297,13 +325,13 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                   <div className="flex items-start gap-3">
                     <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">2</span>
                     <p className="leading-relaxed">
-                      <strong>Via le menu Chrome :</strong> Cliquez sur le menu <strong>⋮ (3 points en haut à droite)</strong> → <strong>« Enregistrer et partager »</strong> → <strong>« Installer CineViseur »</strong>.
+                      <strong>Via le menu :</strong> Cliquez sur le menu <strong>⋮ (3 points en haut à droite)</strong> → <strong>« Enregistrer et partager »</strong> → <strong>« Installer CineViseur »</strong>.
                     </p>
                   </div>
                 </div>
 
                 <p className="text-[11px] text-white/45 bg-white/[0.02] p-3 rounded-lg border border-white/[0.05] leading-relaxed">
-                  💡 <strong>Astuce :</strong> Si vous êtes en fenêtre de <em>navigation privée</em>, Chrome bloque l'installation d'applications par sécurité. Ouvrez CineViseur dans une fenêtre classique pour créer le raccourci.
+                  💡 <strong>Note :</strong> Si vous êtes en fenêtre de <em>navigation privée</em>, Chrome et Edge bloquent l'installation d'applications par sécurité. Ouvrez CineViseur dans une fenêtre classique pour créer le raccourci.
                 </p>
               </div>
             )}
