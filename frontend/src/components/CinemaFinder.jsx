@@ -64,6 +64,18 @@ function directionsUrl(origin, cin) {
   return `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${origin.lat}%2C${origin.lon}%3B${cin.lat}%2C${cin.lon}`;
 }
 
+function getShowtimesUrl(cin, filmTitle) {
+  if (filmTitle) {
+    return `https://www.google.com/search?q=${encodeURIComponent(`${filmTitle} ${cin.name} séances horaires`.trim())}`;
+  }
+  return cin.showtimes_url || `https://www.google.com/search?q=${encodeURIComponent(`${cin.name} séances horaires`.trim())}`;
+}
+
+function getAllocineUrl(cin, filmTitle) {
+  const query = filmTitle ? `${cin.name} ${filmTitle}` : cin.name;
+  return `https://www.allocine.fr/recherche/?q=${encodeURIComponent(query.trim())}`;
+}
+
 /**
  * Où voir ce film en salle : cinémas proches, formats (Dolby Cinema, IMAX, 4DX, 3D...),
  * lien vers les séances du cinéma et itinéraire.
@@ -152,7 +164,7 @@ export default function CinemaFinder({ filmTitle }) {
                   <p className="mt-3 text-center text-xs text-white/55">Rayon de {Math.round(maxKm)} km autour de toi</p>
                 </div>
 
-                <ol className="flex flex-col gap-2">
+                <ol className="flex flex-col gap-3">
                   <AnimatePresence initial={false}>
                     {shown.map((cin, i) => (
                       <motion.li
@@ -164,14 +176,14 @@ export default function CinemaFinder({ filmTitle }) {
                         transition={{ duration: 0.4, delay: Math.min(i, 8) * 0.04, ease: EASE_OUT }}
                         onMouseEnter={() => setActive(cin.id)}
                         onMouseLeave={() => setActive(null)}
-                        className={`rounded-2xl p-4 ring-1 ring-inset transition-colors ${active === cin.id ? "bg-white/[0.08] ring-cine-soft/50" : "bg-white/[0.03] ring-white/[0.08]"}`}
+                        className={`rounded-2xl p-5 ring-1 ring-inset transition-colors ${active === cin.id ? "bg-white/[0.08] ring-cine-soft/50 shadow-lg" : "bg-white/[0.03] ring-white/[0.08]"}`}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <p className="font-semibold">{cin.name}</p>
-                            {cin.address && <p className="text-sm text-white/55">{cin.address}</p>}
+                            <p className="font-semibold text-base text-white">{cin.name}</p>
+                            {cin.address && <p className="text-sm text-white/55 mt-0.5">{cin.address}</p>}
                           </div>
-                          <span className="shrink-0 font-mono text-sm tabular-nums text-cine-soft">{cin.distance_km} km</span>
+                          <span className="shrink-0 font-mono text-sm tabular-nums text-cine-emerald font-semibold">{cin.distance_km} km</span>
                         </div>
 
                         {cin.formats.length > 0 && (
@@ -192,12 +204,36 @@ export default function CinemaFinder({ filmTitle }) {
                           </div>
                         )}
 
-                        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium">
-                          <a href={cin.showtimes_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-white hover:text-cine-soft transition-colors">
-                            <Icon name="calendar" /> {filmTitle ? "Voir les séances" : "Programme"}
+                        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium pt-3 border-t border-white/[0.06]">
+                          <a
+                            href={getShowtimesUrl(cin, filmTitle)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cine-emerald/15 border border-cine-emerald/30 text-cine-emerald hover:bg-cine-emerald/25 transition-all font-semibold"
+                          >
+                            <Icon name="calendar" className="w-3.5 h-3.5" />
+                            <span>{filmTitle ? `Séances de ${filmTitle}` : "Planning des séances"}</span>
+                            <span>↗</span>
                           </a>
-                          <a href={directionsUrl(origin, cin)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-white/75 hover:text-white transition-colors">
-                            <Icon name="compass" /> Itinéraire
+
+                          <a
+                            href={getAllocineUrl(cin, filmTitle)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-white/65 hover:text-white hover:bg-white/[0.05] transition-all"
+                            title="Voir la grille complète sur Allociné"
+                          >
+                            <span>Fiche Allociné ↗</span>
+                          </a>
+
+                          <a
+                            href={directionsUrl(origin, cin)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/[0.05] transition-all ml-auto"
+                          >
+                            <Icon name="compass" className="w-3.5 h-3.5" />
+                            <span>Itinéraire</span>
                           </a>
                         </div>
                       </motion.li>
@@ -207,8 +243,8 @@ export default function CinemaFinder({ filmTitle }) {
               </div>
 
               <p className="mt-6 text-xs text-white/50 max-w-[70ch]">
-                Les horaires viennent du site de chaque cinéma : « Voir les séances » l'ouvre directement. Les formats marqués
-                « selon le réseau » sont ceux que l'enseigne propose, vérifie leur disponibilité pour ta séance.
+                Les horaires et réservations s'ouvrent directement avec la grille du cinéma. Les formats marqués
+                « selon le réseau » sont ceux que l'enseigne propose, vérifiez leur disponibilité pour votre séance.
               </p>
             </>
           )}
