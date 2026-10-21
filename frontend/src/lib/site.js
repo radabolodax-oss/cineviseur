@@ -27,5 +27,5 @@ export const analyticsEnabled = Boolean(ANALYTICS.provider && ANALYTICS.id && AN
 
 // Configuration régie publicitaire Google AdSense
 export const ADSENSE = {
-  pubId: env.VITE_ADSENSE_PUB_ID || "",
+  pubId: env.VITE_ADSENSE_PUB_ID || "ca-pub-4993578792461847",
 };
