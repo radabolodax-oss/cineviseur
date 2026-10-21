@@ -326,18 +326,6 @@ export default function MediaDetail() {
     }
   }
 
-  function getMiawUrl() {
-    const slug = title
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .replace(/[^\w\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-");
-    return `https://miaw.tv/film/${slug}`;
-  }
-
   return (
     <div className="pb-16">
       <div ref={heroRef} className="relative -mt-16 h-[50dvh] md:h-[65dvh] w-full overflow-hidden" aria-hidden="true">
@@ -479,12 +467,6 @@ export default function MediaDetail() {
 
 
         </motion.div>
-      </div>
-
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16 mb-8">
-        <a href={getMiawUrl()} target="_blank" rel="noopener noreferrer" className="inline-block text-cine-soft font-medium hover:text-cine-soft/80 transition-colors">
-          <Icon name="play" weight="fill" className="inline w-4 h-4 mr-2" />Regarder maintenant
-        </a>
       </div>
 
       {mediaType === "tv" && (
