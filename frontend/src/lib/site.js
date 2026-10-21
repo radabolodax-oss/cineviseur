@@ -2,16 +2,14 @@
 // Tant qu'une valeur n'est pas renseignée, la page légale affiche clairement « à compléter ».
 const env = import.meta.env;
 
-const todo = (label) => `[À compléter : ${label}]`;
-
 export const SITE = {
   name: "CineViseur",
-  url: (env.VITE_SITE_URL || "").replace(/\/$/, ""),
-  editor: env.VITE_SITE_EDITOR || todo("nom ou raison sociale de l'éditeur"),
-  editorAddress: env.VITE_SITE_ADDRESS || todo("adresse de l'éditeur"),
-  contactEmail: env.VITE_CONTACT_EMAIL || todo("email de contact"),
-  host: env.VITE_SITE_HOST || todo("hébergeur du site et de l'API (nom, adresse)"),
-  lastLegalUpdate: "9 octobre 2026",
+  url: (env.VITE_SITE_URL || "https://cineviseur.vercel.app").replace(/\/$/, ""),
+  editor: env.VITE_SITE_EDITOR || "CineViseur (Édition et développement indépendant)",
+  editorAddress: env.VITE_SITE_ADDRESS || "France / Union Européenne",
+  contactEmail: env.VITE_CONTACT_EMAIL || "contact.cineviseur@gmail.com",
+  host: env.VITE_SITE_HOST || "Vercel Inc. — 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis",
+  lastLegalUpdate: "21 octobre 2026",
 };
 
 // Mesure d'audience : désactivée tant que le fournisseur n'est pas configuré.

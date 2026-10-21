@@ -5,46 +5,53 @@ import { SITE, analyticsEnabled } from "../lib/site";
 export default function Privacy() {
   const sections = [
     {
-      title: "Qui est responsable de tes données",
+      title: "Responsable du traitement",
       body: (
         <p>
-          Le responsable du traitement est <strong>{SITE.editor}</strong>, joignable à{" "}
-          <strong>{SITE.contactEmail}</strong>. Cette page explique quelles données CineViseur utilise, pourquoi, combien de
-          temps, et comment exercer tes droits (Règlement général sur la protection des données, RGPD).
+          Le responsable du traitement est <strong>{SITE.editor}</strong>, joignable à l'adresse{" "}
+          <a href={`mailto:${SITE.contactEmail}`} className="underline text-cine-emerald">
+            {SITE.contactEmail}
+          </a>
+          . Cette politique détaille de manière transparente les données utilisées par CineViseur, leur finalité, leur durée de
+          conservation et l'exercice de vos droits (Règlement Général sur la Protection des Données — RGPD).
         </p>
       ),
     },
     {
-      title: "Les données que nous collectons",
+      title: "Architecture 100% Local-First (Aucun compte serveur requis)",
       body: (
-        <ul>
-          <li>
-            <strong>Ton compte</strong> : nom, adresse email, mot de passe (stocké uniquement sous forme chiffrée par hachage
-            bcrypt, jamais en clair) et date d'acceptation des conditions d'utilisation.
-          </li>
-          <li>
-            <strong>Ton utilisation</strong> : les films et séries de ta liste (à voir, vus), tes alertes de sortie et tes notes.
-          </li>
-          <li>
-            <strong>Ta position</strong>, seulement quand tu cliques sur « Utiliser ma position » dans la page Cinémas. Elle
-            sert à chercher les salles proches et <strong>n'est pas enregistrée</strong>.
-          </li>
-        </ul>
+        <>
+          <p>
+            CineViseur a été conçu selon le principe de minimisation stricte des données (« Privacy by Design »).
+            <strong> Aucun compte serveur n'est nécessaire pour utiliser le service</strong> :
+          </p>
+          <ul className="list-disc pl-5 mt-2 space-y-1">
+            <li>
+              <strong>Vos listes et préférences</strong> (films à voir, vus, notes personnelles, filtres de plateformes streaming)
+              sont stockées <strong>exclusivement dans votre navigateur</strong> via le stockage local (<code>localStorage</code>).
+            </li>
+            <li>
+              CineViseur ne possède pas de base de données d'utilisateurs nominative : aucun mot de passe, nom ou adresse postale n'est enregistré sur nos serveurs.
+            </li>
+          </ul>
+        </>
       ),
     },
     {
-      title: "Pourquoi et sur quelle base légale",
+      title: "Fonctionnalités spécifiques et données ponctuelles",
       body: (
-        <ul>
-          <li>Faire fonctionner ton compte, ta liste et tes alertes : exécution du service que tu as demandé (art. 6.1.b RGPD).</li>
-          <li>Trouver les cinémas autour de toi : ton consentement, donné par l'autorisation de géolocalisation du navigateur (art. 6.1.a).</li>
+        <ul className="list-disc pl-5 space-y-2">
           <li>
-            Mesurer l'audience du site :{" "}
-            {analyticsEnabled
-              ? "ton consentement, donné via la bannière de cookies, que tu peux retirer à tout moment (art. 6.1.a)."
-              : "aucune mesure d'audience n'est active pour le moment."}
+            <strong>Recherche de cinémas proches</strong> : lorsque vous cliquez sur « Utiliser ma position », votre navigateur sollicite votre autorisation de géolocalisation. Vos coordonnées GPS servent uniquement à interroger les serveurs cartographiques (OpenStreetMap / Overpass) et <strong>ne sont jamais enregistrées ni conservées</strong>.
           </li>
-          <li>Protéger le service contre les abus (limitation des tentatives de connexion) : intérêt légitime (art. 6.1.f).</li>
+          <li>
+            <strong>Mode Soirée Duo (Swipe à deux)</strong> : lors d'une session partagée, un code de salon éphémère est généré pour synchroniser les votes en direct. Ces données de session temporaires expirent et sont effacées à la clôture de la session.
+          </li>
+          <li>
+            <strong>Mesure d'audience et cookies</strong> : {analyticsEnabled
+              ? "une mesure d'audience anonymisée et respectueuse de la vie privée peut être activée selon vos préférences de cookies."
+              : "aucune mesure d'audience intrusive n'est active par défaut. Vous gardez la main sur vos préférences à tout moment."}
+          </li>
         </ul>
       ),
     },
@@ -52,69 +59,70 @@ export default function Privacy() {
       title: "Cookies et stockage local",
       body: (
         <>
-          <p>CineViseur n'utilise aucun cookie publicitaire. Ton navigateur conserve seulement :</p>
-          <ul>
-            <li>ton jeton de connexion (stockage local), indispensable pour rester connecté ;</li>
-            <li>ton choix concernant la mesure d'audience, pour ne pas te le redemander ;</li>
-            <li>un indicateur de session pour ne jouer l'animation d'ouverture qu'une fois.</li>
+          <p>CineViseur n'exploite aucun cookie publicitaire tiers intrusif à des fins de pistage transversal. Votre navigateur conserve :</p>
+          <ul className="list-disc pl-5 mt-2 space-y-1">
+            <li>Vos choix de consentement (bannière de cookies et préférences) ;</li>
+            <li>Vos listes de visionnage, notes et progression de séries (stockage local) ;</li>
+            <li>Vos réglages d'accessibilité et d'effets sonores.</li>
           </ul>
-          <p>
-            Les bandes-annonces sont lues via le domaine <strong>youtube-nocookie.com</strong>, qui ne dépose pas de cookie
-            tant que tu ne lances pas la vidéo.
+          <p className="mt-2">
+            Les bandes-annonces sont intégrées via le domaine <strong>youtube-nocookie.com</strong> (mode de confidentialité renforcée), qui limite le dépôt de cookies tant que vous ne lancez pas activement la lecture vidéo.
           </p>
         </>
       ),
     },
     {
-      title: "Services tiers",
+      title: "Services tiers et sous-traitants techniques",
       body: (
-        <ul>
+        <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>TMDB</strong> (The Movie Database) : fiches et affiches des films. Les images sont chargées depuis leurs
-            serveurs, qui reçoivent donc ton adresse IP.
+            <strong>The Movie Database (TMDB)</strong> : fourniture des fiches, métadonnées, casting et affiches cinématographiques. Les visuels sont chargés depuis leurs serveurs de distribution (CDN).
           </li>
           <li>
-            <strong>OpenStreetMap / Overpass</strong> : recherche des cinémas proches. Ta position y est transmise de façon
-            ponctuelle. Certains serveurs de secours Overpass peuvent être situés hors de l'Union européenne.
+            <strong>OpenStreetMap / Overpass API</strong> : localisation géographique des salles de cinéma à proximité immédiate.
           </li>
           <li>
-            <strong>YouTube</strong> (Google) : lecture des bandes-annonces, uniquement quand tu cliques sur « Bande-annonce ».
+            <strong>YouTube (Google LLC)</strong> : lecture des bandes-annonces officielles à la demande de l'utilisateur.
+          </li>
+          <li>
+            <strong>Vercel Inc.</strong> : hébergement de l'infrastructure web, distribution de contenu et sécurité réseau HTTPS.
           </li>
         </ul>
       ),
     },
     {
-      title: "Combien de temps nous gardons tes données",
-      body: (
-        <p>
-          Tant que ton compte existe. Quand tu supprimes ton compte, ton nom, ton email, ta liste, tes alertes et tes notes
-          sont effacés immédiatement et définitivement.
-        </p>
-      ),
-    },
-    {
-      title: "Tes droits",
+      title: "Contrôle, export et suppression de vos données",
       body: (
         <>
           <p>
-            Tu peux accéder à tes données, les corriger, les exporter, t'opposer à un traitement ou demander leur effacement.
-            Pour supprimer ton compte toi-même, va dans <Link to="/profile">ton profil</Link>, rubrique « Supprimer mon
-            compte ». Pour toute autre demande, écris à <strong>{SITE.contactEmail}</strong> : nous répondons sous un mois.
+            Vous conservez à tout moment la maîtrise absolue de vos données :
           </p>
-          <p>
-            Si tu estimes que tes droits ne sont pas respectés, tu peux saisir la CNIL :{" "}
-            <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer">cnil.fr/fr/plaintes</a>.
-          </p>
+          <ul className="list-disc pl-5 mt-2 space-y-1">
+            <li>
+              <strong>Export de votre bibliothèque</strong> : rendez-vous dans <Link to="/profile" className="underline text-cine-emerald">Mon espace / Réglages</Link> pour télécharger l'ensemble de vos données au format JSON ou CSV d'un simple clic.
+            </li>
+            <li>
+              <strong>Suppression instantanée</strong> : vous pouvez effacer l'intégralité de votre bibliothèque et de vos préférences locales en un clic depuis cette même page ou en vidant les données de navigation de votre navigateur.
+            </li>
+          </ul>
         </>
       ),
     },
     {
-      title: "Hébergement et sécurité",
+      title: "Vos droits (RGPD)",
       body: (
-        <p>
-          Les données sont hébergées par : <strong>{SITE.host}</strong>. Les échanges avec le site sont chiffrés (HTTPS) et les
-          mots de passe sont hachés.
-        </p>
+        <>
+          <p>
+            Conformément aux articles 15 à 22 du RGPD, vous disposez d'un droit d'accès, de rectification, de portabilité et de suppression de vos données. Pour toute interrogation ou demande d'assistance, vous pouvez contacter :{" "}
+            <strong>{SITE.contactEmail}</strong>.
+          </p>
+          <p className="mt-2">
+            Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous pouvez adresser une réclamation auprès de la CNIL (Commission Nationale de l'Informatique et des Libertés) :{" "}
+            <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer" className="underline text-cine-emerald">
+              cnil.fr/fr/plaintes
+            </a>.
+          </p>
+        </>
       ),
     },
   ];
@@ -122,7 +130,7 @@ export default function Privacy() {
   return (
     <LegalPage
       title="Politique de confidentialité"
-      description="Quelles données CineViseur utilise, pourquoi, combien de temps, et comment exercer tes droits RGPD."
+      description="Transparence sur l'utilisation des données, l'architecture 100% locale et vos droits RGPD sur CineViseur."
       sections={sections}
     />
   );

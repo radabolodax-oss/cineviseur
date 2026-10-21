@@ -6,24 +6,35 @@ export default function LegalNotice() {
     {
       title: "Éditeur du site",
       body: (
-        <ul>
-          <li>Éditeur et directeur de la publication : <strong>{SITE.editor}</strong></li>
-          <li>Adresse : {SITE.editorAddress}</li>
-          <li>Contact : {SITE.contactEmail}</li>
+        <ul className="space-y-1">
+          <li>Éditeur et direction de publication : <strong>{SITE.editor}</strong></li>
+          <li>Localisation : {SITE.editorAddress}</li>
+          <li>Contact électronique : <a href={`mailto:${SITE.contactEmail}`} className="text-emerald-400 hover:underline">{SITE.contactEmail}</a></li>
         </ul>
       ),
     },
     {
-      title: "Hébergement",
-      body: <p>{SITE.host}</p>,
-    },
-    {
-      title: "Propriété intellectuelle",
+      title: "Hébergement de l'application",
       body: (
         <p>
-          Le nom CineViseur, le logo et le code du site appartiennent à leur éditeur. Les données et images des films et
-          séries proviennent de TMDB et restent la propriété de leurs ayants droit.
+          Le site et ses API de synchronisation sont hébergés par la société <strong>{SITE.host}</strong> (infrastructure mondiale sécurisée avec CDN européen).
         </p>
+      ),
+    },
+    {
+      title: "Propriété intellectuelle et sources de données",
+      body: (
+        <div className="space-y-3">
+          <p>
+            La marque CineViseur, son logo, son architecture logicielle et son interface sont la propriété exclusive de leur auteur.
+          </p>
+          <p>
+            Les métadonnées, affiches, résumés et images de films et séries proviennent de l'API publique <strong>The Movie Database (TMDB)</strong>. Ce produit utilise l'API TMDB sans être certifié ni approuvé directement par TMDB. Les droits de propriété intellectuelle des œuvres représentées demeurent la propriété de leurs producteurs et ayants droit respectifs.
+          </p>
+          <p>
+            Les bandes-annonces vidéo sont intégrées via le service d'intégration respectueux de la vie privée <strong>YouTube (Google LLC)</strong> sans dépôt de cookies publicitaires préalables.
+          </p>
+        </div>
       ),
     },
   ];

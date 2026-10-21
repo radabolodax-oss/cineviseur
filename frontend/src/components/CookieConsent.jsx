@@ -28,9 +28,9 @@ function loadAnalytics() {
 }
 
 /**
- * Bannière de consentement (CNIL) : la mesure d'audience ne se charge qu'après « Accepter ».
- * « Refuser » est aussi visible et aussi simple qu'« Accepter ». Sans outil d'analytics configuré,
- * le site ne dépose rien de non essentiel et la bannière ne s'affiche pas.
+ * Bannière de consentement (CNIL/RGPD) :
+ * - Si un outil analytics est actif : choix Accepter / Refuser avec impact immédiat.
+ * - Si aucun outil analytics n'est actif : informe l'utilisateur sur l'absence totale de traceurs tiers.
  */
 export default function CookieConsent() {
   const [choice, setChoice] = useState(readChoice);
@@ -45,8 +45,6 @@ export default function CookieConsent() {
     window.addEventListener(OPEN_CONSENT_EVENT, reopen);
     return () => window.removeEventListener(OPEN_CONSENT_EVENT, reopen);
   }, []);
-
-  if (!analyticsEnabled) return null;
 
   function decide(value) {
     try {
@@ -65,21 +63,42 @@ export default function CookieConsent() {
       {open && (
         <motion.div
           role="dialog"
-          aria-label="Mesure d'audience"
+          aria-label="Gestion des cookies et de la vie privée"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 40 }}
           transition={SPRING}
-          className="fixed bottom-24 sm:bottom-6 left-4 right-4 sm:left-6 sm:right-auto sm:max-w-md z-50 panel p-5 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.7)]"
+          className="fixed bottom-24 sm:bottom-6 left-4 right-4 sm:left-6 sm:right-auto sm:max-w-md z-50 panel p-5 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.85)] border border-white/15 bg-cine-ink/95 backdrop-blur-md"
         >
-          <p className="text-sm text-white/80 leading-relaxed mb-4">
-            On aimerait mesurer l'audience du site, de façon anonyme, pour savoir quelles pages sont utiles. Rien n'est
-            déposé sans ton accord. <Link to="/confidentialite" className="link">En savoir plus</Link>
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => decide("denied")} className="btn-ghost !py-2.5">Refuser</button>
-            <button onClick={() => decide("granted")} className="btn-ghost !py-2.5">Accepter</button>
-          </div>
+          {analyticsEnabled ? (
+            <>
+              <p className="text-sm text-white/80 leading-relaxed mb-4">
+                On aimerait mesurer l'audience du site, de façon anonyme, pour savoir quelles pages sont utiles. Rien n'est
+                déposé sans votre accord. <Link to="/confidentialite" className="link text-cine-emerald">En savoir plus</Link>
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={() => decide("denied")} className="btn-ghost !py-2.5">Refuser</button>
+                <button onClick={() => decide("granted")} className="btn-primary !py-2.5">Accepter</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 mb-2 text-cine-emerald font-semibold text-sm">
+                <span>🛡️</span> Respect total de votre vie privée
+              </div>
+              <p className="text-sm text-white/80 leading-relaxed mb-4">
+                CineViseur ne dépose <strong>aucun cookie publicitaire ni traceur tiers</strong>. Vos listes et vos préférences restent 100% confinées dans le stockage local de votre propre navigateur.
+              </p>
+              <div className="flex justify-end gap-2">
+                <Link to="/confidentialite" onClick={() => setOpen(false)} className="btn-ghost !py-2 !text-xs">
+                  Lire la politique
+                </Link>
+                <button onClick={() => setOpen(false)} className="btn-primary !py-2 !px-4 !text-xs">
+                  Compris
+                </button>
+              </div>
+            </>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
