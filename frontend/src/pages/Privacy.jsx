@@ -87,6 +87,9 @@ export default function Privacy() {
           <li>
             <strong>Vercel Inc.</strong> : hébergement de l'infrastructure web, distribution de contenu et sécurité réseau HTTPS.
           </li>
+          <li>
+            <strong>Google AdSense (Google LLC)</strong> : diffusion d'annonces publicitaires contextuelles et discrètes finançant l'hébergement et le maintien gratuit de la plateforme.
+          </li>
         </ul>
       ),
     },

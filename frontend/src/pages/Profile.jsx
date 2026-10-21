@@ -352,6 +352,16 @@ export default function Profile() {
         </Link>
       </motion.section>
 
+      {/* Transparence & Modèle économique */}
+      <motion.section variants={riseItem} className="mt-12 p-5 rounded-2xl border border-white/10 bg-white/[0.02] max-w-xl">
+        <div className="flex items-center gap-2 mb-2 text-cine-emerald font-semibold text-sm">
+          <span>✨</span> Service 100% gratuit & indépendant
+        </div>
+        <p className="text-xs text-white/70 leading-relaxed">
+          CineViseur ne vend pas vos données personnelles et reste accessible sans abonnement payant. Pour financer l'infrastructure, l'hébergement et l'accès aux API de cinéma, le site se rémunère grâce à quelques encarts publicitaires discrets. Merci pour votre soutien !
+        </p>
+      </motion.section>
+
       {/* Suppression du cache */}
       <motion.section variants={riseItem} className="mt-16 pt-8 border-t border-white/[0.08] max-w-xl">
         <h2 className="section-title mb-2">Vider le cache de ma liste</h2>

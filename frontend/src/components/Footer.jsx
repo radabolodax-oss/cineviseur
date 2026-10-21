@@ -35,6 +35,9 @@ export default function Footer() {
             <p className="mt-4 max-w-[34ch] text-sm leading-relaxed text-white/55">
               Films, séries, notes et coups de cœur. CineViseur garde la mémoire de vos écrans.
             </p>
+            <p className="mt-2 text-xs text-white/40 leading-relaxed max-w-[34ch]">
+              Service 100% gratuit et indépendant, financé par une publicité discrète pour couvrir les coûts d'hébergement.
+            </p>
             <Link
               to="/contact"
               className="inline-flex items-center gap-1.5 mt-3 text-xs text-white/50 hover:text-cine-emerald transition-colors"
