@@ -29,3 +29,9 @@ export const analyticsEnabled = Boolean(ANALYTICS.provider && ANALYTICS.id && AN
 export const ADSENSE = {
   pubId: env.VITE_ADSENSE_PUB_ID || "ca-pub-4993578792461847",
 };
+
+// Liens partenaires et affiliation (Prime Video, Apple TV, etc.)
+export const AFFILIATE = {
+  amazonTag: env.VITE_AMAZON_AFFILIATE_TAG || "cineviseur-21",
+  appleToken: env.VITE_APPLE_AFFILIATE_TOKEN || "",
+};

@@ -9,7 +9,8 @@ import Toast from "../components/Toast";
 import Icon from "../components/Icon";
 import SectionTitle from "../components/SectionTitle";
 import useSeo from "../hooks/useSeo";
-import { isSubscribed } from "../lib/providers";
+import { isSubscribed, getProviderDirectUrl } from "../lib/providers";
+import { AFFILIATE } from "../lib/site";
 import { setLibraryStatus } from "../lib/library";
 import RatingDial from "../components/RatingDial";
 import CastCarousel from "../components/CastCarousel";
@@ -292,6 +293,25 @@ export default function MediaDetail() {
   const frProviders = item["watch/providers"]?.results?.FR;
   const providers = frProviders && PROVIDER_GROUPS.some((g) => frProviders[g.key]?.length) ? frProviders : null;
 
+  const allProvidersList = providers
+    ? [...(providers.flatrate || []), ...(providers.rent || []), ...(providers.buy || []), ...(providers.free || [])]
+    : [];
+
+  const hasPrime = allProvidersList.some(
+    (p) =>
+      Number(p.provider_id) === 119 ||
+      Number(p.provider_id) === 9 ||
+      (p.provider_name || "").toLowerCase().includes("prime") ||
+      (p.provider_name || "").toLowerCase().includes("amazon")
+  );
+
+  const hasApple = allProvidersList.some(
+    (p) =>
+      Number(p.provider_id) === 2 ||
+      Number(p.provider_id) === 350 ||
+      (p.provider_name || "").toLowerCase().includes("apple")
+  );
+
   const cast = (item.credits?.cast || []).slice(0, 15);
   const trailer = findTrailer(item.videos);
   const similar = (item.similar?.results || []).filter((s) => s.poster_path).slice(0, 12);
@@ -494,6 +514,64 @@ export default function MediaDetail() {
           <Reveal y={16}>
             <SectionTitle>Où le regarder</SectionTitle>
           </Reveal>
+
+          {/* Encart Partenaire Affiliation Spécial (Prime Video / Apple TV) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            {hasPrime && (
+              <a
+                href={`https://www.amazon.fr/s?k=${encodeURIComponent(title)}&i=instant-video${AFFILIATE.amazonTag ? `&tag=${encodeURIComponent(AFFILIATE.amazonTag)}` : ""}`}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#00A8E1]/20 via-[#00A8E1]/05 to-white/[0.02] border border-[#00A8E1]/30 hover:border-[#00A8E1]/60 transition-all group shadow-sm hover:shadow-[0_8px_24px_rgba(0,168,225,0.15)]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#00A8E1]/20 border border-[#00A8E1]/30 flex items-center justify-center text-lg shrink-0">
+                    🎬
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-[#00A8E1] font-semibold block">
+                      Prime Video Partenaire
+                    </span>
+                    <span className="text-sm font-medium text-white group-hover:text-[#00A8E1] transition-colors truncate block">
+                      Voir sur Prime Video
+                    </span>
+                    <span className="text-[10px] text-white/50 block">Essai 30 jours gratuit disponible</span>
+                  </div>
+                </div>
+                <span className="text-xs text-white/50 group-hover:text-white transition-colors shrink-0 ml-2">
+                  Ouvrir ↗
+                </span>
+              </a>
+            )}
+
+            {hasApple && (
+              <a
+                href={`https://tv.apple.com/fr/search?term=${encodeURIComponent(title)}${AFFILIATE.appleToken ? `&at=${encodeURIComponent(AFFILIATE.appleToken)}` : ""}`}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-white/10 via-white/5 to-white/[0.02] border border-white/15 hover:border-white/35 transition-all group shadow-sm hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-lg shrink-0">
+                    🍎
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-white/70 font-semibold block">
+                      Apple TV
+                    </span>
+                    <span className="text-sm font-medium text-white group-hover:text-cine-emerald transition-colors truncate block">
+                      Louer ou acheter en 4K HDR
+                    </span>
+                    <span className="text-[10px] text-white/50 block">Accès direct sur Apple TV</span>
+                  </div>
+                </div>
+                <span className="text-xs text-white/50 group-hover:text-white transition-colors shrink-0 ml-2">
+                  Ouvrir ↗
+                </span>
+              </a>
+            )}
+          </div>
+
           <div className="flex flex-col gap-6">
             {PROVIDER_GROUPS.filter((g) => providers[g.key]?.length).map((g) => (
               <div key={g.key}>
@@ -501,12 +579,13 @@ export default function MediaDetail() {
                 <div className="flex flex-wrap gap-3">
                   {providers[g.key].map((p) => {
                     const subscribed = isSubscribed(p.provider_id);
+                    const directUrl = getProviderDirectUrl(p, title, providers.link);
                     return (
                       <a
                         key={p.provider_id}
-                        href={providers.link}
+                        href={directUrl}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener noreferrer nofollow"
                         className={`flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 ring-1 ring-inset transition-all ${
                           subscribed
                             ? "bg-emerald-500/15 ring-emerald-500/40 text-white shadow-sm"
@@ -515,10 +594,17 @@ export default function MediaDetail() {
                       >
                         <img src={`https://image.tmdb.org/t/p/w92${p.logo_path}`} alt="" loading="lazy" className="h-10 w-10 rounded-xl" />
                         <div>
-                          <span className="text-sm font-medium block">{p.provider_name}</span>
-                          {subscribed && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-medium block">{p.provider_name}</span>
+                            <span className="text-[10px] text-white/40">↗</span>
+                          </div>
+                          {subscribed ? (
                             <span className="text-[10px] font-mono text-emerald-400 font-semibold flex items-center gap-1">
                               ✓ Inclus dans vos abonnements
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-white/50 block">
+                              Accéder au film
                             </span>
                           )}
                         </div>
@@ -529,7 +615,11 @@ export default function MediaDetail() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-white/50">Disponibilités en France fournies par JustWatch.</p>
+
+          <div className="mt-5 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-white/45">
+            <p>Disponibilités en France fournies par JustWatch.</p>
+            <p className="text-[11px] text-white/35">* Liens partenaires affiliés sans aucun surcoût pour l'utilisateur.</p>
+          </div>
         </section>
       )}
 

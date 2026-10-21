@@ -1,4 +1,5 @@
 // Gestion des abonnements de streaming de l'utilisateur (France)
+import { AFFILIATE } from "./site";
 
 export const POPULAR_PROVIDERS = [
   { id: 8, name: "Netflix", color: "#E50914", logo: "/t/p/original/pbpMk2JmcoNnQwx5JGpXngfoWtp.jpg" },
@@ -36,4 +37,33 @@ export function setMyProviders(ids) {
 export function isSubscribed(providerId) {
   const list = getMyProviders();
   return list.includes(Number(providerId));
+}
+
+/**
+ * Construit un lien direct vers la plateforme avec affiliation (Amazon Prime, Apple TV, etc.).
+ * Si aucun partenaire spécifique n'est détecté, renvoie vers JustWatch.
+ */
+export function getProviderDirectUrl(provider, title, justWatchFallback) {
+  const name = (provider?.provider_name || "").toLowerCase();
+  const id = Number(provider?.provider_id);
+
+  // Amazon Prime Video / Amazon Video (IDs: 119, 9, 10, etc.)
+  if (id === 119 || id === 9 || id === 10 || name.includes("amazon") || name.includes("prime video")) {
+    const tag = AFFILIATE.amazonTag ? `&tag=${encodeURIComponent(AFFILIATE.amazonTag)}` : "";
+    return `https://www.amazon.fr/s?k=${encodeURIComponent(title)}&i=instant-video${tag}`;
+  }
+
+  // Apple TV / iTunes / Apple TV+ (IDs: 2, 350)
+  if (id === 2 || id === 350 || name.includes("apple") || name.includes("itunes")) {
+    const at = AFFILIATE.appleToken ? `&at=${encodeURIComponent(AFFILIATE.appleToken)}` : "";
+    return `https://tv.apple.com/fr/search?term=${encodeURIComponent(title)}${at}`;
+  }
+
+  // Canal+ (ID: 381)
+  if (id === 381 || name.includes("canal")) {
+    return `https://www.canalplus.com/recherche/${encodeURIComponent(title)}`;
+  }
+
+  // Par défaut, lien JustWatch officiel
+  return justWatchFallback || `https://www.justwatch.com/fr/recherche?q=${encodeURIComponent(title)}`;
 }
