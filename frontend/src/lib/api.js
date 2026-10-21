@@ -22,6 +22,8 @@ const LS_KEYS = {
   watchlist: "cv_local_watchlist",
   ratings: "cv_local_ratings",
   alerts: "cv_local_alerts",
+  episodes: "cv_local_episodes_progress",
+  diary: "cv_local_diary_meta",
 };
 
 // Nettoyage de toute ancienne clé d'authentification ou session
@@ -248,13 +250,15 @@ export const api = {
       fallback: () => {
         const items = readStore(LS_KEYS.watchlist, []);
         const statusValue = payload.status || "to_watch";
-        const watchedAt = statusValue === "watched" ? new Date().toISOString() : null;
+        const watchedAt = statusValue === "watched" ? (payload.watched_at || new Date().toISOString()) : null;
+        const viewingTag = payload.viewing_tag || null;
         const existing = items.find(
           (w) => w.media_id === payload.media_id && w.media_type === payload.media_type
         );
         if (existing) {
           existing.status = statusValue;
-          existing.watched_at = watchedAt;
+          existing.watched_at = watchedAt || existing.watched_at;
+          if (viewingTag) existing.viewing_tag = viewingTag;
           writeStore(LS_KEYS.watchlist, items);
           return existing;
         }
@@ -268,6 +272,7 @@ export const api = {
           status: statusValue,
           added_at: new Date().toISOString(),
           watched_at: watchedAt,
+          viewing_tag: viewingTag,
         };
         items.push(doc);
         writeStore(LS_KEYS.watchlist, items);
@@ -275,16 +280,17 @@ export const api = {
       },
     }),
 
-  updateWatchlistStatus: (id, statusValue) =>
+  updateWatchlistStatus: (id, statusValue, extra = {}) =>
     request(`/api/watchlist/${id}`, {
       method: "PATCH",
-      body: { status: statusValue },
+      body: { status: statusValue, ...extra },
       fallback: () => {
         const items = readStore(LS_KEYS.watchlist, []);
         const item = items.find((w) => w.id === id);
         if (!item) throw new Error("Élément introuvable");
         item.status = statusValue;
-        item.watched_at = statusValue === "watched" ? new Date().toISOString() : null;
+        item.watched_at = statusValue === "watched" ? (extra.watched_at || item.watched_at || new Date().toISOString()) : null;
+        if (extra.viewing_tag !== undefined) item.viewing_tag = extra.viewing_tag;
         writeStore(LS_KEYS.watchlist, items);
         return item;
       },
@@ -426,4 +432,200 @@ export const api = {
 
   nearbyCinemas: (lat, lon, radiusKm = 20) =>
     request(`/api/cinemas/nearby?lat=${lat}&lon=${lon}&radius_km=${radiusKm}`),
+
+  tvSeason: (id, seasonNum, lang = "fr") =>
+    request(`/api/tmdb/tv/${id}/season/${seasonNum}?lang=${lang}`, {
+      fallback: () => directTmdb(`/tv/${id}/season/${seasonNum}`, { language: lang }),
+    }),
+
+  // Suivi précis des épisodes pour les séries (style Trakt / TV Time)
+  getEpisodesProgress: (tvId) => {
+    const store = readStore(LS_KEYS.episodes, {});
+    return store[tvId] || { episodes: {}, last_watched: null };
+  },
+
+  getAllEpisodesProgress: () => {
+    return readStore(LS_KEYS.episodes, {});
+  },
+
+  toggleEpisodeWatched: (tvId, seasonNum, episodeNum, meta = {}) => {
+    const store = readStore(LS_KEYS.episodes, {});
+    if (!store[tvId]) store[tvId] = { episodes: {}, last_watched: null };
+    const epKey = `s${seasonNum}e${episodeNum}`;
+    const current = store[tvId].episodes[epKey];
+    if (current?.watched) {
+      delete store[tvId].episodes[epKey];
+    } else {
+      store[tvId].episodes[epKey] = {
+        watched: true,
+        season: seasonNum,
+        episode: episodeNum,
+        title: meta.title || `Épisode ${episodeNum}`,
+        watched_at: new Date().toISOString(),
+      };
+      store[tvId].last_watched = {
+        season: seasonNum,
+        episode: episodeNum,
+        title: meta.title || `Épisode ${episodeNum}`,
+        at: new Date().toISOString(),
+      };
+    }
+    writeStore(LS_KEYS.episodes, store);
+    window.dispatchEvent(new CustomEvent("cv:episodes-changed", { detail: { tvId } }));
+    return store[tvId];
+  },
+
+  markSeasonWatched: (tvId, seasonNum, episodesList = [], watched = true) => {
+    const store = readStore(LS_KEYS.episodes, {});
+    if (!store[tvId]) store[tvId] = { episodes: {}, last_watched: null };
+    episodesList.forEach((ep) => {
+      const epKey = `s${seasonNum}e${ep.episode_number}`;
+      if (watched) {
+        store[tvId].episodes[epKey] = {
+          watched: true,
+          season: seasonNum,
+          episode: ep.episode_number,
+          title: ep.name || `Épisode ${ep.episode_number}`,
+          watched_at: new Date().toISOString(),
+        };
+      } else {
+        delete store[tvId].episodes[epKey];
+      }
+    });
+    if (watched && episodesList.length) {
+      const last = episodesList[episodesList.length - 1];
+      store[tvId].last_watched = {
+        season: seasonNum,
+        episode: last.episode_number,
+        title: last.name || `Épisode ${last.episode_number}`,
+        at: new Date().toISOString(),
+      };
+    }
+    writeStore(LS_KEYS.episodes, store);
+    window.dispatchEvent(new CustomEvent("cv:episodes-changed", { detail: { tvId } }));
+    return store[tvId];
+  },
+
+  // Export complet de toutes les données CineViseur
+  exportData: () => {
+    return {
+      version: 2,
+      exported_at: new Date().toISOString(),
+      watchlist: readStore(LS_KEYS.watchlist, []),
+      ratings: readStore(LS_KEYS.ratings, []),
+      alerts: readStore(LS_KEYS.alerts, []),
+      episodes: readStore(LS_KEYS.episodes, {}),
+    };
+  },
+
+  // Import de données CineViseur JSON
+  importData: (imported) => {
+    if (!imported || typeof imported !== "object") throw new Error("Format JSON invalide");
+    let count = 0;
+    if (Array.isArray(imported.watchlist)) {
+      const current = readStore(LS_KEYS.watchlist, []);
+      imported.watchlist.forEach((item) => {
+        if (!item.media_id || !item.media_type) return;
+        const exists = current.find(
+          (w) => String(w.media_id) === String(item.media_id) && w.media_type === item.media_type
+        );
+        if (!exists) {
+          current.push({ ...item, id: uid(), user_id: "local-visitor" });
+          count++;
+        }
+      });
+      writeStore(LS_KEYS.watchlist, current);
+    }
+    if (Array.isArray(imported.ratings)) {
+      const currentRatings = readStore(LS_KEYS.ratings, []);
+      imported.ratings.forEach((r) => {
+        const exists = currentRatings.find(
+          (x) => String(x.media_id) === String(r.media_id) && x.media_type === r.media_type
+        );
+        if (!exists) currentRatings.push({ ...r, id: uid(), user_id: "local-visitor" });
+      });
+      writeStore(LS_KEYS.ratings, currentRatings);
+    }
+    if (imported.episodes && typeof imported.episodes === "object") {
+      const curEp = readStore(LS_KEYS.episodes, {});
+      writeStore(LS_KEYS.episodes, { ...curEp, ...imported.episodes });
+    }
+    window.dispatchEvent(new Event("storage"));
+    return { importedCount: count };
+  },
+
+  // Import de CSV Letterboxd ou Trakt
+  importCsv: async (csvText) => {
+    const lines = csvText.trim().split(/\r?\n/);
+    if (lines.length < 2) throw new Error("Fichier CSV vide ou invalide");
+    
+    // Détection des en-têtes
+    const headers = lines[0].split(",").map((h) => h.replace(/^["']|["']$/g, "").trim().toLowerCase());
+    const nameIdx = headers.findIndex((h) => h === "name" || h === "title");
+    const yearIdx = headers.findIndex((h) => h === "year");
+    const dateIdx = headers.findIndex((h) => h === "date" || h === "watched date" || h === "watchedat");
+    const ratingIdx = headers.findIndex((h) => h === "rating");
+    const tmdbIdx = headers.findIndex((h) => h === "tmdbid" || h === "tmdb_id");
+
+    if (nameIdx === -1 && tmdbIdx === -1) {
+      throw new Error("Impossible de trouver la colonne 'Name' ou 'Title' dans le fichier");
+    }
+
+    const currentWatchlist = readStore(LS_KEYS.watchlist, []);
+    const currentRatings = readStore(LS_KEYS.ratings, []);
+    let count = 0;
+
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      const cols = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+      const cleanCols = cols.map((c) => c.replace(/^["']|["']$/g, "").trim());
+      
+      const title = nameIdx >= 0 ? cleanCols[nameIdx] : null;
+      const year = yearIdx >= 0 ? cleanCols[yearIdx] : null;
+      const date = dateIdx >= 0 ? cleanCols[dateIdx] : null;
+      const rating = ratingIdx >= 0 ? parseFloat(cleanCols[ratingIdx]) : null;
+      const tmdbId = tmdbIdx >= 0 && cleanCols[tmdbIdx] ? Number(cleanCols[tmdbIdx]) : null;
+
+      if (!title && !tmdbId) continue;
+
+      const mediaId = tmdbId || (900000 + i);
+      const exists = currentWatchlist.some((w) => w.title?.toLowerCase() === title?.toLowerCase());
+      
+      if (!exists) {
+        currentWatchlist.push({
+          id: uid(),
+          user_id: "local-visitor",
+          media_id: mediaId,
+          media_type: "movie",
+          title: title || `Film ${mediaId}`,
+          year: year || null,
+          poster_path: null,
+          status: "watched",
+          added_at: date || new Date().toISOString(),
+          watched_at: date || new Date().toISOString(),
+          viewing_tag: "streaming",
+        });
+        count++;
+
+        if (rating && !isNaN(rating)) {
+          const score = rating <= 5 ? rating * 2 : rating;
+          currentRatings.push({
+            id: uid(),
+            user_id: "local-visitor",
+            media_id: mediaId,
+            media_type: "movie",
+            score,
+            created_at: date || new Date().toISOString(),
+            updated_at: date || new Date().toISOString(),
+          });
+        }
+      }
+    }
+
+    writeStore(LS_KEYS.watchlist, currentWatchlist);
+    writeStore(LS_KEYS.ratings, currentRatings);
+    window.dispatchEvent(new Event("storage"));
+    return { count };
+  },
 };

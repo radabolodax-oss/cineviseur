@@ -144,6 +144,11 @@ export default async (req) => {
       if (q.get("year")) {
         params[mediaType === "movie" ? "primary_release_year" : "first_air_date_year"] = q.get("year");
       }
+      if (q.get("provider")) {
+        params.with_watch_providers = q.get("provider");
+        params.watch_region = "FR";
+        params.with_watch_monetization_types = "flatrate";
+      }
       return await tmdbGet(`/discover/${mediaType}`, params);
     }
 
@@ -181,6 +186,13 @@ export default async (req) => {
         language: lang,
         append_to_response: "combined_credits",
       });
+    }
+
+    const seasonMatch = path.match(/^\/api\/tmdb\/tv\/(\d+)\/season\/(\d+)$/);
+    if (seasonMatch) {
+      const [, tvId, seasonNum] = seasonMatch;
+      const lang = q.get("lang") || "fr";
+      return await tmdbGet(`/tv/${tvId}/season/${seasonNum}`, { language: lang });
     }
 
     const detailMatch = path.match(/^\/api\/tmdb\/(movie|tv)\/(\d+)$/);

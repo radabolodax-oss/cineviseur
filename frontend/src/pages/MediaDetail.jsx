@@ -13,6 +13,8 @@ import { setLibraryStatus } from "../lib/library";
 import RatingDial from "../components/RatingDial";
 import CastCarousel from "../components/CastCarousel";
 import CinemaFinder from "../components/CinemaFinder";
+import CollectorTicketModal from "../components/CollectorTicketModal";
+import TvEpisodeTracker from "../components/TvEpisodeTracker";
 import { KineticTitle, Reveal, TiltCard } from "../components/motion";
 import { EASE_OUT, SPRING, riseItem, stagger } from "../lib/motionTokens";
 
@@ -217,6 +219,8 @@ export default function MediaDetail() {
 
   const [toast, setToast] = useState("");
   const [showTrailer, setShowTrailer] = useState(false);
+  const [showTicket, setShowTicket] = useState(false);
+  const [myRating, setMyRating] = useState(null);
 
   // Le fond descend plus lentement que la page et s'assombrit.
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -227,6 +231,16 @@ export default function MediaDetail() {
     item ? item.title || item.name : null,
     item?.overview ? `${item.overview.slice(0, 150).trim()}${item.overview.length > 150 ? "..." : ""}` : undefined
   );
+
+  useEffect(() => {
+    api
+      .ratings()
+      .then((list) => {
+        const found = list.find((r) => r.media_id === Number(id) && r.media_type === mediaType);
+        if (found) setMyRating(found);
+      })
+      .catch(() => {});
+  }, [id, mediaType]);
 
   useEffect(() => {
     setLoading(true);
@@ -433,6 +447,15 @@ export default function MediaDetail() {
 
             <ListStatus status={watchlistItem?.status || null} busy={busy} onChange={handleStatus} />
 
+            {watchlistItem?.status === "watched" && (
+              <motion.button
+                onClick={() => setShowTicket(true)}
+                className="btn-light !bg-amber-400/10 !border-amber-400/30 !text-amber-200 shadow-sm"
+              >
+                🎟️ Mon billet collector
+              </motion.button>
+            )}
+
             {inTheaters && (
               <a href="#seances" className="btn-ghost">
                 <Icon name="pin" /> Trouver une séance
@@ -457,11 +480,17 @@ export default function MediaDetail() {
         </motion.div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16 mb-12">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16 mb-8">
         <a href={getMiawUrl()} target="_blank" rel="noopener noreferrer" className="inline-block text-cine-soft font-medium hover:text-cine-soft/80 transition-colors">
           <Icon name="play" weight="fill" className="inline w-4 h-4 mr-2" />Regarder maintenant
         </a>
       </div>
+
+      {mediaType === "tv" && (
+        <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mb-14">
+          <TvEpisodeTracker tvId={item.id} seasons={item.seasons || []} totalEpisodes={item.number_of_episodes || 0} />
+        </section>
+      )}
 
       {inTheaters && (
         <section id="seances" className="scroll-mt-24 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16">
@@ -526,6 +555,17 @@ export default function MediaDetail() {
 
       <AnimatePresence>
         {showTrailer && trailer && <TrailerModal videoKey={trailer.key} onClose={() => setShowTrailer(false)} />}
+        {showTicket && (
+          <CollectorTicketModal
+            item={{
+              ...item,
+              watched_at: watchlistItem?.watched_at || new Date().toISOString(),
+              viewing_tag: watchlistItem?.viewing_tag,
+            }}
+            rating={myRating}
+            onClose={() => setShowTicket(false)}
+          />
+        )}
       </AnimatePresence>
       <Toast message={toast} />
     </div>
