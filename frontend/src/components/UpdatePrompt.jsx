@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { AnimatePresence, motion } from "motion/react";
 import { SPRING } from "../lib/motionTokens";
+import { forceAppUpdate } from "../lib/pwa";
 import Icon from "./Icon";
 
 /**
@@ -67,12 +68,18 @@ export default function UpdatePrompt() {
     },
   });
 
+  const [updating, setUpdating] = useState(false);
+
   const handleUpdate = async () => {
+    setUpdating(true);
     try {
-      await updateServiceWorker(true);
+      if (typeof updateServiceWorker === "function") {
+        await updateServiceWorker(true);
+      }
     } catch {
-      window.location.reload();
+      // ignore
     }
+    await forceAppUpdate();
   };
 
   const handleDismiss = () => {
@@ -132,10 +139,11 @@ export default function UpdatePrompt() {
               <button
                 type="button"
                 onClick={handleUpdate}
+                disabled={updating}
                 className="btn-primary !py-1.5 !px-3.5 !text-xs !font-semibold shadow-lg shadow-cine-violet/25 flex items-center gap-1.5"
               >
-                <Icon name="refresh" className="w-3.5 h-3.5" />
-                <span>Mettre à jour</span>
+                <Icon name="refresh" className={`w-3.5 h-3.5 ${updating ? "animate-spin" : ""}`} />
+                <span>{updating ? "Chargement..." : "Mettre à jour"}</span>
               </button>
               <button
                 type="button"

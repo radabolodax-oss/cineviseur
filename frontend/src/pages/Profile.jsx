@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import Icon from "../components/Icon";
 import { GlowCard } from "../components/motion";
+import { forceAppUpdate } from "../lib/pwa";
 import { EASE_OUT, SPRING, riseItem, stagger } from "../lib/motionTokens";
 
 /** Nombre qui compte jusqu'à sa valeur quand il apparaît. */
@@ -41,11 +42,18 @@ export default function Profile() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [importStatus, setImportStatus] = useState("");
+  const [forcingUpdate, setForcingUpdate] = useState(false);
 
   const csvInputRef = useRef(null);
   const jsonInputRef = useRef(null);
 
   useSeo("Mon espace");
+
+  const handleForceUpdate = async () => {
+    setForcingUpdate(true);
+    play("tick");
+    await forceAppUpdate();
+  };
 
   async function handleDelete() {
     setDeleting(true);
@@ -317,18 +325,21 @@ export default function Profile() {
           </button>
         </label>
 
-        <div className="mt-4 flex items-center justify-between gap-4 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-inset ring-white/[0.07]">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-inset ring-white/[0.07]">
           <div>
-            <span className="block font-medium">Mises à jour de l'application</span>
-            <span className="block text-sm text-white/60">Vérifier si un nouveau patch ou de nouvelles fonctionnalités sont prêts.</span>
+            <span className="block font-medium">Mettre à jour CineViseur</span>
+            <span className="block text-xs sm:text-sm text-white/60">
+              Vide les anciens scripts en cache et recharge la toute dernière version en 1 clic. Vos films et notes sont conservés.
+            </span>
           </div>
           <button
             type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent("cv:check-update"))}
-            className="btn-light !py-2 !px-3.5 !text-xs !font-semibold flex items-center gap-1.5 shrink-0"
+            onClick={handleForceUpdate}
+            disabled={forcingUpdate}
+            className="btn-primary !py-2 !px-4 !text-xs !font-semibold flex items-center justify-center gap-2 shrink-0 shadow-md shadow-cine-violet/25"
           >
-            <Icon name="refresh" className="w-3.5 h-3.5" />
-            <span>Vérifier</span>
+            <Icon name="refresh" className={`w-3.5 h-3.5 ${forcingUpdate ? "animate-spin" : ""}`} />
+            <span>{forcingUpdate ? "Mise à jour en cours..." : "Mettre à jour maintenant"}</span>
           </button>
         </div>
 
