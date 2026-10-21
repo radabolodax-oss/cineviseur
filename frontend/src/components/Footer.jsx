@@ -35,12 +35,12 @@ export default function Footer() {
             <p className="mt-4 max-w-[34ch] text-sm leading-relaxed text-white/55">
               Films, séries, notes et coups de cœur. CineViseur garde la mémoire de vos écrans.
             </p>
-            <a
-              href={`mailto:${SITE.contactEmail}`}
+            <Link
+              to="/contact"
               className="inline-flex items-center gap-1.5 mt-3 text-xs text-white/50 hover:text-cine-emerald transition-colors"
             >
               <span>✉</span> {SITE.contactEmail}
-            </a>
+            </Link>
             {!installed && (
               <div className="mt-5">
                 <button onClick={handleInstall} className="btn-ghost !py-2.5 !text-sm">
@@ -66,6 +66,7 @@ export default function Footer() {
           </Column>
 
           <Column title="Légal & Vie privée">
+            <Item to="/contact">Formulaire de contact</Item>
             <Item to="/confidentialite">Politique de confidentialité</Item>
             <Item to="/cgu">Conditions d'utilisation (CGU)</Item>
             <Item to="/mentions-legales">Mentions légales</Item>

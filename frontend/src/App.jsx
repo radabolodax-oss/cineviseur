@@ -31,6 +31,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const LegalNotice = lazy(() => import("./pages/LegalNotice"));
+const Contact = lazy(() => import("./pages/Contact"));
 const QuickPreview = lazy(() => import("./components/QuickPreview"));
 
 function Page({ children }) {
@@ -76,6 +77,7 @@ function App() {
               <Route path="/confidentialite" element={page(<Privacy />)} />
               <Route path="/cgu" element={page(<Terms />)} />
               <Route path="/mentions-legales" element={page(<LegalNotice />)} />
+              <Route path="/contact" element={page(<Contact />)} />
               <Route path="*" element={page(<NotFound />)} />
             </Routes>
           </main>

@@ -33,7 +33,8 @@ export default function LegalPage({ title, description, sections }) {
       </div>
 
       <motion.p variants={riseItem} className="mt-14 text-sm text-white/55">
-        Voir aussi : <Link to="/confidentialite" className="link">Confidentialité</Link>,{" "}
+        Voir aussi : <Link to="/contact" className="link">Contact</Link>,{" "}
+        <Link to="/confidentialite" className="link">Confidentialité</Link>,{" "}
         <Link to="/cgu" className="link">Conditions d'utilisation</Link>,{" "}
         <Link to="/mentions-legales" className="link">Mentions légales</Link>.
       </motion.p>
