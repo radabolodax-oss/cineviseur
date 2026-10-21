@@ -212,6 +212,98 @@ function FeatureBento({ images }) {
   );
 }
 
+function NewFeaturesShowcase() {
+  const cell = "rounded-3xl p-6 sm:p-8 ring-1 ring-inset ring-white/[0.08] hover:ring-cine-violet/50 transition-all duration-500 flex flex-col justify-between";
+
+  const features = [
+    {
+      title: "Suivi des séries & « Up Next »",
+      tag: "Inspiré de Trakt",
+      badge: "NOUVEAU",
+      desc: "Cochez vos épisodes saison par saison. CineViseur calcule automatiquement votre prochain épisode à voir avec un bouton 1-clic depuis votre liste.",
+      link: "/watchlist",
+      linkText: "Voir mes séries",
+      gradient: "from-cine-violet/20 via-transparent to-transparent",
+    },
+    {
+      title: "Billets de cinéma collectors en HD",
+      tag: "Exclusivité CineViseur",
+      badge: "TÉLÉCHARGEABLE",
+      desc: "Chaque film vu génère un vrai ticket de cinéma vintage personnalisé avec date, note et perforation, téléchargeable en haute résolution pour vos stories.",
+      link: "/watchlist",
+      linkText: "Générer un billet",
+      gradient: "from-amber-500/15 via-transparent to-transparent",
+    },
+    {
+      title: "Le mode « Soirée Duo » (Tinder ciné)",
+      tag: "À deux",
+      badge: "MATCH RAPIDE",
+      desc: "Partagez votre lien à un ami ou votre moitié : CineViseur compare vos listes d'envies et trouve immédiatement vos films en commun sans prise de tête.",
+      link: "/ce-soir",
+      linkText: "Lancer un match",
+      gradient: "from-pink-500/15 via-transparent to-transparent",
+    },
+    {
+      title: "Import Letterboxd & Trakt en 1 clic",
+      tag: "Zéro friction",
+      badge: "MIGRATION FACILE",
+      desc: "Vous avez déjà tout un historique ailleurs ? Glissez votre fichier CSV dans Mon Espace pour importer des centaines de films et notes en 2 secondes.",
+      link: "/profile",
+      linkText: "Importer ma collection",
+      gradient: "from-emerald-500/15 via-transparent to-transparent",
+    },
+  ];
+
+  return (
+    <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+        <div>
+          <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-cine-soft block mb-2">
+            L'EXPÉRIENCE CINEVISEUR
+          </span>
+          <h2 className="section-title !text-3xl md:!text-4xl">
+            Tout ce qu'un cinéphile a toujours voulu
+          </h2>
+        </div>
+        <p className="text-sm text-white/60 max-w-md">
+          Inspiré du meilleur de Trakt et Letterboxd, optimisé pour la France avec streaming, séances de cinéma et zéro mot de passe.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {features.map((f) => (
+          <GlowCard key={f.title} as="article" variants={riseItem} className={`${cell} bg-gradient-to-br ${f.gradient} bg-white/[0.02]`}>
+            <div>
+              <div className="flex items-center justify-between gap-3 mb-5">
+                <span className="chip !text-[10px] !py-0.5 !px-2.5 !bg-cine-violet/25 !text-cine-soft !ring-cine-violet/40">
+                  {f.tag}
+                </span>
+                <span className="text-[10px] font-mono font-semibold tracking-wider text-white/50 uppercase">
+                  {f.badge}
+                </span>
+              </div>
+              <h3 className="font-display font-semibold text-xl sm:text-2xl text-white mb-2.5">
+                {f.title}
+              </h3>
+              <p className="text-sm text-white/65 leading-relaxed mb-6">
+                {f.desc}
+              </p>
+            </div>
+
+            <Link
+              to={f.link}
+              className="inline-flex items-center gap-2 text-sm font-medium text-white hover:text-cine-soft transition-colors group"
+            >
+              <span>{f.linkText}</span>
+              <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </GlowCard>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   useSeo(null);
   const [nowPlaying, setNowPlaying] = useState([]);
@@ -246,6 +338,8 @@ export default function Home() {
       <WhenNear minHeight="380px">
         <VelocityMarquee items={GENRES} />
       </WhenNear>
+
+      <NewFeaturesShowcase />
 
       <FeatureBento images={bentoImages} />
     </div>
