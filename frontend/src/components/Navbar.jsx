@@ -15,8 +15,8 @@ function LogoMark() {
     <svg viewBox="36 16 440 440" className="w-9 h-9 overflow-visible" aria-hidden="true">
       <defs>
         <linearGradient id={id} gradientUnits="userSpaceOnUse" x1="64" y1="40" x2="448" y2="440">
-          <stop offset="0" stopColor="#22c55e" />
-          <stop offset="1" stopColor="#7c5ce0" />
+          <stop offset="0" stopColor="#10b981" />
+          <stop offset="1" stopColor="#6366f1" />
         </linearGradient>
       </defs>
       <g fill="none" stroke={paint} strokeWidth="30" strokeLinejoin="round" strokeLinecap="round">

@@ -77,9 +77,9 @@ function Hero({ featured }) {
         </AnimatePresence>
       </motion.div>
 
-      {/* Dégradés d'ambiance salle de cinéma (noir graphite profond et halo projecteur 35mm) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#07080c] via-[#07080c]/55 to-transparent" aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#07080c]/90 via-[#07080c]/40 to-transparent" aria-hidden="true" />
+      {/* Dégradés d'ambiance salle de cinéma (noir carbone profond et halo feutré) */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#08090e] via-[#08090e]/60 to-transparent" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#08090e]/90 via-[#08090e]/45 to-transparent" aria-hidden="true" />
 
       {/* Contenu du Hero centré sur l'œuvre */}
       <motion.div
@@ -87,11 +87,11 @@ function Hero({ featured }) {
         className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pb-16 md:pb-24 pt-24"
       >
         <div className="max-w-3xl">
-          {/* Témoin d'ambiance cabine de projection (Orbe Hardware style) */}
+          {/* Témoin d'ambiance viseur optique (Orbe Hardware style) */}
           <div className="flex flex-wrap items-center gap-3 text-xs font-mono font-medium uppercase tracking-[0.18em] text-white/70 mb-4">
-            <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.9)] animate-pulse" />
-              À L'AFFICHE • 0{index + 1}
+            <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.9)] animate-pulse" />
+              VISEUR CINÉMA • 0{index + 1}
             </span>
             {year && <span className="text-white/50">{year}</span>}
             {rating && (
@@ -133,14 +133,14 @@ function Hero({ featured }) {
               to="/ce-soir"
               className="btn-ghost !px-5 !py-3.5 text-sm sm:text-base hidden sm:inline-flex"
             >
-              <Icon name="dice" className="w-4 h-4 text-amber-400" />
+              <Icon name="dice" className="w-4 h-4 text-emerald-400" />
               <span>Film au hasard</span>
             </Link>
           </div>
 
           {/* Sélecteur de bobine tactile (Hardware Console Switcher) */}
           {featured.length > 1 && (
-            <div className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl bg-black/50 border border-white/10 backdrop-blur-xl shadow-lg">
+            <div className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-xl shadow-lg">
               <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase px-2 hidden sm:inline">
                 BOBINE :
               </span>
@@ -154,7 +154,7 @@ function Hero({ featured }) {
                   }}
                   className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all duration-200 cursor-pointer ${
                     i === index
-                      ? "bg-amber-400 text-black shadow-[0_0_12px_rgba(245,158,11,0.5)] scale-105"
+                      ? "bg-emerald-400 text-black font-bold shadow-[0_0_12px_rgba(16,185,129,0.55)] scale-105"
                       : "text-white/60 hover:text-white hover:bg-white/10"
                   }`}
                   aria-label={`Passer au film ${i + 1}`}
@@ -175,7 +175,7 @@ function FeatureShowcase() {
     <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-24">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-amber-400/90 block mb-2">
+          <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-emerald-400 block mb-2">
             OUTILS & EXPÉRIENCE DE SALLE
           </span>
           <h2 className="section-title !text-3xl md:!text-5xl tracking-tight text-white">
@@ -203,15 +203,15 @@ function FeatureShowcase() {
         <SpotlightCard
           as="article"
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-white/[0.04] via-[#0d0e15] to-[#07080c] border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(245, 158, 11, 0.16)"
+          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-indigo-950/25 via-[#0c0d15] to-[#08090e] border border-indigo-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
+          spotlightColor="rgba(99, 102, 241, 0.16)"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-white/[0.06] border border-white/15 text-white/90 font-semibold">
+              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-indigo-500/20 border border-indigo-500/35 text-indigo-300 font-semibold">
                 SÉRIES & SAISONS
               </span>
-              <span className="text-[10px] font-mono text-amber-400/80 tracking-wider uppercase font-semibold">
+              <span className="text-[10px] font-mono text-indigo-300/80 tracking-wider uppercase font-semibold">
                 INTERACTIF
               </span>
             </div>
@@ -230,7 +230,7 @@ function FeatureShowcase() {
 
           <Link
             to="/watchlist"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors group mt-2"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-indigo-200 transition-colors group mt-2"
           >
             <span>Ouvrir le gestionnaire de séries</span>
             <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -241,8 +241,8 @@ function FeatureShowcase() {
         <SpotlightCard
           as="article"
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-white/[0.04] via-[#0d0e15] to-[#07080c] border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(245, 158, 11, 0.2)"
+          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-amber-950/20 via-[#0c0d15] to-[#08090e] border border-amber-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
+          spotlightColor="rgba(245, 158, 11, 0.16)"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-5">
@@ -268,7 +268,7 @@ function FeatureShowcase() {
 
           <Link
             to="/watchlist"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors group mt-2"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-amber-300 hover:text-amber-200 transition-colors group mt-2"
           >
             <span>Générer mes billets collectors</span>
             <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -279,12 +279,12 @@ function FeatureShowcase() {
         <SpotlightCard
           as="article"
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-white/[0.04] via-[#0d0e15] to-[#07080c] border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(244, 63, 94, 0.2)"
+          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-purple-950/25 via-[#0c0d15] to-[#08090e] border border-purple-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
+          spotlightColor="rgba(168, 85, 247, 0.16)"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-rose-500/20 border border-rose-500/35 text-rose-300 font-semibold">
+              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-purple-500/20 border border-purple-500/35 text-purple-300 font-semibold">
                 À DEUX SUR LE CANAPÉ
               </span>
               <span className="text-[10px] font-mono text-white/60 tracking-wider uppercase">
@@ -306,7 +306,7 @@ function FeatureShowcase() {
 
           <Link
             to="/ce-soir"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-rose-400 hover:text-rose-300 transition-colors group mt-2"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-purple-300 hover:text-purple-200 transition-colors group mt-2"
           >
             <span>Lancer un match à deux</span>
             <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -317,8 +317,8 @@ function FeatureShowcase() {
         <SpotlightCard
           as="article"
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-white/[0.04] via-[#0d0e15] to-[#07080c] border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(34, 197, 94, 0.2)"
+          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-emerald-950/25 via-[#0c0d15] to-[#08090e] border border-emerald-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
+          spotlightColor="rgba(16, 185, 129, 0.18)"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-5">

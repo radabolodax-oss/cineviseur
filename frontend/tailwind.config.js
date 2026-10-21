@@ -5,14 +5,18 @@ export default {
     extend: {
       colors: {
         cine: {
-          green: "#22c55e",
-          // Accent unique du site (désaturé, texte blanc lisible dessus).
-          violet: "#7c5ce0",
-          // Variante claire pour les liens/texte accent sur fond sombre.
-          soft: "#ab98f2",
-          // Base OLED bleu nuit (ui-ux-pro-max), jamais du noir pur.
-          ink: "#06070f",
-          midnight: "#0a0e27",
+          // Vert Émeraude Viseur optique (précis, noble, professionnel)
+          emerald: "#10b981",
+          green: "#10b981",
+          emeraldDark: "#047857",
+          // Violet Nuit profond (feutré, ambiance salle obscure)
+          violet: "#6366f1",
+          violetDeep: "#4338ca",
+          soft: "#818cf8",
+          // Base OLED carbone régie cinéma
+          ink: "#08090e",
+          carbon: "#0c0d14",
+          midnight: "#0e101b",
         },
       },
       fontFamily: {

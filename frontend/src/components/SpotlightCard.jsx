@@ -10,8 +10,8 @@ import { finePointer } from "../lib/motionTokens";
 export default function SpotlightCard({
   children,
   className = "",
-  spotlightColor = "rgba(245, 158, 11, 0.14)",
-  borderColor = "rgba(245, 158, 11, 0.35)",
+  spotlightColor = "rgba(16, 185, 129, 0.12)",
+  borderColor = "rgba(16, 185, 129, 0.35)",
   as = "div",
   ...rest
 }) {
