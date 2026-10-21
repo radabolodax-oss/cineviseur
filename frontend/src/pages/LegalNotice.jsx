@@ -37,6 +37,14 @@ export default function LegalNotice() {
         </div>
       ),
     },
+    {
+      title: "Affiliation et programmes partenaires",
+      body: (
+        <p>
+          En tant que Partenaire Amazon, CineViseur réalise un bénéfice sur les achats et inscriptions éligibles remplissant les conditions requises. Certains liens de redirection vers les plateformes légales de streaming et VOD (Amazon Prime Video, Apple TV) sont des liens partenaires affiliés destinés à soutenir le développement et le maintien gratuit de la plateforme sans aucun surcoût pour l'utilisateur.
+        </p>
+      ),
+    },
   ];
 
   return (

@@ -90,6 +90,9 @@ export default function Privacy() {
           <li>
             <strong>Google AdSense (Google LLC)</strong> : diffusion d'annonces publicitaires contextuelles et discrètes finançant l'hébergement et le maintien gratuit de la plateforme.
           </li>
+          <li>
+            <strong>Amazon Partenaires (Amazon Europe Core S.à r.l.)</strong> : redirection affiliée vers les offres de streaming légal Prime Video et éditions physiques.
+          </li>
         </ul>
       ),
     },
