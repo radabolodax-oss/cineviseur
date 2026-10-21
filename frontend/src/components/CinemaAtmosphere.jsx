@@ -19,32 +19,4 @@ export const CinemaAtmosphere = memo(function CinemaAtmosphere() {
   );
 });
 
-/**
- * TechnicalHudBar — Bandeau de télémétrie cinéma haute lisibilité
- */
-export function TechnicalHudBar({ className = "" }) {
-  return (
-    <div
-      className={`flex items-center justify-between gap-4 py-2 px-4 rounded-full bg-white/[0.06] border border-white/[0.12] backdrop-blur-md text-[11px] font-mono tracking-[0.16em] uppercase text-white/75 shadow-sm ${className}`}
-    >
-      <div className="flex items-center gap-2">
-        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-white font-semibold">SIGNAL CINÉ DIRECT</span>
-      </div>
-
-      <div className="hidden sm:flex items-center gap-4 text-white/70">
-        <span>RATIO 2.39:1</span>
-        <span className="text-white/30">•</span>
-        <span>24.000 FPS</span>
-        <span className="text-white/30">•</span>
-        <span>DOLBY ATMOS</span>
-      </div>
-
-      <div className="flex items-center gap-2 text-cine-soft font-semibold">
-        <span>FRANCE ENTIÈRE</span>
-      </div>
-    </div>
-  );
-}
-
 export default CinemaAtmosphere;

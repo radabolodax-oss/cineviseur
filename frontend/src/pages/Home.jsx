@@ -14,7 +14,6 @@ import WhenNear from "../components/WhenNear";
 import { KineticTitle, Magnetic } from "../components/motion";
 import { ScrambleText } from "../components/effects";
 import SpotlightCard from "../components/SpotlightCard";
-import { TechnicalHudBar } from "../components/CinemaAtmosphere";
 import {
   InteractiveSeriesPreview,
   InteractiveTicketPreview,
@@ -84,14 +83,9 @@ function Hero({ featured }) {
       {/* Contenu du Hero */}
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
-        className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pb-20 md:pb-28 pt-28"
+        className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pb-20 md:pb-28 pt-24"
       >
         <div className="max-w-3xl">
-          {/* Bandeau télémétrie cinéma haute visibilité */}
-          <div className="mb-6 max-w-xl">
-            <TechnicalHudBar />
-          </div>
-
           <motion.p
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
@@ -117,36 +111,15 @@ function Hero({ featured }) {
             initial={{ y: 16 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.8, delay: 0.25, ease: EASE_OUT }}
-            className="text-white/85 text-lg md:text-xl max-w-[44ch] leading-relaxed mb-6"
+            className="text-white/85 text-lg md:text-xl max-w-[44ch] leading-relaxed mb-10"
           >
             Films, séries, notes et séances en salle. CineViseur centralise tout avec zéro friction et sans compte obligatoire.
           </motion.p>
 
-          {/* Pastilles métadonnées rapides lumineuses */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: EASE_OUT }}
-            className="flex flex-wrap items-center gap-2.5 mb-9 text-xs font-mono text-white/80"
-          >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              Streaming & VOD France
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-cine-soft" />
-              Séances ciné géolocalisées
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] border border-white/15 backdrop-blur-md shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              Billets collectors HD
-            </span>
-          </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6, ease: EASE_OUT }}
+            transition={{ duration: 0.8, delay: 0.5, ease: EASE_OUT }}
             className="flex flex-wrap items-center gap-x-6 gap-y-4"
           >
             <Magnetic>
