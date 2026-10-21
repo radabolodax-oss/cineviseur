@@ -207,10 +207,18 @@ export default function Roulette() {
               Partagez votre lien avec la personne avec qui vous voulez regarder un film. CineViseur comparera vos listes en direct pour trouver vos envies communes !
             </p>
 
+            <Link
+              to="/swipe?duo=1"
+              className="btn-primary w-full py-3.5 text-sm font-semibold flex items-center justify-center gap-2 mb-4 !bg-gradient-to-r !from-pink-500 !to-cine-violet shadow-lg shadow-pink-500/25"
+            >
+              <Icon name="heart" className="w-4 h-4" weight="fill" />
+              <span>Lancer un Match Duo en direct (Swipe à 2)</span>
+            </Link>
+
             <button
               type="button"
               onClick={handleShareDuo}
-              className="btn-primary w-full py-3 text-sm font-semibold flex items-center justify-center gap-2 mb-4"
+              className="btn-ghost w-full py-3 text-sm font-semibold flex items-center justify-center gap-2 mb-4 !bg-white/10 hover:!bg-white/15"
             >
               <Icon name="share" className="w-4 h-4" />
               <span>{duoCopied ? "Lien copié dans le presse-papier !" : "Partager ma liste à un ami"}</span>

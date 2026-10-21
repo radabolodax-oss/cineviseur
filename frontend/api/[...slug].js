@@ -1,5 +1,32 @@
 // Fonction serverless Vercel Node.js : gère /api/tmdb/*, /api/cinemas/* et /api/health
 
+// Store des salons Duo en mémoire globale serverless
+const DUO_ROOMS = globalThis.__CV_DUO_ROOMS = globalThis.__CV_DUO_ROOMS || new Map();
+
+function cleanOldRooms() {
+  const now = Date.now();
+  for (const [code, r] of DUO_ROOMS.entries()) {
+    if (now - r.created_at > 24 * 60 * 60 * 1000) {
+      DUO_ROOMS.delete(code);
+    }
+  }
+}
+
+async function getJsonBody(req) {
+  if (req.body && typeof req.body === "object") return req.body;
+  if (typeof req.body === "string") {
+    try { return JSON.parse(req.body); } catch { return {}; }
+  }
+  return new Promise((resolve) => {
+    let data = "";
+    req.on("data", (chunk) => { data += chunk; });
+    req.on("end", () => {
+      try { resolve(JSON.parse(data)); } catch { resolve({}); }
+    });
+    req.on("error", () => resolve({}));
+  });
+}
+
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_API_KEY = process.env.TMDB_API_KEY || process.env.VITE_TMDB_API_KEY || "21bd7c2bfbde3a1cd4f82dfbe7781f76";
 
@@ -290,6 +317,105 @@ export default async function handler(req, res) {
       cinemas.sort((a, b) => a.distance_km - b.distance_km);
       res.setHeader("Cache-Control", "public, max-age=600");
       return res.status(200).json({ cinemas: cinemas.slice(0, 20) });
+    }
+
+    // --- Routes Soirée Duo (Matchmaking 2 personnes) ---
+    if (path === "/api/duo/create" && req.method === "POST") {
+      cleanOldRooms();
+      const body = await getJsonBody(req);
+      const code = String(Math.floor(1000 + Math.random() * 9000));
+      const deck = Array.isArray(body.deck) ? body.deck.slice(0, 40) : [];
+      const room = {
+        code,
+        created_at: Date.now(),
+        host_name: body.host_name || "Hôte",
+        guest_name: null,
+        guest_connected: false,
+        deck,
+        host_likes: new Set(),
+        host_dislikes: new Set(),
+        guest_likes: new Set(),
+        guest_dislikes: new Set(),
+        matches: [],
+      };
+      DUO_ROOMS.set(code, room);
+      return res.status(200).json({ code, host_name: room.host_name, deck_length: deck.length });
+    }
+
+    if (path === "/api/duo/join" && req.method === "POST") {
+      cleanOldRooms();
+      const body = await getJsonBody(req);
+      const code = String(body.code || "").trim();
+      const room = DUO_ROOMS.get(code);
+      if (!room) {
+        return res.status(404).json({ detail: "Salon introuvable ou expiré" });
+      }
+      room.guest_name = body.guest_name || "Ami";
+      room.guest_connected = true;
+      return res.status(200).json({
+        code,
+        host_name: room.host_name,
+        deck: room.deck,
+        host_likes: Array.from(room.host_likes),
+        matches: room.matches,
+      });
+    }
+
+    if (path === "/api/duo/vote" && req.method === "POST") {
+      const body = await getJsonBody(req);
+      const code = String(body.code || "").trim();
+      const role = body.role === "guest" ? "guest" : "host";
+      const action = body.action; // "like", "skip", "watched"
+      const movieId = Number(body.movieId);
+      const room = DUO_ROOMS.get(code);
+      if (!room) {
+        return res.status(404).json({ detail: "Salon introuvable" });
+      }
+
+      if (action === "like" && movieId) {
+        if (role === "host") {
+          room.host_likes.add(movieId);
+          if (room.guest_likes.has(movieId) && !room.matches.some((m) => m.id === movieId)) {
+            const movie = room.deck.find((m) => m.id === movieId) || { id: movieId };
+            room.matches.push(movie);
+          }
+        } else {
+          room.guest_likes.add(movieId);
+          if (room.host_likes.has(movieId) && !room.matches.some((m) => m.id === movieId)) {
+            const movie = room.deck.find((m) => m.id === movieId) || { id: movieId };
+            room.matches.push(movie);
+          }
+        }
+      } else if (action === "skip" && movieId) {
+        if (role === "host") room.host_dislikes.add(movieId);
+        else room.guest_dislikes.add(movieId);
+      }
+
+      return res.status(200).json({
+        matches: room.matches,
+        guest_connected: room.guest_connected,
+        host_progress: room.host_likes.size + room.host_dislikes.size,
+        guest_progress: room.guest_likes.size + room.guest_dislikes.size,
+      });
+    }
+
+    if (path === "/api/duo/status") {
+      const code = String(q.get("code") || "").trim();
+      const room = DUO_ROOMS.get(code);
+      if (!room) {
+        return res.status(404).json({ detail: "Salon introuvable" });
+      }
+      return res.status(200).json({
+        code,
+        host_name: room.host_name,
+        guest_name: room.guest_name,
+        guest_connected: room.guest_connected,
+        matches: room.matches,
+        host_likes: Array.from(room.host_likes),
+        guest_likes: Array.from(room.guest_likes),
+        host_progress: room.host_likes.size + room.host_dislikes.size,
+        guest_progress: room.guest_likes.size + room.guest_dislikes.size,
+      });
     }
 
     return res.status(404).json({ detail: "Route introuvable" });

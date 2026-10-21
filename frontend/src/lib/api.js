@@ -628,4 +628,32 @@ export const api = {
     window.dispatchEvent(new Event("storage"));
     return { count };
   },
+
+  // Soirée Duo / Matchmaking
+  duoCreate: (data) =>
+    request("/api/duo/create", {
+      method: "POST",
+      body: data,
+      fallback: async () => ({
+        code: String(Math.floor(1000 + Math.random() * 9000)),
+        host_name: data.host_name || "Hôte",
+      }),
+    }),
+  duoJoin: (data) =>
+    request("/api/duo/join", {
+      method: "POST",
+      body: data,
+      fallback: async () => ({ code: data.code, deck: [] }),
+    }),
+  duoVote: (data) =>
+    request("/api/duo/vote", {
+      method: "POST",
+      body: data,
+      fallback: async () => ({ matches: [] }),
+    }),
+  duoStatus: (code) =>
+    request(`/api/duo/status?code=${encodeURIComponent(code)}`, {
+      method: "GET",
+      fallback: async () => ({ guest_connected: false, matches: [] }),
+    }),
 };

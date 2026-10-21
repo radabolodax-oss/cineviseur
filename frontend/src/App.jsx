@@ -10,6 +10,9 @@ import { InstallProvider } from "./components/InstallGuide";
 import { ScrollProgress } from "./components/effects";
 import { AuroraBackground } from "./components/backgrounds";
 import CinemaAtmosphere from "./components/CinemaAtmosphere";
+import CommandMenu from "./components/CommandMenu";
+import ProvidersModal from "./components/ProvidersModal";
+import ImportModal from "./components/ImportModal";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useCinematicNavigation from "./hooks/useCinematicNavigation";
 import Home from "./pages/Home";
@@ -136,6 +139,9 @@ function App() {
           <Footer />
           <CinemaLayer />
           <UpdatePrompt />
+          <CommandMenu />
+          <ProvidersModal />
+          <ImportModal />
           <Suspense fallback={null}>
             <QuickPreview />
           </Suspense>

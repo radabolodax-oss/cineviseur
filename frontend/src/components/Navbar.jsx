@@ -180,22 +180,21 @@ export default function Navbar() {
             </nav>
           </div>
 
-          <form onSubmit={handleSearch} role="search" className="flex-1 max-w-md hidden sm:block">
-            <label className="group flex items-center gap-2.5 bg-white/[0.04] ring-1 ring-inset ring-white/[0.09] hover:ring-white/[0.16] focus-within:ring-2 focus-within:ring-cine-soft/70 focus-within:bg-white/[0.07] rounded-full px-4 py-2 transition shadow-inner">
-              <Icon name="search" className="w-4 h-4 text-white/45 group-focus-within:text-cine-soft transition-colors" />
-              <span className="sr-only">Rechercher</span>
-              <input
-                ref={searchInputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Rechercher un film, une série..."
-                className="bg-transparent outline-none text-sm w-full placeholder:text-white/45 text-white"
-              />
-              <kbd className="hidden lg:inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.07] border border-white/[0.1] text-white/45 select-none">
+          <div className="flex-1 max-w-md hidden sm:block">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("cv:open-command-menu"))}
+              className="group flex items-center justify-between gap-2.5 bg-white/[0.04] ring-1 ring-inset ring-white/[0.09] hover:ring-white/[0.2] hover:bg-white/[0.07] rounded-full px-4 py-2 transition shadow-inner w-full text-left"
+            >
+              <div className="flex items-center gap-2.5 text-white/50 group-hover:text-white/80 min-w-0">
+                <Icon name="search" className="w-4 h-4 text-white/45 group-hover:text-cine-soft transition-colors shrink-0" />
+                <span className="text-sm truncate">Recherche rapide, films, actions...</span>
+              </div>
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.07] border border-white/[0.1] text-white/50 select-none shrink-0">
                 ⌘K
               </kbd>
-            </label>
-          </form>
+            </button>
+          </div>
 
           <div className="flex items-center gap-3 shrink-0">
             {/* Tag signal cinéphile direct inspiré d'Orbe Audio */}

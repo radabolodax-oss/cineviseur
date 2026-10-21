@@ -9,6 +9,7 @@ import Toast from "../components/Toast";
 import Icon from "../components/Icon";
 import SectionTitle from "../components/SectionTitle";
 import useSeo from "../hooks/useSeo";
+import { isSubscribed } from "../lib/providers";
 import { setLibraryStatus } from "../lib/library";
 import RatingDial from "../components/RatingDial";
 import CastCarousel from "../components/CastCarousel";
@@ -515,18 +516,32 @@ export default function MediaDetail() {
               <div key={g.key}>
                 <p className="mb-3 text-sm text-white/60">{g.label}</p>
                 <div className="flex flex-wrap gap-3">
-                  {providers[g.key].map((p) => (
-                    <a
-                      key={p.provider_id}
-                      href={providers.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 rounded-2xl bg-white/[0.04] py-2 pl-2 pr-4 ring-1 ring-inset ring-white/[0.08] transition-colors hover:bg-white/[0.09] hover:ring-cine-soft/50"
-                    >
-                      <img src={`https://image.tmdb.org/t/p/w92${p.logo_path}`} alt="" loading="lazy" className="h-10 w-10 rounded-xl" />
-                      <span className="text-sm font-medium">{p.provider_name}</span>
-                    </a>
-                  ))}
+                  {providers[g.key].map((p) => {
+                    const subscribed = isSubscribed(p.provider_id);
+                    return (
+                      <a
+                        key={p.provider_id}
+                        href={providers.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 ring-1 ring-inset transition-all ${
+                          subscribed
+                            ? "bg-emerald-500/15 ring-emerald-500/40 text-white shadow-sm"
+                            : "bg-white/[0.04] ring-white/[0.08] text-white/85 hover:bg-white/[0.09] hover:ring-cine-soft/50"
+                        }`}
+                      >
+                        <img src={`https://image.tmdb.org/t/p/w92${p.logo_path}`} alt="" loading="lazy" className="h-10 w-10 rounded-xl" />
+                        <div>
+                          <span className="text-sm font-medium block">{p.provider_name}</span>
+                          {subscribed && (
+                            <span className="text-[10px] font-mono text-emerald-400 font-semibold flex items-center gap-1">
+                              ✓ Inclus dans vos abonnements
+                            </span>
+                          )}
+                        </div>
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             ))}

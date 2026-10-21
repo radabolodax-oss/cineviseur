@@ -278,7 +278,19 @@ export default function Watchlist() {
         <motion.h1 variants={riseItem} className="page-title">
           Ma liste
         </motion.h1>
-        <motion.div variants={riseItem} className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
+        <motion.div variants={riseItem} className="flex flex-wrap items-center gap-3 text-sm font-medium">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("cv:open-import"))}
+            className="btn-ghost !px-3.5 !py-2 !text-xs flex items-center gap-1.5 !bg-white/[0.06] hover:!bg-white/[0.12] border border-white/10"
+          >
+            <Icon name="download" className="w-3.5 h-3.5 text-cine-soft" />
+            <span>Importer CSV (Letterboxd / IMDb)</span>
+          </button>
+          <Link to="/swipe?duo=1" className="btn-ghost !px-3.5 !py-2 !text-xs flex items-center gap-1.5 !bg-pink-500/15 text-pink-300 hover:!bg-pink-500/25 border border-pink-500/30">
+            <Icon name="heart" className="w-3.5 h-3.5" weight="fill" />
+            <span>Soirée Duo</span>
+          </Link>
           <Link to="/swipe" className="link">Trier en swipant</Link>
           <Link to="/recap" className="link">Mon année ciné</Link>
         </motion.div>

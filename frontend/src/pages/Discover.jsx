@@ -225,6 +225,15 @@ export default function Discover() {
             onChange={(e) => setYear(e.target.value)}
             options={[{ value: "", label: "Toutes les années" }, ...YEARS.map((y) => ({ value: y, label: y }))]}
           />
+
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("cv:open-providers"))}
+            className="btn-ghost !px-3.5 !py-2 text-xs flex items-center gap-2 !bg-white/[0.04] hover:!bg-white/[0.1] border border-white/10 rounded-full text-white/80"
+          >
+            <Icon name="tv" className="w-3.5 h-3.5 text-cine-soft" />
+            <span>Mes plateformes</span>
+          </button>
         </div>
 
         <AnimatePresence>
