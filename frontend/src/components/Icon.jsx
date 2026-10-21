@@ -34,6 +34,7 @@ import {
   DeviceMobile,
   ArrowsClockwise,
   Sparkle,
+  Heart,
 } from "@phosphor-icons/react";
 
 // Une seule famille d'icônes (Phosphor) pour tout le site, graisse "regular" par défaut.
@@ -73,9 +74,13 @@ const ICONS = {
   share: Export,
   dots: DotsThreeVertical,
   mobile: DeviceMobile,
+  heart: Heart,
 };
 
 export default function Icon({ name, className = "w-4 h-4", weight = "regular" }) {
   const Glyph = ICONS[name];
+  if (!Glyph) {
+    return <span className={className} aria-hidden="true" />;
+  }
   return <Glyph className={className} weight={weight} aria-hidden="true" />;
 }
