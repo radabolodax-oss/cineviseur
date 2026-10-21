@@ -24,3 +24,8 @@ export const ANALYTICS = {
 };
 
 export const analyticsEnabled = Boolean(ANALYTICS.provider && ANALYTICS.id && ANALYTICS.src);
+
+// Configuration régie publicitaire Google AdSense
+export const ADSENSE = {
+  pubId: env.VITE_ADSENSE_PUB_ID || "",
+};

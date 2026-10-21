@@ -12,6 +12,7 @@ import CarouselRow from "../components/CarouselRow";
 import Icon from "../components/Icon";
 import WhenNear from "../components/WhenNear";
 import SpotlightCard from "../components/SpotlightCard";
+import AdSlot from "../components/AdSlot";
 import {
   InteractiveSeriesPreview,
   InteractiveTicketPreview,
@@ -390,6 +391,10 @@ export default function Home() {
       </WhenNear>
 
       <FeatureShowcase />
+
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
+        <AdSlot slotId="home-bottom-banner" />
+      </div>
     </div>
   );
 }

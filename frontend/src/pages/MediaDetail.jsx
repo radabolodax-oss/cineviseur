@@ -16,6 +16,7 @@ import CastCarousel from "../components/CastCarousel";
 import CinemaFinder from "../components/CinemaFinder";
 import CollectorTicketModal from "../components/CollectorTicketModal";
 import TvEpisodeTracker from "../components/TvEpisodeTracker";
+import AdSlot from "../components/AdSlot";
 import { KineticTitle, Reveal, TiltCard } from "../components/motion";
 import { EASE_OUT, SPRING, riseItem, stagger } from "../lib/motionTokens";
 
@@ -540,6 +541,10 @@ export default function MediaDetail() {
           <CastCarousel cast={cast} />
         </section>
       )}
+
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
+        <AdSlot slotId="detail-mid-banner" />
+      </div>
 
       {similar.length > 0 && (
         <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-14">

@@ -14,6 +14,7 @@ import ProvidersModal from "./components/ProvidersModal";
 import ImportModal from "./components/ImportModal";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useCinematicNavigation from "./hooks/useCinematicNavigation";
+import { ADSENSE } from "./lib/site";
 import Home from "./pages/Home";
 
 // L'accueil est dans le bundle principal ; les autres pages se chargent à la demande.
@@ -48,6 +49,16 @@ function Page({ children }) {
 function App() {
   const location = useLocation();
   useCinematicNavigation();
+
+  useEffect(() => {
+    if (!ADSENSE.pubId || document.getElementById("cv-adsense")) return;
+    const s = document.createElement("script");
+    s.id = "cv-adsense";
+    s.async = true;
+    s.crossOrigin = "anonymous";
+    s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE.pubId}`;
+    document.head.appendChild(s);
+  }, []);
 
   const page = (el) => <Page>{el}</Page>;
   const member = (el) => page(<ProtectedRoute>{el}</ProtectedRoute>);
