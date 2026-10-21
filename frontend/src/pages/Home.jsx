@@ -24,7 +24,7 @@ import {
 // Sections sous la ligne de flottaison : chargées seulement quand on s'en approche.
 const UpcomingPan = lazy(() => import("../components/UpcomingPan"));
 const VelocityMarquee = lazy(() => import("../components/VelocityMarquee"));
-import { EASE_OUT, riseItem, stagger } from "../lib/motionTokens";
+import { EASE_OUT, riseItem } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
 
 const GENRES = ["Action", "Drame", "Science-fiction", "Thriller", "Animation", "Comédie", "Horreur", "Romance", "Documentaire", "Western"];

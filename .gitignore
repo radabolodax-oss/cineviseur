@@ -22,3 +22,5 @@ android-app/
 pc-app/
 .claude/
 frontend/src_backup_design/
+
+.vercel

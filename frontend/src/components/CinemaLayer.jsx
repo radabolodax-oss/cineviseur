@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useAnimate, useReducedMotion } from "motion/react";
+import { useAnimate, useReducedMotion } from "motion/react";
 import { tmdbImage } from "../lib/tmdb";
 
 /**
@@ -85,10 +85,5 @@ function TicketLayer() {
 }
 
 export default function CinemaLayer() {
-  return (
-    <>
-      <AuroraTint />
-      <TicketLayer />
-    </>
-  );
+  return <TicketLayer />;
 }
