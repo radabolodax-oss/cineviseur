@@ -2,15 +2,18 @@ import { memo, useEffect, useMemo, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
 /**
- * Arrière-plan global « Dark Mode (OLED) » :
- * gradients radiaux statiques accélérés sur GPU (aucun filtre blur ni animation infinie plein écran).
+ * Arrière-plan global cinématique :
+ * Dégradés lumineux profonds bleutés/violets apportant contraste, chaleur et lisibilité.
  */
 export function AuroraBackground() {
   return (
-    <div aria-hidden="true" className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-cine-ink">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_70%_at_50%_-10%,#0A0E27_0%,#06070F_60%)]" />
-      <div className="aurora-layer absolute inset-0" />
-      <div className="absolute inset-x-0 bottom-0 h-[50vh] bg-[radial-gradient(ellipse_60%_80%_at_20%_100%,rgba(30,27,75,0.35),transparent_70%)]" />
+    <div aria-hidden="true" className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-[#0a0c18]">
+      {/* Halo supérieur violet/bleu cinéma vibrant */}
+      <div className="absolute -top-[15%] left-1/2 -translate-x-1/2 w-[1200px] h-[650px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(124,92,224,0.28)_0%,rgba(67,56,202,0.18)_40%,transparent_70%)] blur-[90px]" />
+      {/* Halo d'ambiance latéral indigo */}
+      <div className="absolute top-[30%] -left-[10%] w-[700px] h-[700px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(79,70,229,0.16)_0%,transparent_65%)] blur-[100px]" />
+      {/* Halo d'ambiance bas violet */}
+      <div className="absolute -bottom-[15%] right-[5%] w-[850px] h-[550px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(124,92,224,0.2)_0%,rgba(147,51,234,0.1)_40%,transparent_70%)] blur-[100px]" />
     </div>
   );
 }
