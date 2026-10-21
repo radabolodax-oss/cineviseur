@@ -25,7 +25,7 @@ export const ANALYTICS = {
 
 export const analyticsEnabled = Boolean(ANALYTICS.provider && ANALYTICS.id && ANALYTICS.src);
 
-// Configuration régie publicitaire Google AdSense
+// Configuration régie publicitaire Google AdSense (Vercel Production)
 export const ADSENSE = {
   pubId: env.VITE_ADSENSE_PUB_ID || "ca-pub-4993578792461847",
 };
