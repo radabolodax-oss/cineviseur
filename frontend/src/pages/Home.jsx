@@ -218,7 +218,7 @@ function NewFeaturesShowcase() {
   const features = [
     {
       title: "Suivi des séries & « Up Next »",
-      tag: "Inspiré de Trakt",
+      tag: "Séries & Saisons",
       badge: "NOUVEAU",
       desc: "Cochez vos épisodes saison par saison. CineViseur calcule automatiquement votre prochain épisode à voir avec un bouton 1-clic depuis votre liste.",
       link: "/watchlist",
@@ -256,18 +256,13 @@ function NewFeaturesShowcase() {
 
   return (
     <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-20">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-        <div>
-          <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-cine-soft block mb-2">
-            L'EXPÉRIENCE CINEVISEUR
-          </span>
-          <h2 className="section-title !text-3xl md:!text-4xl">
-            Tout ce qu'un cinéphile a toujours voulu
-          </h2>
-        </div>
-        <p className="text-sm text-white/60 max-w-md">
-          Inspiré du meilleur de Trakt et Letterboxd, optimisé pour la France avec streaming, séances de cinéma et zéro mot de passe.
-        </p>
+      <div className="mb-10">
+        <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-cine-soft block mb-2">
+          L'EXPÉRIENCE CINEVISEUR
+        </span>
+        <h2 className="section-title !text-3xl md:!text-4xl">
+          Tout ce qu'un cinéphile a toujours voulu
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
