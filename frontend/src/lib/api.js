@@ -200,18 +200,48 @@ export const api = {
   list: (kind, lang = "fr", page = 1) =>
     request(`/api/tmdb/lists/${kind}?lang=${lang}&page=${page}`, {
       fallback: () => {
-        if (kind === "now_playing" || kind === "upcoming") {
-          return directTmdb(`/movie/${kind}`, { language: lang, region: "FR", page });
+        const today = new Date().toISOString().slice(0, 10);
+
+        if (kind === "now_playing") {
+          return directTmdb("/movie/now_playing", { language: lang, region: "FR", page }).then((res) => ({
+            ...res,
+            results: (res.results || []).filter((m) => m.poster_path),
+          }));
         }
-        if (kind === "streaming") {
+
+        if (kind === "upcoming") {
+          // Sorties cinéma françaises rigoureuses : films à venir triés par date chronologique
+          return directTmdb("/discover/movie", {
+            language: lang,
+            region: "FR",
+            "primary_release_date.gte": today,
+            sort_by: "popularity.desc",
+            page,
+          }).then((res) => ({
+            ...res,
+            results: (res.results || [])
+              .filter((m) => m.poster_path && m.release_date && m.release_date >= today)
+              .sort((a, b) => a.release_date.localeCompare(b.release_date)),
+          }));
+        }
+
+        if (kind === "streaming" || kind === "vod_releases") {
+          // Sorties VOD & Streaming récentes en France (SVOD, location et achat)
+          const eightMonthsAgo = new Date(Date.now() - 240 * 86400000).toISOString().slice(0, 10);
           return directTmdb("/discover/movie", {
             language: lang,
             page,
             watch_region: "FR",
-            with_watch_monetization_types: "flatrate",
+            with_watch_monetization_types: "flatrate|rent|buy",
+            "primary_release_date.gte": eightMonthsAgo,
+            "primary_release_date.lte": today,
             sort_by: "popularity.desc",
-          });
+          }).then((res) => ({
+            ...res,
+            results: (res.results || []).filter((m) => m.poster_path),
+          }));
         }
+
         throw new Error("Liste invalide");
       },
     }),

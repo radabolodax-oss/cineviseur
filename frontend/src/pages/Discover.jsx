@@ -132,8 +132,8 @@ export default function Discover() {
   const rows = useMemo(() => {
     const base = [
       { id: "now-playing", title: "En ce moment au cinéma", mediaType: "movie", listKind: "now_playing" },
-      { id: "streaming", title: "Sur vos plateformes", mediaType: "movie", listKind: "streaming" },
-      { id: "upcoming", title: "Bientôt au cinéma", mediaType: "movie", listKind: "upcoming" },
+      { id: "streaming", title: "Nouveautés Streaming & VOD", mediaType: "movie", listKind: "streaming" },
+      { id: "upcoming", title: "Prochaines sorties cinéma", mediaType: "movie", listKind: "upcoming" },
       { id: "pop-movies", title: "Films populaires", mediaType: "movie" },
       { id: "pop-tv", title: "Séries populaires", mediaType: "tv" },
     ];

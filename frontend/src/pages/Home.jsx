@@ -6,7 +6,7 @@ import {
   useScroll,
   useTransform,
 } from "motion/react";
-import { getNowPlaying, getTrending, tmdbImage, tmdbSrcSet } from "../lib/tmdb";
+import { getNowPlaying, getTrending, getStreamingReleases, tmdbImage, tmdbSrcSet } from "../lib/tmdb";
 import InstallButton from "../components/InstallButton";
 import CarouselRow from "../components/CarouselRow";
 import Icon from "../components/Icon";
@@ -360,7 +360,9 @@ export default function Home() {
   useSeo(null);
   const [nowPlaying, setNowPlaying] = useState([]);
   const [trending, setTrending] = useState([]);
+  const [streaming, setStreaming] = useState([]);
   const [trendingLoaded, setTrendingLoaded] = useState(false);
+  const [streamingLoaded, setStreamingLoaded] = useState(false);
 
   useEffect(() => {
     getNowPlaying().then(setNowPlaying).catch(() => setNowPlaying([]));
@@ -368,6 +370,10 @@ export default function Home() {
       .then(setTrending)
       .catch(() => setTrending([]))
       .finally(() => setTrendingLoaded(true));
+    getStreamingReleases()
+      .then(setStreaming)
+      .catch(() => setStreaming([]))
+      .finally(() => setStreamingLoaded(true));
   }, []);
 
   // Le hero montre les films à l'affiche, le carrousel les tendances
@@ -378,8 +384,10 @@ export default function Home() {
     <div>
       <Hero featured={featured} />
 
-      <div className="-mt-10 relative z-10">
+      <div className="-mt-10 relative z-10 flex flex-col gap-6">
         <CarouselRow title="Tendances de la semaine" staticItems={trending} pending={!trendingLoaded} />
+        <CarouselRow title="À l'affiche au cinéma" staticItems={nowPlaying} pending={nowPlaying.length === 0} />
+        <CarouselRow title="Nouveautés en streaming & VOD" staticItems={streaming} pending={!streamingLoaded} />
       </div>
 
       <WhenNear minHeight="100dvh">

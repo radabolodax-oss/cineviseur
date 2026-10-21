@@ -70,3 +70,7 @@ export function getUpcoming() {
 export function getNowPlaying() {
   return cached("now_playing", () => api.list("now_playing", "fr", 1).then((data) => data.results || []));
 }
+
+export function getStreamingReleases() {
+  return cached("streaming", () => api.list("streaming", "fr", 1).then((data) => data.results || []));
+}

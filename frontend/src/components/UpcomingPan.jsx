@@ -91,14 +91,14 @@ export default function UpcomingPan() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    const cutoff = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
     getUpcoming()
       .then((list) =>
         setItems(
           list
-            .filter((m) => m.poster_path && m.release_date && m.release_date >= cutoff)
+            .filter((m) => m.poster_path && m.release_date && m.release_date >= today)
             .sort((a, b) => a.release_date.localeCompare(b.release_date))
-            .slice(0, 12)
+            .slice(0, 14)
         )
       )
       .catch(() => setItems([]));
