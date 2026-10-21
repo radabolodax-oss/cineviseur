@@ -60,7 +60,7 @@ html {
 /* Direction artistique : bleu nuit cinématique riche avec contrastes OLED et lueurs violettes. */
 body {
   margin: 0;
-  background-color: #0a0c18;
+  background-color: #07080c;
   color-scheme: dark;
   color: #f4f4f6;
   font-family: "Outfit Variable", "Outfit", sans-serif;
@@ -109,41 +109,41 @@ select {
     transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out, transform 50ms ease-out;
   }
   .btn-primary {
-    @apply btn px-6 py-3 text-white bg-cine-violet hover:bg-[#8a6ce8] shadow-[0_8px_24px_-12px_rgba(124,92,224,0.6)];
-    --plate-color: #3d2a7e;
-    --plate-x: 3px;
-    --plate-y: 4px;
+    @apply btn px-6 py-3 text-[#0a0a0d] font-bold bg-gradient-to-b from-[#fde68a] via-[#f59e0b] to-[#d97706] hover:brightness-105 active:brightness-95 border border-amber-300/40 shadow-[0_8px_24px_-6px_rgba(245,158,11,0.5),inset_0_1px_0_rgba(255,255,255,0.6)] active:translate-y-0.5 active:scale-[0.98];
+    --plate-color: #92400e;
+    --plate-x: 2px;
+    --plate-y: 3px;
   }
   .btn-light {
-    @apply btn px-6 py-3 text-cine-ink bg-[#f4f4f6] hover:bg-white;
+    @apply btn px-6 py-3 text-cine-ink bg-[#f4f4f6] hover:bg-white shadow-[0_4px_16px_rgba(255,255,255,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-0.5;
     --plate-color: #bbbbc8;
-    --plate-x: 3px;
-    --plate-y: 4px;
+    --plate-x: 2px;
+    --plate-y: 3px;
   }
   .btn-ghost {
-    @apply btn px-5 py-3 text-[#f4f4f6] bg-white/[0.07] ring-1 ring-inset ring-white/[0.12] hover:bg-white/[0.13] hover:ring-white/20 backdrop-blur-md;
+    @apply btn px-5 py-3 text-[#f4f4f6] font-medium bg-gradient-to-b from-white/[0.09] to-white/[0.04] ring-1 ring-inset ring-white/[0.15] hover:bg-white/[0.14] hover:ring-white/30 active:translate-y-0.5 active:scale-[0.98] backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.15)];
     --plate-color: rgba(0, 0, 0, 0.55);
     --plate-x: 2px;
     --plate-y: 3px;
   }
   .btn-danger {
-    @apply btn px-5 py-3 text-white bg-rose-500 hover:bg-rose-400;
+    @apply btn px-5 py-3 text-white bg-rose-600 hover:bg-rose-500 shadow-[0_6px_20px_rgba(225,29,72,0.4),inset_0_1px_0_rgba(255,255,255,0.2)] active:translate-y-0.5;
     --plate-color: #8f1d3c;
-    --plate-x: 3px;
-    --plate-y: 4px;
-  }
-  /* Puce de filtre : état actif via aria-pressed (même plaque que les autres boutons pleins). */
-  .btn-chip {
-    @apply btn shrink-0 px-4 py-2 !font-medium text-white/75 bg-white/[0.06] ring-1 ring-inset ring-white/10 hover:bg-white/[0.13] hover:text-white;
-    --plate-color: rgba(0, 0, 0, 0.5);
     --plate-x: 2px;
     --plate-y: 3px;
   }
+  /* Puce de filtre : tactile inspiré d'OriginKit */
+  .btn-chip {
+    @apply btn shrink-0 px-4 py-2 !font-medium text-white/75 bg-gradient-to-b from-white/[0.08] to-white/[0.03] ring-1 ring-inset ring-white/10 hover:bg-white/[0.12] hover:text-white active:scale-95 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.08)];
+    --plate-color: rgba(0, 0, 0, 0.5);
+    --plate-x: 1px;
+    --plate-y: 2px;
+  }
   .btn-chip[aria-pressed="true"],
   .btn-chip.is-active {
-    @apply text-white bg-cine-violet ring-white/15 hover:bg-[#8a6ce8];
-    --plate-color: #3d2a7e;
-    box-shadow: 0 0 16px rgba(124, 92, 224, 0.45);
+    @apply text-[#0a0a0d] !font-semibold bg-gradient-to-b from-amber-300 to-amber-500 ring-amber-300/40 hover:brightness-105;
+    --plate-color: #b45309;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
   .btn-icon {
     position: relative;

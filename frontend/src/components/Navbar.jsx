@@ -197,15 +197,6 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            {/* Tag signal cinéphile direct inspiré d'Orbe Audio */}
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.07] text-[11px] font-mono text-white/60">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span>LIVE</span>
-            </div>
-
             <NotificationBell />
           </div>
         </div>

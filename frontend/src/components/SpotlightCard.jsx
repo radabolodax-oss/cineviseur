@@ -10,8 +10,8 @@ import { finePointer } from "../lib/motionTokens";
 export default function SpotlightCard({
   children,
   className = "",
-  spotlightColor = "rgba(124, 92, 224, 0.22)",
-  borderColor = "rgba(171, 152, 242, 0.5)",
+  spotlightColor = "rgba(245, 158, 11, 0.14)",
+  borderColor = "rgba(245, 158, 11, 0.35)",
   as = "div",
   ...rest
 }) {
@@ -35,7 +35,7 @@ export default function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative overflow-hidden rounded-3xl bg-[#121426]/85 backdrop-blur-xl border border-white/[0.12] transition-all duration-300 shadow-[0_12px_36px_rgba(0,0,0,0.45)] ${className}`}
+      className={`relative overflow-hidden rounded-3xl bg-[#0d0e15]/90 backdrop-blur-xl border border-white/[0.08] transition-all duration-300 shadow-[0_12px_36px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] ${className}`}
       {...rest}
     >
       {/* Halo radial interactif au survol (21st.dev) */}

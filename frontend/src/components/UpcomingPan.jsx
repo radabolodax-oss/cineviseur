@@ -21,7 +21,7 @@ function UpcomingCard({ item, index }) {
       to={`/title/movie/${item.id}`}
       className={`group block shrink-0 w-[220px] md:w-[280px] focus-visible:outline-none ${index % 2 ? "md:mt-16" : ""}`}
     >
-      <TiltCard className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-white/[0.05] ring-1 ring-inset ring-white/10 group-hover:ring-white/25 group-focus-visible:ring-2 group-focus-visible:ring-cine-soft transition-[box-shadow] duration-300 group-hover:shadow-[0_30px_60px_-24px_rgba(124,92,224,0.55)]">
+      <TiltCard className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-white/[0.05] ring-1 ring-inset ring-white/10 group-hover:ring-white/25 group-focus-visible:ring-2 group-focus-visible:ring-amber-400 transition-[box-shadow] duration-300 group-hover:shadow-[0_24px_50px_-16px_rgba(245,158,11,0.25)]">
         <img
           src={tmdbImage(item.poster_path, "posterLarge")} srcSet={tmdbSrcSet(item.poster_path, "poster")} sizes="(min-width: 768px) 280px, 220px" decoding="async"
           alt={`Affiche de ${mediaTitle(item)}`}
@@ -32,7 +32,7 @@ function UpcomingCard({ item, index }) {
       <div className="flex items-end gap-3 pt-4">
         <p className="font-display font-semibold text-5xl leading-none tabular-nums tracking-tighter">{formatDay(item.release_date)}</p>
         <div className="min-w-0 pb-0.5">
-          <p className="text-xs uppercase tracking-wide text-cine-soft">{formatMonth(item.release_date)}</p>
+          <p className="text-xs uppercase tracking-wide text-amber-400 font-semibold font-mono">{formatMonth(item.release_date)}</p>
           <p className="text-sm font-medium truncate text-white/85 group-hover:text-white transition-colors">{mediaTitle(item)}</p>
         </div>
       </div>

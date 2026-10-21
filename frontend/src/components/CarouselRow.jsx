@@ -6,6 +6,7 @@ import SectionTitle from "./SectionTitle";
 import Icon from "./Icon";
 import { Reveal } from "./motion";
 import { SPRING } from "../lib/motionTokens";
+import { play } from "../lib/feedback";
 
 const CARD_WIDTH = "shrink-0 w-32 sm:w-36 md:w-40 lg:w-44";
 
@@ -94,6 +95,7 @@ export default function CarouselRow({ title, mediaType, genre, sort, minRating, 
   function scrollBy(dir) {
     const el = scrollerRef.current;
     if (!el) return;
+    play("tick");
     el.scrollBy({ left: dir === "left" ? -el.clientWidth * 0.8 : el.clientWidth * 0.8, behavior: "smooth" });
   }
 

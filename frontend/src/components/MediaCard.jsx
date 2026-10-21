@@ -42,7 +42,7 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
       className="group block rounded-2xl focus-visible:outline-none select-none [-webkit-touch-callout:none]"
       {...gestures}
     >
-      <div className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-white/[0.04] border border-white/[0.08] transition-all duration-300 group-hover:border-cine-violet/50 group-hover:shadow-[0_20px_45px_-15px_rgba(124,92,224,0.45)] group-focus-visible:ring-2 group-focus-visible:ring-cine-soft">
+      <div className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-white/[0.04] border border-white/[0.08] transition-all duration-300 group-hover:border-amber-400/40 group-hover:shadow-[0_16px_40px_-12px_rgba(245,158,11,0.25)] group-focus-visible:ring-2 group-focus-visible:ring-amber-400">
         {item.poster_path ? (
           <img
             data-poster
@@ -74,7 +74,7 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
         {/* Pastille Note / Score en verre dépoli (Originkit) */}
         {rating && (
           <div className="absolute top-2.5 left-2.5 z-[2] flex items-center gap-1 px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-white/90 shadow-sm tabular-nums">
-            <Icon name="star" weight="fill" className="w-2.5 h-2.5 text-cine-soft" />
+            <Icon name="star" weight="fill" className="w-2.5 h-2.5 text-amber-400" />
             <span>{rating}</span>
           </div>
         )}
@@ -91,10 +91,10 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
             whileTap={{ scale: 0.88 }}
             aria-label={state === "none" ? `Ajouter ${title} à ma liste` : `${title} est dans ma liste`}
             title={state === "watched" ? "Déjà vu" : state === "listed" ? "Dans ma liste" : "Ajouter à ma liste"}
-            className={`absolute bottom-2.5 right-2.5 z-[2] flex items-center justify-center w-8 h-8 rounded-full backdrop-blur-md border border-white/20 transition-all duration-300 ease-out focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft shadow-lg ${
+            className={`absolute bottom-2.5 right-2.5 z-[2] flex items-center justify-center w-8 h-8 rounded-full backdrop-blur-md border border-white/20 transition-all duration-300 ease-out focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 shadow-lg ${
               state !== "none"
-                ? "bg-cine-violet text-white opacity-100"
-                : "bg-cine-ink/80 text-white hover:bg-white hover:text-cine-ink opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                ? "bg-amber-400 text-black font-bold opacity-100 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                : "bg-black/75 text-white hover:bg-white hover:text-black opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
             }`}
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -114,7 +114,7 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
       </div>
 
       <div className="pt-2.5 px-0.5">
-        <p className="text-[13px] font-medium leading-snug truncate text-white/90 group-hover:text-cine-soft transition-colors">{title}</p>
+        <p className="text-[13px] font-medium leading-snug truncate text-white/90 group-hover:text-amber-300 transition-colors">{title}</p>
         <p className="flex items-center justify-between text-[11px] text-white/50 mt-0.5 tabular-nums">
           <span>{year || "Date à venir"}</span>
           <span className="font-mono text-[10px] text-white/40 tracking-wider">FR</span>
