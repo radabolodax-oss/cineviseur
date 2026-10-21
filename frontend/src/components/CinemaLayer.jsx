@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useAnimate, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import { AnimatePresence, motion, useAnimate, useReducedMotion } from "motion/react";
 import { tmdbImage } from "../lib/tmdb";
-import { finePointer } from "../lib/motionTokens";
 
 /**
  * Ticket de cinéma : quand un titre passe en « vu », un ticket apparaît, reçoit le tampon VU,
@@ -85,71 +84,10 @@ function TicketLayer() {
   return current ? <Ticket key={current.key} ticket={current} onDone={() => setQueue((q) => q.slice(1))} /> : null;
 }
 
-/** Halo de projecteur qui éclaire doucement le contenu sous la souris. */
-function CursorSpotlight() {
-  const reduce = useReducedMotion();
-  const x = useMotionValue(-500);
-  const y = useMotionValue(-500);
-  const sx = useSpring(x, { stiffness: 300, damping: 40 });
-  const sy = useSpring(y, { stiffness: 300, damping: 40 });
-  const background = useMotionTemplate`radial-gradient(380px circle at ${sx}px ${sy}px, rgba(255,255,255,0.07), transparent 70%)`;
-
-  useEffect(() => {
-    if (reduce) return;
-    const move = (e) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
-    };
-    window.addEventListener("pointermove", move, { passive: true });
-    return () => window.removeEventListener("pointermove", move);
-  }, [x, y, reduce]);
-
-  if (reduce) return null;
-  return <motion.div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[55] mix-blend-soft-light" style={{ background }} />;
-}
-
-/** Teinte du fond : l'aurore prend la couleur de l'affiche survolée, puis revient au violet. */
-function AuroraTint() {
-  const [tint, setTint] = useState(null);
-  useEffect(() => {
-    let timer;
-    const onTint = (e) => {
-      clearTimeout(timer);
-      setTint(e.detail);
-      if (!e.detail) return;
-      timer = setTimeout(() => setTint(null), 6000);
-    };
-    window.addEventListener("cv:tint", onTint);
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("cv:tint", onTint);
-    };
-  }, []);
-  return (
-    <AnimatePresence>
-      {tint && (
-        <motion.div
-          key={tint.join(",")}
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 -z-[5]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2 }}
-          style={{
-            background: `radial-gradient(ellipse 80% 60% at 75% -5%, rgba(${tint.join(",")},0.28), transparent 70%)`,
-          }}
-        />
-      )}
-    </AnimatePresence>
-  );
-}
-
 export default function CinemaLayer() {
   return (
     <>
       <AuroraTint />
-      {finePointer && <CursorSpotlight />}
       <TicketLayer />
     </>
   );

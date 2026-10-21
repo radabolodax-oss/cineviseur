@@ -141,152 +141,32 @@ function Hero({ featured }) {
   );
 }
 
-function FeatureBento({ images }) {
-  const [big, small] = images;
-
-  return (
-    <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-12 mb-24">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.6 }}
-        transition={{ duration: 0.7, ease: EASE_OUT }}
-        className="mb-8"
-      >
-        <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-cine-soft block mb-2">
-          SUR LE TERRAIN & SUR VOS ÉCRANS
-        </span>
-        <h2 className="section-title !text-3xl md:!text-4xl text-white">
-          Votre liste, vos alertes, vos salles
-        </h2>
-      </motion.div>
-
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-5"
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={stagger(0.12)}
-      >
-        {/* Grande carte Bento 1 */}
-        <SpotlightCard
-          as="article"
-          variants={riseItem}
-          className="md:col-span-2 md:row-span-2 min-h-[360px] md:min-h-[500px] flex items-end bg-gradient-to-br from-indigo-950/40 via-[#13152c]/90 to-[#0e1022] border-white/15"
-          spotlightColor="rgba(124, 92, 224, 0.25)"
-        >
-          <div className="absolute inset-0 rounded-3xl overflow-hidden" aria-hidden="true">
-            {big && (
-              <motion.img
-                src={tmdbImage(big.backdrop_path, "backdrop")}
-                srcSet={tmdbSrcSet(big.backdrop_path, "backdrop")}
-                sizes="(min-width: 768px) 66vw, 100vw"
-                decoding="async"
-                alt=""
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover opacity-55"
-                initial={{ scale: 1.12 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.6, ease: EASE_OUT }}
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c18] via-[#0a0c18]/60 to-transparent" />
-          </div>
-
-          <div className="relative z-[2] p-7 md:p-10 max-w-xl">
-            <div className="w-12 h-12 rounded-2xl bg-cine-violet/30 border border-cine-violet/50 flex items-center justify-center text-cine-soft mb-6 shadow-lg shadow-cine-violet/25">
-              <Icon name="list" className="w-6 h-6" />
-            </div>
-            <h3 className="font-display font-semibold text-2xl md:text-3xl tracking-tight mb-3 text-white">
-              Une liste, tous vos appareils
-            </h3>
-            <p className="text-white/80 leading-relaxed mb-7 text-sm sm:text-base">
-              À voir, déjà vu, notes personnelles : votre collection vous suit partout instantanément. Installez CineViseur sur votre smartphone ou Bureau en 1 clic.
-            </p>
-            <InstallButton />
-          </div>
-        </SpotlightCard>
-
-        {/* Carte Bento 2 : Alertes */}
-        <SpotlightCard
-          as="article"
-          variants={riseItem}
-          className="min-h-[230px] flex items-end bg-gradient-to-br from-purple-950/40 via-[#13152c]/90 to-[#0e1022] border-white/15"
-          spotlightColor="rgba(171, 152, 242, 0.22)"
-        >
-          <div className="absolute inset-0 rounded-3xl overflow-hidden" aria-hidden="true">
-            {small && (
-              <img
-                src={tmdbImage(small.backdrop_path, "backdrop")}
-                srcSet={tmdbSrcSet(small.backdrop_path, "backdrop")}
-                sizes="(min-width: 768px) 33vw, 100vw"
-                decoding="async"
-                alt=""
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale"
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c18] via-[#0a0c18]/70 to-[#0a0c18]/20" />
-          </div>
-
-          <div className="relative z-[2] p-7">
-            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-cine-soft mb-4">
-              <Icon name="bell" className="w-5 h-5" />
-            </div>
-            <h3 className="font-display font-semibold text-xl tracking-tight mb-2 text-white">
-              Alertes de sortie
-            </h3>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Activez une alerte sur un film très attendu : CineViseur vous notifie le jour de sa sortie.
-            </p>
-          </div>
-        </SpotlightCard>
-
-        {/* Carte Bento 3 : Cinémas */}
-        <SpotlightCard
-          as="article"
-          variants={riseItem}
-          className="min-h-[230px] bg-gradient-to-br from-emerald-950/40 via-[#13152c]/90 to-[#0e1022] border-emerald-500/30"
-          spotlightColor="rgba(34, 197, 94, 0.22)"
-        >
-          <Link
-            to="/cinemas"
-            className="group relative z-[2] h-full p-7 flex flex-col justify-end focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft"
-          >
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4 transition-transform duration-300 group-hover:-translate-y-1">
-              <Icon name="pin" className="w-5 h-5" />
-            </div>
-            <h3 className="font-display font-semibold text-xl tracking-tight mb-2 text-white">
-              Cinémas autour de vous
-            </h3>
-            <p className="text-sm text-white/75 leading-relaxed mb-4">
-              Localisez les salles d'art et essai et multiplexes à proximité avec itinéraire direct.
-            </p>
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 group-hover:text-emerald-300 transition-colors">
-              Trouver une salle
-              <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </span>
-          </Link>
-        </SpotlightCard>
-      </motion.div>
-    </section>
-  );
-}
-
-function NewFeaturesShowcase() {
+function FeatureShowcase() {
   return (
     <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-24">
-      <div className="mb-12">
-        <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-cine-soft block mb-2">
-          INNOVATIONS CINEVISEUR
-        </span>
-        <h2 className="section-title !text-3xl md:!text-5xl tracking-tight text-white">
-          L'expérience cinéphile réinventée
-        </h2>
-        <p className="text-white/75 text-base max-w-2xl mt-2">
-          Découvrez les outils interactifs exclusifs conçus pour rendre chaque séance mémorable.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+          <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-cine-soft block mb-2">
+            INNOVATIONS CINEVISEUR
+          </span>
+          <h2 className="section-title !text-3xl md:!text-5xl tracking-tight text-white">
+            L'expérience cinéphile réinventée
+          </h2>
+          <p className="text-white/75 text-base max-w-2xl mt-2">
+            Des outils interactifs conçus pour fluidifier chaque choix, vos séances et vos souvenirs.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            to="/cinemas"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white transition-colors"
+          >
+            <Icon name="pin" className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Salles de ciné</span>
+          </Link>
+          <InstallButton className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white transition-colors cursor-pointer" />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -463,7 +343,6 @@ export default function Home() {
   // Le hero montre les films à l'affiche, le carrousel les tendances
   const withBackdrop = nowPlaying.filter((t) => t.backdrop_path);
   const featured = withBackdrop.slice(0, 5);
-  const bentoImages = withBackdrop.slice(5, 7);
 
   return (
     <div>
@@ -481,9 +360,7 @@ export default function Home() {
         <VelocityMarquee items={GENRES} />
       </WhenNear>
 
-      <NewFeaturesShowcase />
-
-      <FeatureBento images={bentoImages} />
+      <FeatureShowcase />
     </div>
   );
 }
