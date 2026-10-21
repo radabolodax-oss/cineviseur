@@ -9,6 +9,8 @@ import UpdatePrompt from "./components/UpdatePrompt";
 import { InstallProvider } from "./components/InstallGuide";
 import { ScrollProgress } from "./components/effects";
 import { AuroraBackground } from "./components/backgrounds";
+import CinemaAtmosphere from "./components/CinemaAtmosphere";
+import DotCursor from "./components/DotCursor";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useCinematicNavigation from "./hooks/useCinematicNavigation";
 import Home from "./pages/Home";
@@ -108,6 +110,8 @@ function App() {
       <InstallProvider>
         <div className="min-h-[100dvh] flex flex-col">
           <AuroraBackground />
+          <CinemaAtmosphere />
+          <DotCursor />
           <ScrollProgress />
           <Navbar />
           <main id="contenu" tabIndex={-1} className="flex-1 outline-none">

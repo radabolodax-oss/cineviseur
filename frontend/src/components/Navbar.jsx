@@ -52,17 +52,21 @@ function DesktopLink({ to, children, ...rest }) {
       to={to}
       {...rest}
       className={({ isActive }) =>
-        `relative text-sm px-3.5 py-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft ${
-          isActive ? "text-white" : "text-white/60 hover:text-white"
+        `relative text-sm px-4 py-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft ${
+          isActive ? "text-white font-semibold" : "text-white/65 hover:text-white"
         }`
       }
     >
       {({ isActive }) => (
         <>
           {isActive && (
-            <motion.span layoutId="nav-pill" transition={SPRING} className="absolute inset-0 rounded-full bg-white/[0.09] ring-1 ring-inset ring-white/10" />
+            <motion.span
+              layoutId="nav-pill"
+              transition={SPRING}
+              className="absolute inset-0 rounded-full bg-white/[0.09] border border-white/[0.14] shadow-[0_4px_16px_rgba(124,92,224,0.25)]"
+            />
           )}
-          <span className="relative">{children}</span>
+          <span className="relative z-10">{children}</span>
         </>
       )}
     </NavLink>
@@ -78,7 +82,7 @@ function MobileTabBar() {
     { to: "/cinemas", label: "Cinémas", icon: "pin" },
   ];
   return (
-    <nav aria-label="Navigation principale" className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-white/[0.08] bg-cine-ink/85 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
+    <nav aria-label="Navigation principale" className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-white/[0.08] bg-cine-ink/90 backdrop-blur-2xl pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(0,0,0,0.8)]">
       <div className="grid grid-cols-5">
         {tabs.map((t) => (
           <NavLink
@@ -95,7 +99,7 @@ function MobileTabBar() {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <motion.span layoutId="tab-indicator" transition={SPRING} className="absolute top-0 h-0.5 w-8 rounded-full bg-cine-soft" />
+                  <motion.span layoutId="tab-indicator" transition={SPRING} className="absolute top-0 h-0.5 w-8 rounded-full bg-cine-soft shadow-[0_0_12px_#ab98f2]" />
                 )}
                 <motion.span animate={{ y: isActive ? -1 : 0, scale: isActive ? 1.08 : 1 }} transition={SPRING}>
                   <Icon name={t.icon} className={`w-5 h-5 ${isActive ? "text-cine-soft" : ""}`} weight={isActive ? "fill" : "regular"} />
@@ -115,6 +119,7 @@ export default function Navbar() {
   const location = useLocation();
   const [query, setQuery] = useState("");
   const [atTop, setAtTop] = useState(true);
+  const searchInputRef = useRef(null);
   const sentinelRef = useRef(null);
 
   // Détecte le haut de page sans écouteur de scroll : une sentinelle de 8px en haut du document.
@@ -124,6 +129,18 @@ export default function Navbar() {
     const observer = new IntersectionObserver(([entry]) => setAtTop(entry.isIntersecting));
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // Raccourci clavier universel Cmd+K / Ctrl+K pour ouvrir/focaliser la recherche (21st.dev / Originkit)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   function handleSearch(e) {
@@ -141,8 +158,10 @@ export default function Navbar() {
         Aller au contenu
       </a>
       <header
-        className={`sticky top-0 z-40 transition-colors duration-500 border-b ${
-          transparent ? "bg-transparent border-transparent" : "bg-cine-ink/80 backdrop-blur-xl border-white/[0.07]"
+        className={`sticky top-0 z-40 transition-all duration-500 ${
+          transparent
+            ? "bg-transparent border-b border-transparent"
+            : "bg-cine-ink/85 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_10px_35px_-10px_rgba(0,0,0,0.8)]"
         }`}
       >
         <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 md:px-10 h-16">
@@ -153,7 +172,7 @@ export default function Navbar() {
               </button>
             )}
             <Logo />
-            <nav aria-label="Navigation principale" className="hidden md:flex items-center gap-1 ml-4">
+            <nav aria-label="Navigation principale" className="hidden md:flex items-center gap-1 ml-3">
               <DesktopLink to="/discover">Découvrir</DesktopLink>
               <DesktopLink to="/ce-soir">Ce soir ?</DesktopLink>
               <DesktopLink to="/cinemas">Cinémas</DesktopLink>
@@ -162,19 +181,32 @@ export default function Navbar() {
           </div>
 
           <form onSubmit={handleSearch} role="search" className="flex-1 max-w-md hidden sm:block">
-            <label className="flex items-center gap-2.5 bg-white/[0.06] ring-1 ring-inset ring-white/10 focus-within:ring-2 focus-within:ring-cine-soft/70 focus-within:bg-white/[0.09] rounded-full px-4 py-2 transition">
-              <Icon name="search" className="w-4 h-4 text-white/50" />
+            <label className="group flex items-center gap-2.5 bg-white/[0.04] ring-1 ring-inset ring-white/[0.09] hover:ring-white/[0.16] focus-within:ring-2 focus-within:ring-cine-soft/70 focus-within:bg-white/[0.07] rounded-full px-4 py-2 transition shadow-inner">
+              <Icon name="search" className="w-4 h-4 text-white/45 group-focus-within:text-cine-soft transition-colors" />
               <span className="sr-only">Rechercher</span>
               <input
+                ref={searchInputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Rechercher un film, une série..."
-                className="bg-transparent outline-none text-sm w-full placeholder:text-white/55"
+                className="bg-transparent outline-none text-sm w-full placeholder:text-white/45 text-white"
               />
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.07] border border-white/[0.1] text-white/45 select-none">
+                ⌘K
+              </kbd>
             </label>
           </form>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Tag signal cinéphile direct inspiré d'Orbe Audio */}
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.07] text-[11px] font-mono text-white/60">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span>LIVE</span>
+            </div>
+
             <NotificationBell />
           </div>
         </div>

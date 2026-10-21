@@ -8,6 +8,8 @@ import { play, vibrate } from "../lib/feedback";
 import useLibrary from "../hooks/useLibrary";
 import useSeo from "../hooks/useSeo";
 import Icon from "../components/Icon";
+import SegmentedControl from "../components/SegmentedControl";
+import SpotlightCard from "../components/SpotlightCard";
 import { KineticTitle, Magnetic } from "../components/motion";
 import { EASE_OUT, SPRING } from "../lib/motionTokens";
 
@@ -181,22 +183,18 @@ export default function Roulette() {
           La roulette choisit pour toi, ou compare ta liste avec celle d'un ami pour trouver le film parfait pour votre soirée.
         </p>
 
-        {/* Sélecteur de mode : Solo vs Soirée Duo */}
-        <div className="inline-flex p-1 rounded-full bg-white/[0.05] ring-1 ring-inset ring-white/[0.08] mb-8">
-          <button
-            type="button"
-            onClick={() => setMode("solo")}
-            className={`btn px-5 py-2 text-sm rounded-full ${mode === "solo" ? "bg-white text-cine-ink font-semibold" : "text-white/60 hover:text-white"}`}
-          >
-            🎰 La Bobine Solitaire
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("duo")}
-            className={`btn px-5 py-2 text-sm rounded-full ${mode === "duo" ? "bg-white text-cine-ink font-semibold" : "text-white/60 hover:text-white"}`}
-          >
-            👥 Soirée Duo (Match à 2)
-          </button>
+        {/* Sélecteur de mode : Solo vs Soirée Duo (Originkit SegmentedControl) */}
+        <div className="flex justify-center mb-8">
+          <SegmentedControl
+            options={[
+              { value: "solo", label: "La Bobine Solitaire", icon: "🎰" },
+              { value: "duo", label: "Soirée Duo (Match à 2)", icon: "👥" },
+            ]}
+            value={mode}
+            onChange={setMode}
+            size="md"
+            layoutId="roulette-mode-pill"
+          />
         </div>
       </div>
 
@@ -272,20 +270,18 @@ export default function Roulette() {
         <>
           {/* Filtres de la Bobine Solo */}
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
-            {/* Films vs Séries */}
-            <div className="flex justify-center gap-2 mb-4">
-              <button
-                onClick={() => setKind("movie")}
-                className={`btn px-4 py-2 text-xs rounded-full ${kind === "movie" ? "bg-cine-violet text-white" : "text-white/60 hover:text-white"}`}
-              >
-                Films
-              </button>
-              <button
-                onClick={() => setKind("tv")}
-                className={`btn px-4 py-2 text-xs rounded-full ${kind === "tv" ? "bg-cine-violet text-white" : "text-white/60 hover:text-white"}`}
-              >
-                Séries
-              </button>
+            {/* Films vs Séries (SegmentedControl) */}
+            <div className="flex justify-center mb-4">
+              <SegmentedControl
+                options={[
+                  { value: "movie", label: "Films" },
+                  { value: "tv", label: "Séries" },
+                ]}
+                value={kind}
+                onChange={setKind}
+                size="sm"
+                layoutId="roulette-kind-pill"
+              />
             </div>
 
             {/* Fournisseurs Streaming (JustWatch / TMDB) */}

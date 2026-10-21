@@ -8,6 +8,7 @@ import useLibrary from "../hooks/useLibrary";
 import useSeo from "../hooks/useSeo";
 import Icon from "../components/Icon";
 import CollectorTicketModal from "../components/CollectorTicketModal";
+import SegmentedControl from "../components/SegmentedControl";
 import { SPRING, riseItem, stagger } from "../lib/motionTokens";
 
 const ORDER_KEY = "cv_queue_order";
@@ -266,9 +267,9 @@ export default function Watchlist() {
   const remove = (w) => setLibraryStatus({ item: asItem(w), mediaType: w.media_type, existing: w }, null);
 
   const tabs = [
-    { key: "queue", label: "File d'attente", count: toWatch.length },
-    { key: "upnext", label: "Séries (Up Next)", count: seriesList.length },
-    { key: "wall", label: "Vus & Journal", count: watched.length },
+    { value: "queue", label: "File d'attente", count: toWatch.length },
+    { value: "upnext", label: "Séries (Up Next)", count: seriesList.length },
+    { value: "wall", label: "Vus & Journal", count: watched.length },
   ];
 
   return (
@@ -283,21 +284,15 @@ export default function Watchlist() {
         </motion.div>
       </motion.div>
 
-      {/* Onglets principaux */}
-      <div role="tablist" aria-label="Ma liste" className="inline-flex p-1 rounded-full bg-white/[0.05] ring-1 ring-inset ring-white/[0.08] mb-10 overflow-x-auto max-w-full">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            role="tab"
-            aria-selected={tab === t.key}
-            onClick={() => setTab(t.key)}
-            className={`relative btn px-4 py-2 shrink-0 ${tab === t.key ? "text-cine-ink font-semibold" : "text-white/65 hover:text-white"}`}
-          >
-            {tab === t.key && <motion.span layoutId="watchlist-tab" transition={SPRING} className="absolute inset-0 rounded-full bg-[#f4f4f6]" />}
-            <span className="relative">{t.label}</span>
-            <span className={`relative tabular-nums text-xs ml-1.5 ${tab === t.key ? "text-cine-ink/60" : "text-white/55"}`}>{t.count}</span>
-          </button>
-        ))}
+      {/* Onglets principaux tactiles (Originkit) */}
+      <div className="mb-10 overflow-x-auto max-w-full pb-2">
+        <SegmentedControl
+          options={tabs}
+          value={tab}
+          onChange={setTab}
+          size="md"
+          layoutId="watchlist-tab-pill"
+        />
       </div>
 
       {!loaded && (
@@ -360,28 +355,18 @@ export default function Watchlist() {
         {/* 3. Vus & Journal (Mur des tickets + Diary) */}
         {loaded && tab === "wall" && (
           <motion.div key="wall" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-            {/* Basculeur de mode : Mur de tickets vs Journal chronologique */}
+            {/* Basculeur de mode : Mur de tickets vs Journal chronologique (SegmentedControl) */}
             <div className="flex items-center justify-between gap-4 mb-8">
-              <div className="flex items-center gap-2 p-1 rounded-2xl bg-white/[0.04] border border-white/[0.07]">
-                <button
-                  type="button"
-                  onClick={() => setWallMode("wall")}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                    wallMode === "wall" ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  🎟️ Mur des tickets
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setWallMode("diary")}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                    wallMode === "diary" ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  📖 Journal de visionnage (Diary)
-                </button>
-              </div>
+              <SegmentedControl
+                options={[
+                  { value: "wall", label: "Mur des tickets", icon: "🎟️" },
+                  { value: "diary", label: "Journal (Diary)", icon: "📖" },
+                ]}
+                value={wallMode}
+                onChange={setWallMode}
+                size="sm"
+                layoutId="wall-mode-pill"
+              />
             </div>
 
             {months.length === 0 ? (

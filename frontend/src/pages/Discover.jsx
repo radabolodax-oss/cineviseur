@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import CarouselRow from "../components/CarouselRow";
 import { AnimatePresence, motion, useAnimationFrame, useMotionValue, useReducedMotion } from "motion/react";
 import Icon from "../components/Icon";
+import SegmentedControl from "../components/SegmentedControl";
 import { SPRING, riseItem, stagger } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
 
@@ -75,7 +76,7 @@ function InfiniteTagRow({ items, onSelect, activeLabel }) {
 const SORTS = [
   { value: "popularity", label: "Popularité" },
   { value: "rating", label: "Mieux notés" },
-  { value: "date", label: "Plus récents" },
+  { value: "date", label: "Récents" },
   { value: "title", label: "A-Z" },
 ];
 
@@ -104,7 +105,7 @@ function FilterSelect({ icon, label, value, onChange, options }) {
       <select
         value={value}
         onChange={onChange}
-        className="appearance-none bg-white/[0.06] ring-1 ring-inset ring-white/10 hover:ring-white/20 focus:ring-2 focus:ring-cine-soft/70 text-sm text-white/85 rounded-full pl-9 pr-9 py-2.5 outline-none transition cursor-pointer"
+        className="appearance-none bg-white/[0.04] ring-1 ring-inset ring-white/[0.09] hover:ring-white/20 focus:ring-2 focus:ring-cine-soft/70 text-xs sm:text-sm text-white/85 rounded-full pl-9 pr-9 py-2 outline-none transition cursor-pointer"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value} className="bg-[#111116] text-white">
@@ -112,8 +113,8 @@ function FilterSelect({ icon, label, value, onChange, options }) {
           </option>
         ))}
       </select>
-      <Icon name={icon} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/55" />
-      <Icon name="chevronDown" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/55" />
+      <Icon name={icon} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/45" />
+      <Icon name="chevronDown" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/45" />
     </label>
   );
 }
@@ -136,8 +137,6 @@ export default function Discover() {
       { id: "pop-movies", title: "Films populaires", mediaType: "movie" },
       { id: "pop-tv", title: "Séries populaires", mediaType: "tv" },
     ];
-    // Une rangée par genre : le tri (popularité, note, date) se choisit avec le filtre,
-    // pas en dupliquant chaque genre trois fois.
     const genreRows = CATEGORIES.map((cat) => ({
       id: slug(cat.label),
       title: cat.label,
@@ -179,36 +178,55 @@ export default function Discover() {
   }
 
   return (
-    <div className="pt-12 pb-16">
+    <div className="pt-10 pb-16">
       <motion.div className="px-4 sm:px-6 md:px-10 mb-8" initial="hidden" animate="show" variants={stagger(0.08)}>
+        <motion.div variants={riseItem} className="flex items-center gap-2 mb-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-cine-soft animate-ping" />
+          <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-cine-soft font-semibold">
+            EXPLORATION & CATALOGUE
+          </span>
+        </motion.div>
+
         <motion.h1 variants={riseItem} className="page-title mb-3">
           Découvrir
         </motion.h1>
-        <motion.p variants={riseItem} className="text-white/60 max-w-[55ch]">
-          Ce qui sort au cinéma, ce qui arrive en streaming, et tout le catalogue par genre.
+        <motion.p variants={riseItem} className="text-white/65 max-w-[55ch] text-base leading-relaxed">
+          Ce qui sort au cinéma, ce qui arrive en streaming, et tout le catalogue mondial classé par genre.
         </motion.p>
         <motion.div variants={riseItem} className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link to="/ce-soir" className="btn-ghost">
             <Icon name="aperture" weight="bold" /> Ce soir, je regarde quoi ?
           </Link>
-          <Link to="/swipe" className="link text-sm font-medium">Trier en swipant</Link>
+          <Link to="/swipe" className="link text-sm font-medium">Trier en swipant (Soirée Duo)</Link>
         </motion.div>
       </motion.div>
 
-      <div className="mb-5">
+      {/* Rangée de tags défilante */}
+      <div className="mb-6">
         <InfiniteTagRow items={CATEGORIES} onSelect={jumpTo} activeLabel={activeCategory} />
       </div>
 
-      <div className="px-4 sm:px-6 md:px-10 flex flex-wrap items-center gap-2.5 mb-12 pb-8 border-b border-white/[0.08]">
-        <FilterSelect icon="sort" label="Trier par" value={sort} onChange={(e) => setSort(e.target.value)} options={SORTS} />
-        <FilterSelect icon="star" label="Note minimale" value={minRating} onChange={(e) => setMinRating(e.target.value)} options={MIN_RATINGS} />
-        <FilterSelect
-          icon="calendar"
-          label="Année"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-          options={[{ value: "", label: "Toutes les années" }, ...YEARS.map((y) => ({ value: y, label: y }))]}
-        />
+      {/* Barre de filtres interactive (Originkit SegmentedControl + Selects) */}
+      <div className="px-4 sm:px-6 md:px-10 flex flex-wrap items-center justify-between gap-4 mb-12 pb-8 border-b border-white/[0.08]">
+        <div className="flex flex-wrap items-center gap-3">
+          <SegmentedControl
+            options={SORTS}
+            value={sort}
+            onChange={setSort}
+            size="sm"
+            layoutId="discover-sort-pill"
+          />
+
+          <FilterSelect icon="star" label="Note minimale" value={minRating} onChange={(e) => setMinRating(e.target.value)} options={MIN_RATINGS} />
+          <FilterSelect
+            icon="calendar"
+            label="Année"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            options={[{ value: "", label: "Toutes les années" }, ...YEARS.map((y) => ({ value: y, label: y }))]}
+          />
+        </div>
+
         <AnimatePresence>
           {isFiltered && (
             <motion.button
@@ -221,9 +239,9 @@ export default function Discover() {
                 setMinRating("");
                 setYear("");
               }}
-              className="btn px-3 py-2.5 text-white/60 hover:text-white"
+              className="btn-chip !text-xs !py-1.5 text-white/60 hover:text-white"
             >
-              <Icon name="x" className="w-3.5 h-3.5" /> Réinitialiser
+              <Icon name="x" className="w-3.5 h-3.5" /> Réinitialiser les filtres
             </motion.button>
           )}
         </AnimatePresence>
@@ -248,7 +266,7 @@ export default function Discover() {
           <div className="h-6 w-48 rounded-full skeleton mb-4" />
           <div className="flex gap-4 overflow-hidden">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="shrink-0 w-32 sm:w-36 md:w-40 lg:w-44 aspect-[2/3] rounded-xl skeleton" />
+              <div key={i} className="shrink-0 w-32 sm:w-36 md:w-40 lg:w-44 aspect-[2/3] rounded-2xl skeleton" />
             ))}
           </div>
         </div>
