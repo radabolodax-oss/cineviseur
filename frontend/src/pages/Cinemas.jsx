@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import CinemaFinder from "../components/CinemaFinder";
+import AdSlot from "../components/AdSlot";
 import { riseItem, stagger } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
 
@@ -17,6 +18,9 @@ export default function Cinemas() {
         </motion.p>
       </motion.div>
       <CinemaFinder />
+      <div className="mt-14">
+        <AdSlot slotId="cinemas-bottom-banner" />
+      </div>
     </div>
   );
 }

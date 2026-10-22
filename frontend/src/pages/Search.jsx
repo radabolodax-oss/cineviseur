@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import MediaCard from "../components/MediaCard";
 import PosterGrid, { PosterSkeleton } from "../components/PosterGrid";
 import Icon from "../components/Icon";
+import AdSlot from "../components/AdSlot";
 import { TextShimmer } from "../components/backgrounds";
 import { riseItem } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
@@ -94,11 +95,16 @@ export default function Search() {
       )}
 
       {!loading && results.length > 0 && (
-        <PosterGrid
-          items={results}
-          getKey={(item) => `${item.media_type}-${item.id}`}
-          render={(item) => <MediaCard item={item} mediaType={item.media_type} />}
-        />
+        <>
+          <PosterGrid
+            items={results}
+            getKey={(item) => `${item.media_type}-${item.id}`}
+            render={(item) => <MediaCard item={item} mediaType={item.media_type} />}
+          />
+          <div className="mt-12">
+            <AdSlot slotId="search-bottom-banner" />
+          </div>
+        </>
       )}
     </div>
   );

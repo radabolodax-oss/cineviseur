@@ -4,6 +4,8 @@ import CarouselRow from "../components/CarouselRow";
 import { AnimatePresence, motion, useAnimationFrame, useMotionValue, useReducedMotion } from "motion/react";
 import Icon from "../components/Icon";
 import SegmentedControl from "../components/SegmentedControl";
+import PrimeBanner from "../components/PrimeBanner";
+import AdSlot from "../components/AdSlot";
 import { SPRING, riseItem, stagger } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
 
@@ -256,7 +258,7 @@ export default function Discover() {
         </AnimatePresence>
       </div>
 
-      {rows.slice(0, visibleCount).map((row) => (
+      {rows.slice(0, visibleCount).map((row, index) => (
         <div id={row.id} key={row.id} className="scroll-mt-20">
           <CarouselRow
             title={row.title}
@@ -267,6 +269,16 @@ export default function Discover() {
             year={year}
             listKind={row.listKind}
           />
+          {index === 1 && (
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-8">
+              <PrimeBanner />
+            </div>
+          )}
+          {index === 4 && (
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-8">
+              <AdSlot slotId="discover-mid-banner" />
+            </div>
+          )}
         </div>
       ))}
 

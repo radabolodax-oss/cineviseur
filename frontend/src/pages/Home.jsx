@@ -13,6 +13,7 @@ import Icon from "../components/Icon";
 import WhenNear from "../components/WhenNear";
 import SpotlightCard from "../components/SpotlightCard";
 import AdSlot from "../components/AdSlot";
+import PrimeBanner from "../components/PrimeBanner";
 import {
   InteractiveSeriesPreview,
   InteractiveTicketPreview,
@@ -387,6 +388,9 @@ export default function Home() {
       <div className="-mt-10 relative z-10 flex flex-col gap-6">
         <CarouselRow title="Tendances de la semaine" staticItems={trending} pending={!trendingLoaded} />
         <CarouselRow title="À l'affiche au cinéma" staticItems={nowPlaying} pending={nowPlaying.length === 0} />
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 w-full my-2">
+          <PrimeBanner />
+        </div>
         <CarouselRow title="Nouveautés en streaming & VOD" staticItems={streaming} pending={!streamingLoaded} />
       </div>
 
