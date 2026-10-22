@@ -1,5 +1,5 @@
 // Fonction serverless Vercel Node.js : gère /api/tmdb/*, /api/cinemas/*, /api/duo/* et /api/health
-const crypto = require("node:crypto");
+import crypto from "node:crypto";
 
 // Store des salons Duo en mémoire globale serverless
 const DUO_ROOMS = (globalThis.__CV_DUO_ROOMS = globalThis.__CV_DUO_ROOMS || new Map());
