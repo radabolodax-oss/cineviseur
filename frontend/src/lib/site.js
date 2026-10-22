@@ -1,12 +1,15 @@
 // Informations de l'éditeur et du déploiement, lues depuis les variables d'environnement (.env).
 const env = import.meta.env;
 
+// Contact légal obfusqué contre le moissonnage automatisé de spams
+const defaultContact = typeof atob !== "undefined" ? atob("Y29udGFjdC5jaW5ldmlzZXVyQGdtYWlsLmNvbQ==") : "";
+
 export const SITE = {
   name: "CineViseur",
   url: (env.VITE_SITE_URL || "https://cineviseur.vercel.app").replace(/\/$/, ""),
   editor: env.VITE_SITE_EDITOR || "CineViseur (Édition et développement indépendant)",
   editorAddress: env.VITE_SITE_ADDRESS || "France / Union Européenne",
-  contactEmail: env.VITE_CONTACT_EMAIL || "contact.cineviseur@gmail.com",
+  contactEmail: env.VITE_CONTACT_EMAIL || defaultContact,
   host: env.VITE_SITE_HOST || "Vercel Inc. — 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis",
   lastLegalUpdate: "22 octobre 2026",
 };

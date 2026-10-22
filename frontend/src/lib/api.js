@@ -372,8 +372,12 @@ export const api = {
       },
     }),
 
-  nearbyCinemas: (lat, lon, radiusKm = 20) =>
-    request(`/api/cinemas/nearby?lat=${lat}&lon=${lon}&radius_km=${radiusKm}`),
+  nearbyCinemas: (lat, lon, radiusKm = 20) => {
+    // Floutage protecteur de la vie privée à ~1.1 km (arrondi à 2 décimales)
+    const blurredLat = Math.round(Number(lat) * 100) / 100;
+    const blurredLon = Math.round(Number(lon) * 100) / 100;
+    return request(`/api/cinemas/nearby?lat=${blurredLat}&lon=${blurredLon}&radius_km=${radiusKm}`);
+  },
 
   tvSeason: (id, seasonNum, lang = "fr") =>
     request(`/api/tmdb/tv/${id}/season/${seasonNum}?lang=${lang}`),
@@ -556,15 +560,20 @@ export const api = {
     const currentRatings = readStore(LS_KEYS.ratings, []);
     let count = 0;
 
+    const sanitizeText = (str) => {
+      if (!str || typeof str !== "string") return "";
+      return str.replace(/<[^>]*>?/gm, "").replace(/[\x00-\x1F\x7F]/g, "").trim().slice(0, 200);
+    };
+
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
       if (!line.trim()) continue;
       const cols = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
       const cleanCols = cols.map((c) => c.replace(/^["']|["']$/g, "").trim());
       
-      const title = nameIdx >= 0 ? cleanCols[nameIdx] : null;
-      const year = yearIdx >= 0 ? cleanCols[yearIdx] : null;
-      const date = dateIdx >= 0 ? cleanCols[dateIdx] : null;
+      const title = nameIdx >= 0 ? sanitizeText(cleanCols[nameIdx]) : null;
+      const year = yearIdx >= 0 ? sanitizeText(cleanCols[yearIdx]) : null;
+      const date = dateIdx >= 0 ? sanitizeText(cleanCols[dateIdx]) : null;
       const rating = ratingIdx >= 0 ? parseFloat(cleanCols[ratingIdx]) : null;
       const tmdbId = tmdbIdx >= 0 && cleanCols[tmdbIdx] ? Number(cleanCols[tmdbIdx]) : null;
 

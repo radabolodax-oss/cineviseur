@@ -130,13 +130,14 @@ export default function Contact() {
       email: email.trim(),
       subject: `[CineViseur] ${categoryLabels[category] || category} - De ${name.trim()}`,
       message: message.trim(),
-      _subject: `Nouveau message CineViseur : ${categoryLabels[category]}`,
-      _template: "table",
-      _captcha: "false", // We use our own superior multi-layer anti-bot
+      honeypot_website: honeypotWebsite,
+      honeypot_phone: honeypotPhone,
+      math_answer: parseInt(userMathAnswer.trim(), 10),
+      math_expected: challenge.answer,
     };
 
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(SITE.contactEmail)}`, {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -145,8 +146,9 @@ export default function Contact() {
         body: JSON.stringify(payload),
       });
 
+      const resData = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(`Erreur serveur (${response.status})`);
+        throw new Error(resData.detail || `Erreur serveur (${response.status})`);
       }
 
       // Record timestamp to enforce anti-flood
@@ -160,7 +162,7 @@ export default function Contact() {
     } catch (err) {
       console.error("Erreur envoi contact:", err);
       setStatus("error");
-      setErrorMessage("Impossible d'envoyer le message automatiquement pour l'instant. Vous pouvez nous écrire directement par e-mail.");
+      setErrorMessage(err.message || "Impossible d'envoyer le message pour l'instant. Veuillez réessayer plus tard.");
     }
   };
 

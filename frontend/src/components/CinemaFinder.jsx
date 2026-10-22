@@ -130,6 +130,9 @@ export default function CinemaFinder({ filmTitle }) {
           <button onClick={start} disabled={status === "locating"} className="btn-primary">
             <Icon name="pin" weight="bold" /> {filmTitle ? "Trouver un cinéma autour de moi" : "Utiliser ma position"}
           </button>
+          <p className="mt-2 text-[11px] text-white/45">
+            Protection vie privée : coordonnées floutées à ~1 km, non conservées sur nos serveurs.
+          </p>
           {status === "locating" && <TextShimmer as="p" className="text-sm">On cherche ta position...</TextShimmer>}
           {status === "error" && <p role="alert" className="text-sm text-rose-300">{error}</p>}
         </div>

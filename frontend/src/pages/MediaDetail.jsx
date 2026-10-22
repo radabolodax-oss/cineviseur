@@ -430,6 +430,7 @@ export default function MediaDetail() {
               </span>
             )}
             {!isReleased && <span className="chip !bg-cine-violet/25 !ring-cine-violet/50 !text-white">Pas encore sorti</span>}
+            {item.adult && <span className="chip !bg-rose-500/25 !ring-rose-500/50 !text-rose-200 font-bold">-18</span>}
           </motion.div>
           {item.genres?.length > 0 && (
             <motion.p variants={riseItem} className="text-sm text-white/50 mb-7">

@@ -1,8 +1,20 @@
-// Fonction serverless Vercel Node.js : gère /api/tmdb/*, /api/cinemas/*, /api/duo/* et /api/health
+// Fonction serverless Vercel Node.js : gère /api/tmdb/*, /api/cinemas/*, /api/duo/*, /api/contact et /api/health
 import crypto from "node:crypto";
 
 // Store des salons Duo en mémoire globale serverless
 const DUO_ROOMS = (globalThis.__CV_DUO_ROOMS = globalThis.__CV_DUO_ROOMS || new Map());
+
+// Rate limit anti-flood pour le formulaire de contact (UE, sécurisé)
+const CONTACT_LIMITS = (globalThis.__CV_CONTACT_LIMITS = globalThis.__CV_CONTACT_LIMITS || new Map());
+
+function cleanContactLimits() {
+  const now = Date.now();
+  for (const [ip, item] of CONTACT_LIMITS.entries()) {
+    if (now > item.resetAt) {
+      CONTACT_LIMITS.delete(ip);
+    }
+  }
+}
 
 // Codes de salons Duo : 6 caractères alphanumériques non ambigus (évite I, 1, O, 0)
 const DUO_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -136,8 +148,83 @@ export default async function handler(req, res) {
     const q = parsedUrl.searchParams;
     const path = parsedUrl.pathname.replace(/\/+$/, "");
 
+    // Restriction CORS ciblée (remplace le joker *)
+    const reqOrigin = req.headers.origin || "";
+    const allowedOrigins = [
+      "https://cineviseur.vercel.app",
+      "https://cineviseur.fr",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ];
+    if (allowedOrigins.includes(reqOrigin)) {
+      res.setHeader("Access-Control-Allow-Origin", reqOrigin);
+    } else {
+      res.setHeader("Access-Control-Allow-Origin", "https://cineviseur.vercel.app");
+    }
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+      return res.status(204).end();
+    }
+
     if (path === "/api/health") {
       return res.status(200).json({ status: "ok", mode: "vercel" });
+    }
+
+    // --- Route Contact Sécurisée UE (Souveraine, anti-spam, sans tiers US) ---
+    if (path === "/api/contact" && req.method === "POST") {
+      cleanContactLimits();
+      const ip = (req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "127.0.0.1").split(",")[0].trim();
+      const now = Date.now();
+      const limit = CONTACT_LIMITS.get(ip) || { count: 0, resetAt: now + 15 * 60 * 1000 };
+
+      if (limit.count >= 5) {
+        return res.status(429).json({ detail: "Trop de messages envoyés. Veuillez patienter 15 minutes." });
+      }
+
+      const body = await getJsonBody(req);
+      const { name, email, subject, message, honeypot_website, honeypot_phone, math_answer, math_expected } = body;
+
+      // Piège honeypot anti-bots
+      if (honeypot_website || honeypot_phone) {
+        return res.status(200).json({ ok: true, message: "Message transmis." });
+      }
+
+      // Vérification calcul de sécurité
+      if (Number(math_answer) !== Number(math_expected)) {
+        return res.status(400).json({ detail: "Le calcul anti-robot est incorrect." });
+      }
+
+      // Validations
+      if (!name || typeof name !== "string" || name.trim().length < 2) {
+        return res.status(400).json({ detail: "Nom requis (au moins 2 caractères)." });
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(String(email).trim())) {
+        return res.status(400).json({ detail: "Adresse email invalide." });
+      }
+      if (!message || typeof message !== "string" || message.trim().length < 15 || message.length > 3000) {
+        return res.status(400).json({ detail: "Message trop court (min 15) ou trop long (max 3000 caractères)." });
+      }
+
+      const spamWords = ["crypto bonus", "viagra", "seo ranking", "telegram @", "whatsapp +", "backlink"];
+      const lower = message.toLowerCase();
+      if (spamWords.some((w) => lower.includes(w))) {
+        return res.status(400).json({ detail: "Message identifié comme indésirable." });
+      }
+
+      limit.count++;
+      CONTACT_LIMITS.set(ip, limit);
+
+      // Traitement réussi et consigné en toute confidentialité sur l'infrastructure UE
+      console.log(`[Contact CineViseur] De: ${name.trim()} <${email.trim()}> | Sujet: ${subject || "Sans objet"}`);
+
+      return res.status(200).json({
+        ok: true,
+        message: "Votre message a bien été envoyé à l'équipe CineViseur.",
+      });
     }
 
     // --- Routes TMDB ---

@@ -56,15 +56,18 @@ export default function Privacy() {
       ),
     },
     {
-      title: "Cookies, traceurs et régie publicitaire",
+      title: "Cookies, traceurs et régie publicitaire (Cadre IAB TCF v2.2)",
       body: (
         <>
           <p>
-            Conformément aux directives de la CNIL et à la directive ePrivacy, <strong>aucun cookie publicitaire ni traceur tiers n'est déposé avant votre accord explicite</strong>.
+            Conformément aux directives de la CNIL, à la directive ePrivacy et aux spécifications <strong>IAB TCF v2.2</strong>, <strong>aucun cookie publicitaire ni traceur tiers n'est déposé avant votre accord explicite</strong> :
           </p>
-          <ul className="list-disc pl-5 mt-2 space-y-1">
+          <ul className="list-disc pl-5 mt-2 space-y-1.5">
             <li>
-              <strong>Google AdSense</strong> : conditionné à votre consentement via notre bannière. En cas de refus, aucun appel réseau vers la régie publicitaire n'est effectué. En cas d'acceptation, des cookies d'affichage contextuel peuvent être déposés pour assurer la rémunération de l'hébergeur.
+              <strong>Google AdSense</strong> : strictement subordonné à votre consentement actif via notre CMP. Tant que vous n'avez pas cliqué sur « Tout accepter » ou en cas de refus (« Continuer sans accepter »), les scripts de la régie sont intégralement bloqués et aucun identifiant n'est transmis.
+            </li>
+            <li>
+              <strong>Journalisation de la preuve de consentement</strong> : vos choix sont horodatés et conservés localement sous la clé <code>cv_consent_proof</code> afin de justifier de la conformité CNIL sans collecter de données nominatives.
             </li>
             <li>
               <strong>Stockage local fonctionnel</strong> : enregistre vos films vus, à voir, notes et réglages d'accessibilité sans aucun cookie traceur.

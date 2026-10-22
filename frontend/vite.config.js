@@ -94,16 +94,17 @@ export default defineConfig(({ mode }) => {
       // Mode prompt : alerte l'utilisateur dès qu'un patch/mise à jour est disponible
       // sans l'obliger à vider son cache ou perdre ses données locales.
       VitePWA({
-        registerType: 'prompt',
+        registerType: 'autoUpdate',
         manifest: false,
         devOptions: {
-          enabled: true,
+          enabled: false,
         },
         workbox: {
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
           globPatterns: ['**/*.{js,css,html,svg,png,jpg,woff2}'],
           navigateFallback: '/index.html',
-          // L'API est sur un autre domaine et les réponses dépendent du compte connecté :
-          // rien de tout cela ne doit être mis en cache.
           navigateFallbackDenylist: [/^\/api\//],
           runtimeCaching: [
             {
