@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion, useMotionValue, useTransform } from "motion/react";
-import { api } from "../lib/api";
+import { api, generateClientRoomCode } from "../lib/api";
 import { mediaTitle, mediaYear, tmdbImage } from "../lib/tmdb";
 import { libraryKey, setLibraryStatus } from "../lib/library";
 import { play, vibrate } from "../lib/feedback";
@@ -275,7 +275,7 @@ export default function Swipe() {
       play("pop");
     } catch {
       // Fallback local
-      const fallbackCode = String(Math.floor(1000 + Math.random() * 9000));
+      const fallbackCode = generateClientRoomCode();
       setRoomCode(fallbackCode);
       setDuoRole("host");
     } finally {

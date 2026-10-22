@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { SITE } from "../lib/site";
+import { SITE, AFFILIATE } from "../lib/site";
 import { Logo } from "./Navbar";
 import { useInstall } from "./InstallGuide";
 import Icon from "./Icon";
@@ -42,7 +42,7 @@ export default function Footer() {
               to="/contact"
               className="inline-flex items-center gap-1.5 mt-3 text-xs text-white/50 hover:text-cine-emerald transition-colors"
             >
-              <span>✉</span> {SITE.contactEmail}
+              <span>✉</span> Formulaire de contact
             </Link>
             {!installed && (
               <div className="mt-5">
@@ -66,6 +66,17 @@ export default function Footer() {
             <Item to="/watchlist">Ma liste de visionnage</Item>
             <Item to="/recap">Mon année ciné & Journal</Item>
             <Item to="/profile">Réglages, export & données</Item>
+            <li>
+              <a
+                href={AFFILIATE.kofiUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${LINK} flex items-center gap-1.5 text-amber-300 hover:text-amber-200 font-medium`}
+              >
+                <span>☕ Offrir un café</span>
+                <span className="text-[10px] text-amber-400/80">↗</span>
+              </a>
+            </li>
           </Column>
 
           <Column title="Légal & Vie privée">

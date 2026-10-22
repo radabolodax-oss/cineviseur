@@ -45,29 +45,34 @@ export default function Privacy() {
             <strong>Recherche de cinémas proches</strong> : lorsque vous cliquez sur « Utiliser ma position », votre navigateur sollicite votre autorisation de géolocalisation. Vos coordonnées GPS servent uniquement à interroger les serveurs cartographiques (OpenStreetMap / Overpass) et <strong>ne sont jamais enregistrées ni conservées</strong>.
           </li>
           <li>
-            <strong>Mode Soirée Duo (Swipe à deux)</strong> : lors d'une session partagée, un code de salon éphémère est généré pour synchroniser les votes en direct. Ces données de session temporaires expirent et sont effacées à la clôture de la session.
+            <strong>Mode Soirée Duo (Swipe à deux)</strong> : lors d'une session partagée, un code de salon temporaire (6 caractères cryptographiques) est généré pour synchroniser les votes en direct. Ces salons expirent automatiquement après 2 heures et aucune donnée n'est conservée.
           </li>
           <li>
             <strong>Mesure d'audience et cookies</strong> : {analyticsEnabled
-              ? "une mesure d'audience anonymisée et respectueuse de la vie privée peut être activée selon vos préférences de cookies."
-              : "aucune mesure d'audience intrusive n'est active par défaut. Vous gardez la main sur vos préférences à tout moment."}
+              ? "une mesure d'audience anonymisée peut être activée après votre accord explicite."
+              : "aucune mesure d'audience intrusive n'est active par défaut. Vos choix sont modifiables à tout moment via la bannière de consentement."}
           </li>
         </ul>
       ),
     },
     {
-      title: "Cookies et stockage local",
+      title: "Cookies, traceurs et régie publicitaire",
       body: (
         <>
-          <p>CineViseur n'exploite aucun cookie publicitaire tiers intrusif à des fins de pistage transversal. Votre navigateur conserve :</p>
-          <ul className="list-disc pl-5 mt-2 space-y-1">
-            <li>Vos choix de consentement (bannière de cookies et préférences) ;</li>
-            <li>Vos listes de visionnage, notes et progression de séries (stockage local) ;</li>
-            <li>Vos réglages d'accessibilité et d'effets sonores.</li>
-          </ul>
-          <p className="mt-2">
-            Les bandes-annonces sont intégrées via le domaine <strong>youtube-nocookie.com</strong> (mode de confidentialité renforcée), qui limite le dépôt de cookies tant que vous ne lancez pas activement la lecture vidéo.
+          <p>
+            Conformément aux directives de la CNIL et à la directive ePrivacy, <strong>aucun cookie publicitaire ni traceur tiers n'est déposé avant votre accord explicite</strong>.
           </p>
+          <ul className="list-disc pl-5 mt-2 space-y-1">
+            <li>
+              <strong>Google AdSense</strong> : conditionné à votre consentement via notre bannière. En cas de refus, aucun appel réseau vers la régie publicitaire n'est effectué. En cas d'acceptation, des cookies d'affichage contextuel peuvent être déposés pour assurer la rémunération de l'hébergeur.
+            </li>
+            <li>
+              <strong>Stockage local fonctionnel</strong> : enregistre vos films vus, à voir, notes et réglages d'accessibilité sans aucun cookie traceur.
+            </li>
+            <li>
+              <strong>Bandes-annonces YouTube</strong> : intégrées via le domaine de confidentialité renforcée (<code>youtube-nocookie.com</code>), ne déposant pas de cookies préalables.
+            </li>
+          </ul>
         </>
       ),
     },
@@ -76,24 +81,45 @@ export default function Privacy() {
       body: (
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>The Movie Database (TMDB)</strong> : fourniture des fiches, métadonnées, casting et affiches cinématographiques. Les visuels sont chargés depuis leurs serveurs de distribution (CDN).
+            <strong>The Movie Database (TMDB)</strong> : métadonnées et affiches cinématographiques, relayées de façon sécurisée par notre serveur proxy pour protéger les clés d'API.
           </li>
           <li>
             <strong>OpenStreetMap / Overpass API</strong> : localisation géographique des salles de cinéma à proximité immédiate.
           </li>
           <li>
-            <strong>YouTube (Google LLC)</strong> : lecture des bandes-annonces officielles à la demande de l'utilisateur.
+            <strong>YouTube (Google LLC)</strong> : lecture des bandes-annonces officielles à la demande.
           </li>
           <li>
-            <strong>Vercel Inc.</strong> : hébergement de l'infrastructure web, distribution de contenu et sécurité réseau HTTPS.
+            <strong>Vercel Inc.</strong> : hébergement de l'infrastructure web, fonctions serverless et distribution CDN sécurisée HTTPS.
           </li>
           <li>
-            <strong>Google AdSense (Google LLC)</strong> : diffusion d'annonces publicitaires contextuelles et discrètes finançant l'hébergement et le maintien gratuit de la plateforme.
+            <strong>Google AdSense (Google LLC)</strong> : régie publicitaire sous réserve de consentement préalable.
           </li>
           <li>
-            <strong>Amazon Partenaires (Amazon Europe Core S.à r.l.)</strong> : redirection affiliée vers les offres de streaming légal Prime Video et éditions physiques.
+            <strong>Amazon Partenaires (Amazon Europe Core S.à r.l.)</strong> : redirection vers les offres d'achat, de location VOD et équipements home-cinéma.
           </li>
         </ul>
+      ),
+    },
+    {
+      title: "Transferts de données hors Union Européenne (RGPD Chapitre V)",
+      body: (
+        <div className="space-y-2">
+          <p>
+            Certains prestataires techniques indispensables au fonctionnement du service sont établis aux États-Unis (notamment <strong>Vercel Inc.</strong> pour l'hébergement réseau et <strong>Google LLC</strong> pour YouTube et la régie AdSense sous consentement).
+          </p>
+          <p>
+            Ces transferts de données sont strictement encadrés conformément au Chapitre V du RGPD par :
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              La <strong>décision d'adéquation de la Commission Européenne du 10 juillet 2023</strong> (EU-U.S. Data Privacy Framework — DPF), sous laquelle ces entités sont certifiées ;
+            </li>
+            <li>
+              Et/ou les <strong>Clauses Contractuelles Types (CCT / SCC)</strong> adoptées par la Commission Européenne dans les accords de traitement des données (DPA) souscrits avec ces hébergeurs.
+            </li>
+          </ul>
+        </div>
       ),
     },
     {
@@ -136,7 +162,7 @@ export default function Privacy() {
   return (
     <LegalPage
       title="Politique de confidentialité"
-      description="Transparence sur l'utilisation des données, l'architecture 100% locale et vos droits RGPD sur CineViseur."
+      description="Transparence sur l'utilisation des données, l'architecture locale et vos droits RGPD sur CineViseur."
       sections={sections}
     />
   );

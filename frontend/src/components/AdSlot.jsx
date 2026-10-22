@@ -1,15 +1,26 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ADSENSE } from "../lib/site";
+import { CONSENT_CHANGED_EVENT, readConsentChoice } from "./CookieConsent";
 
 /**
  * Composant de bannière publicitaire Google AdSense propre et responsive.
+ * RGPD / ePrivacy : ne se charge que si le consentement de l'utilisateur a été accordé.
  * Se charge sans bloquer le rendu et gère gracieusement les bloqueurs de publicité (AdBlock).
  */
 export default function AdSlot({ slotId, format = "auto", responsive = "true", className = "" }) {
   const adRef = useRef(null);
+  const [hasConsent, setHasConsent] = useState(() => readConsentChoice() === "granted");
 
   useEffect(() => {
-    if (!ADSENSE.pubId) return;
+    const onConsentChanged = (e) => {
+      setHasConsent(e.detail?.consent === "granted");
+    };
+    window.addEventListener(CONSENT_CHANGED_EVENT, onConsentChanged);
+    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, onConsentChanged);
+  }, []);
+
+  useEffect(() => {
+    if (!ADSENSE.pubId || !hasConsent) return;
 
     try {
       if (typeof window !== "undefined") {
@@ -19,10 +30,10 @@ export default function AdSlot({ slotId, format = "auto", responsive = "true", c
       // Ignorer silencieusement si bloqué par AdBlock
       console.debug("AdSlot: AdSense script blocked or not loaded yet.", err);
     }
-  }, [slotId]);
+  }, [slotId, hasConsent]);
 
-  if (!ADSENSE.pubId) {
-    // Si aucun ID éditeur AdSense n'est configuré pour l'instant, on n'affiche rien d'intrusif
+  if (!ADSENSE.pubId || !hasConsent) {
+    // Si pas de pubId ou si le consentement n'est pas accordé, zéro pub affichée
     return null;
   }
 

@@ -1,6 +1,4 @@
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000" : "");
-const TMDB_BASE = "https://api.themoviedb.org/3";
-const FALLBACK_TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY || "21bd7c2bfbde3a1cd4f82dfbe7781f76";
 
 const SORT_FIELDS = {
   movie: {
@@ -16,6 +14,14 @@ const SORT_FIELDS = {
     title: "original_name.asc",
   },
 };
+
+const DUO_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+export function generateClientRoomCode() {
+  const bytes = new Uint8Array(6);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => DUO_CODE_CHARS[b % DUO_CODE_CHARS.length]).join("");
+}
 
 // --- Stockage dans le cache local du navigateur (sans compte ni mot de passe) ---
 const LS_KEYS = {
@@ -71,17 +77,6 @@ function currentLocalUser() {
 
 function requireLocalUser() {
   return LOCAL_USER;
-}
-
-async function directTmdb(tmdbPath, params = {}) {
-  const url = new URL(`${TMDB_BASE}${tmdbPath}`);
-  for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
-  }
-  url.searchParams.set("api_key", FALLBACK_TMDB_KEY);
-  const res = await fetch(url.toString());
-  if (!res.ok) throw new Error("Erreur TMDB");
-  return res.json();
 }
 
 async function request(path, { method = "GET", body, fallback } = {}) {
@@ -154,15 +149,10 @@ export const api = {
     return Promise.resolve(null);
   },
 
-  trending: (lang = "fr") =>
-    request(`/api/tmdb/trending?lang=${lang}`, {
-      fallback: () => directTmdb("/trending/all/week", { language: lang }),
-    }),
+  trending: (lang = "fr") => request(`/api/tmdb/trending?lang=${lang}`),
 
   genres: (mediaType, lang = "fr") =>
-    request(`/api/tmdb/genres?media_type=${mediaType}&lang=${lang}`, {
-      fallback: () => directTmdb(`/genre/${mediaType}/list`, { language: lang }),
-    }),
+    request(`/api/tmdb/genres?media_type=${mediaType}&lang=${lang}`),
 
   discover: (mediaType, lang = "fr", { genre, sort, minRating, year, page } = {}) => {
     const params = new URLSearchParams({ media_type: mediaType, lang });
@@ -171,98 +161,20 @@ export const api = {
     if (minRating) params.set("min_rating", minRating);
     if (year) params.set("year", year);
     if (page) params.set("page", page);
-    return request(`/api/tmdb/discover?${params.toString()}`, {
-      fallback: () => {
-        const tmdbParams = {
-          language: lang,
-          sort_by: SORT_FIELDS[mediaType]?.[sort || "popularity"] || "popularity.desc",
-          page: page || 1,
-        };
-        if (genre) tmdbParams.with_genres = genre;
-        if (minRating) {
-          tmdbParams["vote_average.gte"] = minRating;
-          tmdbParams["vote_count.gte"] = 50;
-        }
-        if (sort === "rating") tmdbParams["vote_count.gte"] = 50;
-        if (year) {
-          tmdbParams[mediaType === "movie" ? "primary_release_year" : "first_air_date_year"] = year;
-        }
-        return directTmdb(`/discover/${mediaType}`, tmdbParams);
-      },
-    });
+    return request(`/api/tmdb/discover?${params.toString()}`);
   },
 
   search: (query, lang = "fr") =>
-    request(`/api/tmdb/search?query=${encodeURIComponent(query)}&lang=${lang}`, {
-      fallback: () => directTmdb("/search/multi", { language: lang, query, page: 1 }),
-    }),
+    request(`/api/tmdb/search?query=${encodeURIComponent(query)}&lang=${lang}`),
 
   list: (kind, lang = "fr", page = 1) =>
-    request(`/api/tmdb/lists/${kind}?lang=${lang}&page=${page}`, {
-      fallback: () => {
-        const today = new Date().toISOString().slice(0, 10);
-
-        if (kind === "now_playing") {
-          return directTmdb("/movie/now_playing", { language: lang, region: "FR", page }).then((res) => ({
-            ...res,
-            results: (res.results || []).filter((m) => m.poster_path),
-          }));
-        }
-
-        if (kind === "upcoming") {
-          // Sorties cinéma françaises rigoureuses : films à venir triés par date chronologique
-          return directTmdb("/discover/movie", {
-            language: lang,
-            region: "FR",
-            "primary_release_date.gte": today,
-            sort_by: "popularity.desc",
-            page,
-          }).then((res) => ({
-            ...res,
-            results: (res.results || [])
-              .filter((m) => m.poster_path && m.release_date && m.release_date >= today)
-              .sort((a, b) => a.release_date.localeCompare(b.release_date)),
-          }));
-        }
-
-        if (kind === "streaming" || kind === "vod_releases") {
-          // Sorties VOD & Streaming récentes en France (SVOD, location et achat)
-          const eightMonthsAgo = new Date(Date.now() - 240 * 86400000).toISOString().slice(0, 10);
-          return directTmdb("/discover/movie", {
-            language: lang,
-            page,
-            watch_region: "FR",
-            with_watch_monetization_types: "flatrate|rent|buy",
-            "primary_release_date.gte": eightMonthsAgo,
-            "primary_release_date.lte": today,
-            sort_by: "popularity.desc",
-          }).then((res) => ({
-            ...res,
-            results: (res.results || []).filter((m) => m.poster_path),
-          }));
-        }
-
-        throw new Error("Liste invalide");
-      },
-    }),
+    request(`/api/tmdb/lists/${kind}?lang=${lang}&page=${page}`),
 
   details: (mediaType, id, lang = "fr") =>
-    request(`/api/tmdb/${mediaType}/${id}?lang=${lang}`, {
-      fallback: () =>
-        directTmdb(`/${mediaType}/${id}`, {
-          language: lang,
-          append_to_response: `credits,videos,similar,watch/providers${mediaType === "movie" ? ",release_dates" : ""}`,
-        }),
-    }),
+    request(`/api/tmdb/${mediaType}/${id}?lang=${lang}`),
 
   person: (id, lang = "fr") =>
-    request(`/api/tmdb/person/${id}?lang=${lang}`, {
-      fallback: () =>
-        directTmdb(`/person/${id}`, {
-          language: lang,
-          append_to_response: "combined_credits",
-        }),
-    }),
+    request(`/api/tmdb/person/${id}?lang=${lang}`),
 
   watchlist: () =>
     request("/api/watchlist", {
@@ -464,9 +376,7 @@ export const api = {
     request(`/api/cinemas/nearby?lat=${lat}&lon=${lon}&radius_km=${radiusKm}`),
 
   tvSeason: (id, seasonNum, lang = "fr") =>
-    request(`/api/tmdb/tv/${id}/season/${seasonNum}?lang=${lang}`, {
-      fallback: () => directTmdb(`/tv/${id}/season/${seasonNum}`, { language: lang }),
-    }),
+    request(`/api/tmdb/tv/${id}/season/${seasonNum}?lang=${lang}`),
 
   // Suivi précis des épisodes pour les séries (style Trakt / TV Time)
   getEpisodesProgress: (tvId) => {
@@ -536,7 +446,7 @@ export const api = {
     return store[tvId];
   },
 
-  // Export complet de toutes les données CineViseur
+  // Export complet de toutes les données CineViseur au format JSON
   exportData: () => {
     return {
       version: 2,
@@ -546,6 +456,45 @@ export const api = {
       alerts: readStore(LS_KEYS.alerts, []),
       episodes: readStore(LS_KEYS.episodes, {}),
     };
+  },
+
+  // Export sécurisé au format CSV avec protection anti-injection Excel / Formules
+  exportCsv: () => {
+    const sanitize = (val) => {
+      if (val === null || val === undefined) return "";
+      let str = String(val);
+      // Neutralise l'injection de formules Excel/Calc (=, +, -, @, tabulation, retour chariot)
+      if (/^[=+\-@\t\r]/.test(str)) {
+        str = "'" + str;
+      }
+      if (str.includes('"') || str.includes(",") || str.includes("\n")) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const watchlist = readStore(LS_KEYS.watchlist, []);
+    const ratings = readStore(LS_KEYS.ratings, []);
+    const ratingsMap = new Map(ratings.map((r) => [`${r.media_type}:${r.media_id}`, r.score]));
+
+    const headers = ["Titre", "Annee", "Type", "Statut", "Note_sur_10", "Date_ajout", "Date_vu"];
+    const rows = [headers.join(",")];
+
+    for (const item of watchlist) {
+      const rating = ratingsMap.get(`${item.media_type}:${item.media_id}`) ?? "";
+      rows.push(
+        [
+          sanitize(item.title),
+          sanitize(item.year),
+          sanitize(item.media_type),
+          sanitize(item.status),
+          sanitize(rating),
+          sanitize(item.added_at),
+          sanitize(item.watched_at),
+        ].join(",")
+      );
+    }
+    return rows.join("\r\n");
   },
 
   // Import de données CineViseur JSON
@@ -586,6 +535,8 @@ export const api = {
 
   // Import de CSV Letterboxd ou Trakt
   importCsv: async (csvText) => {
+    if (!csvText || typeof csvText !== "string") throw new Error("Fichier vide");
+    if (csvText.length > 2 * 1024 * 1024) throw new Error("Fichier trop volumineux (maximum 2 Mo)");
     const lines = csvText.trim().split(/\r?\n/);
     if (lines.length < 2) throw new Error("Fichier CSV vide ou invalide");
     
@@ -665,7 +616,7 @@ export const api = {
       method: "POST",
       body: data,
       fallback: async () => ({
-        code: String(Math.floor(1000 + Math.random() * 9000)),
+        code: generateClientRoomCode(),
         host_name: data.host_name || "Hôte",
       }),
     }),

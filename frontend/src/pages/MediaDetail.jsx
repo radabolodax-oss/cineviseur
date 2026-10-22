@@ -19,6 +19,7 @@ import CollectorTicketModal from "../components/CollectorTicketModal";
 import TvEpisodeTracker from "../components/TvEpisodeTracker";
 import AdSlot from "../components/AdSlot";
 import CollectorShop from "../components/CollectorShop";
+import VpnCallout from "../components/VpnCallout";
 import { KineticTitle, Reveal, TiltCard } from "../components/motion";
 import { EASE_OUT, SPRING, riseItem, stagger } from "../lib/motionTokens";
 
@@ -616,6 +617,8 @@ export default function MediaDetail() {
               </div>
             ))}
           </div>
+
+          <VpnCallout />
 
           <div className="mt-5 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-white/50">
             <p>Disponibilités de streaming en France certifiées par JustWatch.</p>

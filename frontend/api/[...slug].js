@@ -1,12 +1,26 @@
-// Fonction serverless Vercel Node.js : gère /api/tmdb/*, /api/cinemas/* et /api/health
+// Fonction serverless Vercel Node.js : gère /api/tmdb/*, /api/cinemas/*, /api/duo/* et /api/health
+const crypto = require("node:crypto");
 
 // Store des salons Duo en mémoire globale serverless
-const DUO_ROOMS = globalThis.__CV_DUO_ROOMS = globalThis.__CV_DUO_ROOMS || new Map();
+const DUO_ROOMS = (globalThis.__CV_DUO_ROOMS = globalThis.__CV_DUO_ROOMS || new Map());
+
+// Codes de salons Duo : 6 caractères alphanumériques non ambigus (évite I, 1, O, 0)
+const DUO_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function generateSecureDuoCode() {
+  const bytes = crypto.randomBytes(6);
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += DUO_CODE_CHARS[bytes[i] % DUO_CODE_CHARS.length];
+  }
+  return code;
+}
 
 function cleanOldRooms() {
   const now = Date.now();
+  // Expiration automatique des salons après 2 heures (au lieu de 24h)
   for (const [code, r] of DUO_ROOMS.entries()) {
-    if (now - r.created_at > 24 * 60 * 60 * 1000) {
+    if (now - r.created_at > 2 * 60 * 60 * 1000) {
       DUO_ROOMS.delete(code);
     }
   }
@@ -180,12 +194,12 @@ export default async function handler(req, res) {
         if (result.cacheControl) res.setHeader("Cache-Control", result.cacheControl);
         return res.status(result.status).json(result.data);
       }
-      if (kind === "streaming") {
+      if (kind === "streaming" || kind === "vod_releases") {
         const result = await tmdbGet("/discover/movie", {
           language: lang,
           page,
           watch_region: "FR",
-          with_watch_monetization_types: "flatrate",
+          with_watch_monetization_types: "flatrate|rent|buy",
           sort_by: "popularity.desc",
         });
         if (result.cacheControl) res.setHeader("Cache-Control", result.cacheControl);
@@ -323,7 +337,7 @@ export default async function handler(req, res) {
     if (path === "/api/duo/create" && req.method === "POST") {
       cleanOldRooms();
       const body = await getJsonBody(req);
-      const code = String(Math.floor(1000 + Math.random() * 9000));
+      const code = generateSecureDuoCode();
       const deck = Array.isArray(body.deck) ? body.deck.slice(0, 40) : [];
       const room = {
         code,
@@ -345,7 +359,7 @@ export default async function handler(req, res) {
     if (path === "/api/duo/join" && req.method === "POST") {
       cleanOldRooms();
       const body = await getJsonBody(req);
-      const code = String(body.code || "").trim();
+      const code = String(body.code || "").trim().toUpperCase();
       const room = DUO_ROOMS.get(code);
       if (!room) {
         return res.status(404).json({ detail: "Salon introuvable ou expiré" });
@@ -363,7 +377,7 @@ export default async function handler(req, res) {
 
     if (path === "/api/duo/vote" && req.method === "POST") {
       const body = await getJsonBody(req);
-      const code = String(body.code || "").trim();
+      const code = String(body.code || "").trim().toUpperCase();
       const role = body.role === "guest" ? "guest" : "host";
       const action = body.action; // "like", "skip", "watched"
       const movieId = Number(body.movieId);
@@ -400,7 +414,7 @@ export default async function handler(req, res) {
     }
 
     if (path === "/api/duo/status") {
-      const code = String(q.get("code") || "").trim();
+      const code = String(q.get("code") || "").trim().toUpperCase();
       const room = DUO_ROOMS.get(code);
       if (!room) {
         return res.status(404).json({ detail: "Salon introuvable" });

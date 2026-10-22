@@ -1,5 +1,4 @@
 // Informations de l'éditeur et du déploiement, lues depuis les variables d'environnement (.env).
-// Tant qu'une valeur n'est pas renseignée, la page légale affiche clairement « à compléter ».
 const env = import.meta.env;
 
 export const SITE = {
@@ -9,12 +8,10 @@ export const SITE = {
   editorAddress: env.VITE_SITE_ADDRESS || "France / Union Européenne",
   contactEmail: env.VITE_CONTACT_EMAIL || "contact.cineviseur@gmail.com",
   host: env.VITE_SITE_HOST || "Vercel Inc. — 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis",
-  lastLegalUpdate: "21 octobre 2026",
+  lastLegalUpdate: "22 octobre 2026",
 };
 
 // Mesure d'audience : désactivée tant que le fournisseur n'est pas configuré.
-// Plausible : VITE_ANALYTICS_PROVIDER=plausible, VITE_ANALYTICS_ID=mon-domaine.fr
-// Umami     : VITE_ANALYTICS_PROVIDER=umami, VITE_ANALYTICS_ID=<website-id>, VITE_ANALYTICS_SRC=https://.../script.js
 export const ANALYTICS = {
   provider: env.VITE_ANALYTICS_PROVIDER || null,
   id: env.VITE_ANALYTICS_ID || null,
@@ -30,8 +27,10 @@ export const ADSENSE = {
   pubId: env.VITE_ADSENSE_PUB_ID || "ca-pub-4993578792461847",
 };
 
-// Liens partenaires et affiliation (Prime Video, Apple TV, etc.)
+// Liens partenaires et affiliation (Prime Video, Apple TV, Amazon, VPN, Soutien)
 export const AFFILIATE = {
   amazonTag: env.VITE_AMAZON_AFFILIATE_TAG || "cineviseur-21",
   appleToken: env.VITE_APPLE_AFFILIATE_TOKEN || "",
+  kofiUrl: env.VITE_KOFI_URL || "https://ko-fi.com/cineviseur",
+  vpnUrl: env.VITE_VPN_AFFILIATE_URL || "https://nordvpn.com/fr/special-offer/?utm_medium=affiliate&utm_source=cineviseur",
 };

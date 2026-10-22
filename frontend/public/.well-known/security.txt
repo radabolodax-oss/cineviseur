@@ -1,0 +1,9 @@
+# CineViseur Security Policy
+# RFC 9116: https://www.rfc-editor.org/rfc/rfc9116
+
+Contact: mailto:contact.cineviseur@gmail.com
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: fr, en
+Canonical: https://cineviseur.vercel.app/.well-known/security.txt
+Policy: https://cineviseur.vercel.app/confidentialite
+Acknowledgments: https://cineviseur.vercel.app/mentions-legales

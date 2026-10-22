@@ -13,6 +13,8 @@ import Icon from "../components/Icon";
 import WhenNear from "../components/WhenNear";
 import AdSlot from "../components/AdSlot";
 import PrimeBanner from "../components/PrimeBanner";
+import HomeCinemaGear from "../components/HomeCinemaGear";
+import NewsletterCard from "../components/NewsletterCard";
 import {
   InteractiveSeriesPreview,
   InteractiveTicketPreview,
@@ -398,7 +400,11 @@ export default function Home() {
 
       <CozyGenreShelf items={GENRES} />
 
+      <HomeCinemaGear />
+
       <FeatureShowcase />
+
+      <NewsletterCard />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
         <AdSlot slotId="home-bottom-banner" />

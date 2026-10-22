@@ -6,6 +6,7 @@ import { play, setSoundsEnabled, soundsEnabled } from "../lib/feedback";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import Icon from "../components/Icon";
+import SupportCard from "../components/SupportCard";
 import { GlowCard } from "../components/motion";
 import { forceAppUpdate } from "../lib/pwa";
 import { EASE_OUT, SPRING, riseItem, stagger } from "../lib/motionTokens";
@@ -131,7 +132,22 @@ export default function Profile() {
     a.download = `sauvegarde-cineviseur-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setImportStatus("Sauvegarde exportée avec succès !");
+    setImportStatus("Sauvegarde JSON exportée avec succès !");
+    setTimeout(() => setImportStatus(""), 4000);
+  };
+
+  // Exportation au format CSV sécurisé
+  const handleExportCsv = () => {
+    play("tick");
+    const csv = api.exportCsv();
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bibliotheque-cineviseur-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setImportStatus("Tableau CSV exporté avec succès !");
     setTimeout(() => setImportStatus(""), 4000);
   };
 
@@ -273,32 +289,41 @@ export default function Profile() {
         <input type="file" ref={csvInputRef} accept=".csv" onChange={handleCsvFile} className="hidden" />
         <input type="file" ref={jsonInputRef} accept=".json" onChange={handleJsonFile} className="hidden" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <button
             type="button"
             onClick={() => csvInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-sm font-medium text-white"
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
           >
             <Icon name="download" className="w-4 h-4 text-cine-soft" />
-            <span>Importer Letterboxd / Trakt (.csv)</span>
+            <span>Importer CSV (.csv)</span>
           </button>
 
           <button
             type="button"
             onClick={handleExport}
-            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-sm font-medium text-white"
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
           >
             <Icon name="share" className="w-4 h-4 text-cine-soft" />
-            <span>Exporter ma sauvegarde (.json)</span>
+            <span>Sauvegarde (.json)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
+          >
+            <Icon name="share" className="w-4 h-4 text-emerald-400" />
+            <span>Exporter tableur (.csv)</span>
           </button>
 
           <button
             type="button"
             onClick={() => jsonInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-sm font-medium text-white"
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
           >
             <Icon name="plus" className="w-4 h-4 text-cine-soft" />
-            <span>Restaurer une sauvegarde (.json)</span>
+            <span>Restaurer (.json)</span>
           </button>
         </div>
       </motion.section>
@@ -352,15 +377,10 @@ export default function Profile() {
         </Link>
       </motion.section>
 
-      {/* Transparence & Modèle économique */}
-      <motion.section variants={riseItem} className="mt-12 p-5 rounded-2xl border border-white/10 bg-white/[0.02] max-w-xl">
-        <div className="flex items-center gap-2 mb-2 text-cine-emerald font-semibold text-sm">
-          <span>✨</span> Service 100% gratuit & indépendant
-        </div>
-        <p className="text-xs text-white/70 leading-relaxed">
-          CineViseur ne vend pas vos données personnelles et reste accessible sans abonnement payant. Pour financer l'infrastructure, l'hébergement et l'accès aux API de cinéma, le site se rémunère grâce à quelques encarts publicitaires discrets. Merci pour votre soutien !
-        </p>
-      </motion.section>
+      {/* Soutenir CineViseur (Projet Indépendant / Don libre) */}
+      <motion.div variants={riseItem} className="max-w-xl">
+        <SupportCard />
+      </motion.div>
 
       {/* Suppression du cache */}
       <motion.section variants={riseItem} className="mt-16 pt-8 border-t border-white/[0.08] max-w-xl">
