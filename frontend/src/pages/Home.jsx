@@ -14,7 +14,7 @@ import WhenNear from "../components/WhenNear";
 import AdSlot from "../components/AdSlot";
 import PrimeBanner from "../components/PrimeBanner";
 import HomeCinemaGear from "../components/HomeCinemaGear";
-import QuickDecisionCard from "../components/QuickDecisionCard";
+import MoodInspirer from "../components/MoodInspirer";
 import {
   InteractiveSeriesPreview,
   InteractiveTicketPreview,
@@ -404,7 +404,7 @@ export default function Home() {
 
       <FeatureShowcase />
 
-      <QuickDecisionCard />
+      <MoodInspirer />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
         <AdSlot slotId="home-bottom-banner" />
