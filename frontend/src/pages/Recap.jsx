@@ -225,9 +225,19 @@ export default function Recap() {
                   />
                 ))}
               </div>
-              <button onClick={() => shareImage(stats, yearValue)} className="btn-primary mt-10">
-                <Icon name="download" weight="bold" /> Partager mon récap
-              </button>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <button onClick={() => shareImage(stats, yearValue)} className="btn-primary">
+                  <Icon name="download" weight="bold" /> Partager mon récap
+                </button>
+                <a
+                  href={AFFILIATE.kofiUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-200 font-semibold text-sm transition-all shadow-[0_4px_16px_-4px_rgba(245,158,11,0.3)] active:scale-95"
+                >
+                  <span>☕ Offrir un café</span>
+                </a>
+              </div>
             </>
           ),
         },

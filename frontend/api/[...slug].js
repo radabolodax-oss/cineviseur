@@ -173,15 +173,30 @@ export default async function handler(req, res) {
       return res.status(200).json({ status: "ok", mode: "vercel" });
     }
 
-    // --- Route Contact Sécurisée UE (Souveraine, anti-spam, sans tiers US) ---
+    // --- Route Contact Sécurisée UE (Souveraine, anti-spam, sans tiers US, rate-limit par hash IP) ---
     if (path === "/api/contact" && req.method === "POST") {
       cleanContactLimits();
-      const ip = (req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "127.0.0.1").split(",")[0].trim();
+      const rawIp = (req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "127.0.0.1").split(",")[0].trim();
+      const ipHash = crypto.createHash("sha256").update(rawIp + "cv-rate-salt").digest("hex").slice(0, 16);
       const now = Date.now();
-      const limit = CONTACT_LIMITS.get(ip) || { count: 0, resetAt: now + 15 * 60 * 1000 };
+      const limit = CONTACT_LIMITS.get(ipHash) || { attempts: 0, resetAt: now + 15 * 60 * 1000 };
 
-      if (limit.count >= 5) {
-        return res.status(429).json({ detail: "Trop de messages envoyés. Veuillez patienter 15 minutes." });
+      // Comptage immédiat de toute tentative (valide ou invalide) pour neutraliser le brute-force
+      limit.attempts++;
+      CONTACT_LIMITS.set(ipHash, limit);
+
+      const remaining = Math.max(0, 5 - limit.attempts);
+      res.setHeader("X-RateLimit-Limit", "5");
+      res.setHeader("X-RateLimit-Remaining", String(remaining));
+
+      if (limit.attempts > 5) {
+        const retryAfterSeconds = Math.max(1, Math.ceil((limit.resetAt - now) / 1000));
+        res.setHeader("Retry-After", String(retryAfterSeconds));
+        return res.status(429).json({
+          error: "Too Many Requests",
+          detail: "Trop de tentatives. Veuillez patienter 15 minutes avant de réessayer.",
+          retryAfter: retryAfterSeconds,
+        });
       }
 
       const body = await getJsonBody(req);
@@ -214,9 +229,6 @@ export default async function handler(req, res) {
       if (spamWords.some((w) => lower.includes(w))) {
         return res.status(400).json({ detail: "Message identifié comme indésirable." });
       }
-
-      limit.count++;
-      CONTACT_LIMITS.set(ip, limit);
 
       // Traitement réussi et consigné en toute confidentialité sur l'infrastructure UE
       console.log(`[Contact CineViseur] De: ${name.trim()} <${email.trim()}> | Sujet: ${subject || "Sans objet"}`);

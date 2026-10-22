@@ -11,6 +11,7 @@ import Icon from "../components/Icon";
 import { KineticTitle, Magnetic } from "../components/motion";
 import SegmentedControl from "../components/SegmentedControl";
 import SpotlightCard from "../components/SpotlightCard";
+import { AFFILIATE } from "../lib/site";
 
 const THRESHOLD = 120;
 const EXIT = {
@@ -654,6 +655,17 @@ export default function Swipe() {
                         Relancer un nouveau deck
                       </button>
                     )}
+                    <div className="mt-5 pt-3 border-t border-white/10">
+                      <a
+                        href={AFFILIATE.kofiUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-amber-200/90 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 transition-all"
+                        title="Offrir un café au créateur de CineViseur"
+                      >
+                        <span>☕ Offrir un café</span>
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import NotificationBell from "./NotificationBell";
 import Icon from "./Icon";
 import { SPRING } from "../lib/motionTokens";
+import { AFFILIATE } from "../lib/site";
 
 const CLAP = "[transform-origin:88px_182px] -rotate-[14deg] group-hover:rotate-0 transition-transform duration-300 ease-[cubic-bezier(0.3,1.6,0.5,1)] motion-reduce:transition-none motion-reduce:rotate-0";
 const PLAY = "origin-center [transform-box:fill-box] transition-transform duration-300 ease-out group-hover:scale-125 motion-reduce:transition-none motion-reduce:transform-none";
@@ -194,7 +195,17 @@ export default function Navbar() {
             </button>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <a
+              href={AFFILIATE.kofiUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-400/50 transition-all shadow-[0_2px_10px_-2px_rgba(245,158,11,0.25)] hover:shadow-[0_4px_16px_-2px_rgba(245,158,11,0.4)] active:scale-95 group"
+              title="Offrir un café au créateur (projet indépendant & gratuit)"
+            >
+              <span className="text-sm transition-transform duration-300 group-hover:scale-125">☕</span>
+              <span className="hidden sm:inline">Offrir un café</span>
+            </a>
             <NotificationBell />
           </div>
         </div>

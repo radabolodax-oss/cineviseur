@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { ADSENSE } from "../lib/site";
-import { CONSENT_CHANGED_EVENT, readConsentChoice } from "./CookieConsent";
+import { CONSENT_CHANGED_EVENT, readConsentChoice, verifyTcfConsentProof } from "./CookieConsent";
 
 /**
  * Composant de bannière publicitaire Google AdSense propre et responsive.
- * RGPD / ePrivacy : ne se charge que si le consentement de l'utilisateur a été accordé.
+ * RGPD / ePrivacy : ne se charge que si le consentement de l'utilisateur a été accordé et vérifié TCF v2.2.
  * Se charge sans bloquer le rendu et gère gracieusement les bloqueurs de publicité (AdBlock).
  */
 export default function AdSlot({ slotId, format = "auto", responsive = "true", className = "" }) {
   const adRef = useRef(null);
-  const [hasConsent, setHasConsent] = useState(() => readConsentChoice() === "granted");
+  const [hasConsent, setHasConsent] = useState(() => readConsentChoice() === "granted" && verifyTcfConsentProof());
 
   useEffect(() => {
     const onConsentChanged = (e) => {
-      setHasConsent(e.detail?.consent === "granted");
+      setHasConsent(e.detail?.consent === "granted" && verifyTcfConsentProof());
     };
     window.addEventListener(CONSENT_CHANGED_EVENT, onConsentChanged);
     return () => window.removeEventListener(CONSENT_CHANGED_EVENT, onConsentChanged);

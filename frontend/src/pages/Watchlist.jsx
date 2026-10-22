@@ -9,6 +9,7 @@ import useSeo from "../hooks/useSeo";
 import Icon from "../components/Icon";
 import CollectorTicketModal from "../components/CollectorTicketModal";
 import SegmentedControl from "../components/SegmentedControl";
+import SupportCard from "../components/SupportCard";
 import { SPRING, riseItem, stagger } from "../lib/motionTokens";
 
 const ORDER_KEY = "cv_queue_order";
@@ -406,6 +407,8 @@ export default function Watchlist() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SupportCard />
 
       {/* Modal Billet Collector si sélectionné */}
       <AnimatePresence>
