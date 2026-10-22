@@ -16,7 +16,7 @@ function LogoMark() {
       <defs>
         <linearGradient id={id} gradientUnits="userSpaceOnUse" x1="64" y1="40" x2="448" y2="440">
           <stop offset="0" stopColor="#10b981" />
-          <stop offset="1" stopColor="#6366f1" />
+          <stop offset="1" stopColor="#7c66dc" />
         </linearGradient>
       </defs>
       <g fill="none" stroke={paint} strokeWidth="30" strokeLinejoin="round" strokeLinecap="round">
@@ -40,7 +40,7 @@ export function Logo() {
     <Link to="/" className="flex items-center gap-2.5 group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft">
       <LogoMark />
       <span className="font-display font-semibold text-lg tracking-tight">
-        CINE<span className="bg-gradient-to-r from-cine-green to-cine-violet bg-clip-text text-transparent">VISEUR</span>
+        CINE<span className="bg-gradient-to-r from-emerald-400 to-indigo-400 bg-clip-text text-transparent">VISEUR</span>
       </span>
     </Link>
   );
@@ -63,7 +63,7 @@ function DesktopLink({ to, children, ...rest }) {
             <motion.span
               layoutId="nav-pill"
               transition={SPRING}
-              className="absolute inset-0 rounded-full bg-white/[0.09] border border-white/[0.14] shadow-[0_4px_16px_rgba(124,92,224,0.25)]"
+              className="absolute inset-0 rounded-full bg-white/[0.08] border border-white/[0.1] shadow-sm"
             />
           )}
           <span className="relative z-10">{children}</span>
@@ -82,7 +82,7 @@ function MobileTabBar() {
     { to: "/cinemas", label: "Cinémas", icon: "pin" },
   ];
   return (
-    <nav aria-label="Navigation principale" className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-white/[0.08] bg-cine-ink/90 backdrop-blur-2xl pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(0,0,0,0.8)]">
+    <nav aria-label="Navigation principale" className="sm:hidden fixed bottom-0 inset-x-0 z-40 border-t border-white/[0.06] bg-[#0c0b12]/92 backdrop-blur-2xl pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(0,0,0,0.6)]">
       <div className="grid grid-cols-5">
         {tabs.map((t) => (
           <NavLink
@@ -122,7 +122,6 @@ export default function Navbar() {
   const searchInputRef = useRef(null);
   const sentinelRef = useRef(null);
 
-  // Détecte le haut de page sans écouteur de scroll : une sentinelle de 8px en haut du document.
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -131,7 +130,6 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // Raccourci clavier universel Cmd+K / Ctrl+K pour ouvrir/focaliser la recherche (21st.dev / Originkit)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -161,7 +159,7 @@ export default function Navbar() {
         className={`sticky top-0 z-40 transition-all duration-500 ${
           transparent
             ? "bg-transparent border-b border-transparent"
-            : "bg-cine-ink/85 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_10px_35px_-10px_rgba(0,0,0,0.8)]"
+            : "bg-[#0c0b12]/85 backdrop-blur-2xl border-b border-white/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
         }`}
       >
         <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-4 px-4 sm:px-6 md:px-10 h-16">
@@ -184,13 +182,13 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("cv:open-command-menu"))}
-              className="group flex items-center justify-between gap-2.5 bg-white/[0.04] ring-1 ring-inset ring-white/[0.09] hover:ring-white/[0.2] hover:bg-white/[0.07] rounded-full px-4 py-2 transition shadow-inner w-full text-left"
+              className="group flex items-center justify-between gap-2.5 bg-white/[0.035] border border-white/[0.07] hover:border-white/[0.15] hover:bg-white/[0.06] rounded-full px-4 py-2 transition shadow-sm w-full text-left"
             >
               <div className="flex items-center gap-2.5 text-white/50 group-hover:text-white/80 min-w-0">
                 <Icon name="search" className="w-4 h-4 text-white/45 group-hover:text-cine-soft transition-colors shrink-0" />
-                <span className="text-sm truncate">Recherche rapide, films, actions...</span>
+                <span className="text-sm truncate">Recherche rapide, films, cinémas...</span>
               </div>
-              <kbd className="hidden lg:inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.07] border border-white/[0.1] text-white/50 select-none shrink-0">
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.08] text-white/45 select-none shrink-0">
                 ⌘K
               </kbd>
             </button>

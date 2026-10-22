@@ -5,18 +5,19 @@ export default {
     extend: {
       colors: {
         cine: {
-          // Vert Émeraude Viseur optique (précis, noble, professionnel)
+          // Vert Émeraude noble, feutré et soyeux (D.A conservée, moins agressif)
           emerald: "#10b981",
           green: "#10b981",
           emeraldDark: "#047857",
-          // Violet Nuit profond (feutré, ambiance salle obscure)
-          violet: "#6366f1",
-          violetDeep: "#4338ca",
-          soft: "#818cf8",
-          // Base OLED carbone régie cinéma
-          ink: "#08090e",
-          carbon: "#0c0d14",
-          midnight: "#0e101b",
+          // Violet Nuit feutré velours (ambiance salle obscure cocon)
+          violet: "#7c66dc",
+          violetDeep: "#4f3fa6",
+          soft: "#9d8df1",
+          // Base chaleureuse cocon (noir prune et velours nuit feutré, pas de noir froid OLED)
+          ink: "#0c0b12",
+          carbon: "#13111c",
+          midnight: "#181524",
+          surface: "#1e1b2e",
         },
       },
       fontFamily: {
@@ -24,7 +25,6 @@ export default {
         body: ["'Outfit Variable'", "Outfit", "sans-serif"],
         mono: ["'JetBrains Mono'", "monospace"],
       },
-      // Les animations passent par Motion (src/components/motion.jsx), plus par des keyframes Tailwind.
     },
   },
   plugins: [],

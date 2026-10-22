@@ -11,7 +11,6 @@ import InstallButton from "../components/InstallButton";
 import CarouselRow from "../components/CarouselRow";
 import Icon from "../components/Icon";
 import WhenNear from "../components/WhenNear";
-import SpotlightCard from "../components/SpotlightCard";
 import AdSlot from "../components/AdSlot";
 import PrimeBanner from "../components/PrimeBanner";
 import {
@@ -21,9 +20,7 @@ import {
   InteractiveImportPreview,
 } from "../components/FeatureDemos";
 
-// Sections sous la ligne de flottaison : chargées seulement quand on s'en approche.
 const UpcomingPan = lazy(() => import("../components/UpcomingPan"));
-const VelocityMarquee = lazy(() => import("../components/VelocityMarquee"));
 import { EASE_OUT, riseItem } from "../lib/motionTokens";
 import { play } from "../lib/feedback";
 import useSeo from "../hooks/useSeo";
@@ -36,10 +33,9 @@ function Hero({ featured }) {
   const [index, setIndex] = useState(0);
   const ref = useRef(null);
 
-  // Parallaxe au scroll
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-18%"]);
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "-14%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   useEffect(() => {
@@ -53,8 +49,8 @@ function Hero({ featured }) {
   const rating = current?.vote_average ? current.vote_average.toFixed(1) : null;
 
   return (
-    <section ref={ref} className="relative -mt-16 min-h-[92dvh] flex items-end overflow-hidden">
-      {/* Image de fond cinématique haute fidélité */}
+    <section ref={ref} className="relative -mt-16 min-h-[90dvh] flex items-end overflow-hidden">
+      {/* Affiche de fond cinématique feutrée */}
       <motion.div className="absolute inset-0 will-change-transform" style={{ y: imageY }} aria-hidden="true">
         <AnimatePresence initial={false}>
           {current && (
@@ -67,33 +63,32 @@ function Hero({ featured }) {
               alt=""
               fetchPriority={index === 0 ? "high" : "low"}
               className="absolute inset-0 w-full h-full object-cover"
-              initial={{ opacity: 0, scale: 1.04 }}
+              initial={{ opacity: 0, scale: 1.03 }}
               animate={{
-                opacity: 0.65,
+                opacity: 0.6,
                 scale: 1,
                 transition: { duration: 1.2, ease: EASE_OUT },
               }}
-              exit={{ opacity: 0, transition: { duration: 1.1, ease: EASE_OUT } }}
+              exit={{ opacity: 0, transition: { duration: 1, ease: EASE_OUT } }}
             />
           )}
         </AnimatePresence>
       </motion.div>
 
-      {/* Dégradés d'ambiance salle de cinéma (noir carbone profond et halo feutré) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#08090e] via-[#08090e]/60 to-transparent" aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#08090e]/90 via-[#08090e]/45 to-transparent" aria-hidden="true" />
+      {/* Dégradés d'ambiance velours chaud */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0b12] via-[#0c0b12]/60 to-transparent" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0c0b12]/95 via-[#0c0b12]/50 to-transparent" aria-hidden="true" />
 
       {/* Contenu du Hero centré sur l'œuvre */}
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
-        className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pb-16 md:pb-24 pt-24"
+        className="relative w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pb-16 md:pb-22 pt-24"
       >
         <div className="max-w-3xl">
-          {/* Témoin d'ambiance viseur optique (Orbe Hardware style) */}
-          <div className="flex flex-wrap items-center gap-3 text-xs font-mono font-medium uppercase tracking-[0.18em] text-white/70 mb-4">
-            <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.9)] animate-pulse" />
-              VISEUR CINÉMA • 0{index + 1}
+          <div className="flex flex-wrap items-center gap-2.5 text-xs font-medium text-white/70 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold text-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              À l'affiche en salle
             </span>
             {year && <span className="text-white/50">{year}</span>}
             {rating && (
@@ -103,25 +98,24 @@ function Hero({ featured }) {
             )}
           </div>
 
-          <h1 className="font-display font-semibold text-4xl sm:text-6xl md:text-7xl leading-[0.98] uppercase tracking-tighter mb-5 text-white drop-shadow-lg">
+          <h1 className="font-display font-semibold text-4xl sm:text-6xl md:text-7xl leading-[1.02] tracking-tight mb-4 text-white drop-shadow-md">
             {current?.title || "Le cinéma en direct"}
           </h1>
 
           {current?.overview && (
-            <p className="text-white/80 text-sm sm:text-base md:text-lg max-w-[55ch] leading-relaxed mb-8 line-clamp-3">
+            <p className="text-white/75 text-sm sm:text-base md:text-lg line-clamp-3 mb-8 max-w-2xl font-light leading-relaxed">
               {current.overview}
             </p>
           )}
 
-          {/* Boutons d'action tactiles matériels (Orbe Audio / OriginKit) */}
-          <div className="flex flex-wrap items-center gap-3.5 mb-10">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-8">
             {current && (
               <Link
                 to={`/title/movie/${current.id}`}
-                className="btn-primary !px-7 !py-3.5 text-sm sm:text-base group"
+                className="btn-primary !px-7 !py-3.5 text-sm sm:text-base"
               >
-                <span>Fiche du film</span>
-                <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" weight="bold" />
+                <Icon name="play" className="w-4 h-4" />
+                <span>Voir la fiche & séances</span>
               </Link>
             )}
             <Link
@@ -135,17 +129,14 @@ function Hero({ featured }) {
               to="/ce-soir"
               className="btn-ghost !px-5 !py-3.5 text-sm sm:text-base hidden sm:inline-flex"
             >
-              <Icon name="dice" className="w-4 h-4 text-emerald-400" />
+              <Icon name="sparkle" className="w-4 h-4 text-amber-300" />
               <span>Film au hasard</span>
             </Link>
           </div>
 
-          {/* Sélecteur de bobine tactile (Hardware Console Switcher) */}
+          {/* Pagination discrète et douce */}
           {featured.length > 1 && (
-            <div className="inline-flex items-center gap-1.5 p-1.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-xl shadow-lg">
-              <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase px-2 hidden sm:inline">
-                BOBINE :
-              </span>
+            <div className="inline-flex items-center gap-2 p-1.5 rounded-full bg-black/40 border border-white/10 backdrop-blur-md">
               {featured.map((f, i) => (
                 <button
                   key={f.id}
@@ -154,15 +145,13 @@ function Hero({ featured }) {
                     play("tick");
                     setIndex(i);
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all duration-200 cursor-pointer ${
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                     i === index
-                      ? "bg-emerald-400 text-black font-bold shadow-[0_0_12px_rgba(16,185,129,0.55)] scale-105"
-                      : "text-white/60 hover:text-white hover:bg-white/10"
+                      ? "w-7 bg-emerald-400"
+                      : "w-2 bg-white/30 hover:bg-white/60"
                   }`}
                   aria-label={`Passer au film ${i + 1}`}
-                >
-                  0{i + 1}
-                </button>
+                />
               ))}
             </div>
           )}
@@ -172,57 +161,82 @@ function Hero({ featured }) {
   );
 }
 
+function CozyGenreShelf({ items }) {
+  return (
+    <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-16" aria-label="Explorer par genre">
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#141220]/80 border border-white/[0.06] shadow-[0_12px_36px_rgba(0,0,0,0.3)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <div>
+            <h3 className="font-display font-semibold text-xl text-white">Explorer par genre</h3>
+            <p className="text-xs sm:text-sm text-white/55 mt-0.5">Choisissez une ambiance pour votre prochaine séance</p>
+          </div>
+          <Link to="/discover" className="text-xs font-semibold text-cine-soft hover:text-white transition-colors inline-flex items-center gap-1">
+            <span>Tout le catalogue</span>
+            <span>→</span>
+          </Link>
+        </div>
+        <div className="flex flex-wrap gap-2.5">
+          {items.map((g) => (
+            <Link
+              key={g}
+              to="/discover"
+              className="px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] hover:border-white/[0.18] text-white/80 hover:text-white transition-all shadow-sm active:scale-95"
+            >
+              {g}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function FeatureShowcase() {
   return (
-    <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-24">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+    <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <span className="text-xs font-mono font-medium tracking-[0.2em] uppercase text-emerald-400 block mb-2">
-            OUTILS & EXPÉRIENCE DE SALLE
+          <span className="text-xs font-medium uppercase tracking-wider text-emerald-400 block mb-2">
+            L'EXPÉRIENCE CINEVISEUR
           </span>
-          <h2 className="section-title !text-3xl md:!text-5xl tracking-tight text-white">
-            Conçu pour ceux qui vivent le cinéma
+          <h2 className="section-title !text-3xl md:!text-4xl text-white">
+            Votre salon de cinéma personnalisé
           </h2>
-          <p className="text-white/70 text-base max-w-2xl mt-2">
-            Zéro compte imposé, zéro publicité. Des outils physiques et instantanés pour vos séances, vos séries et vos souvenirs.
+          <p className="text-white/65 text-sm sm:text-base max-w-2xl mt-2 leading-relaxed">
+            Vos listes, vos séances en salle et vos soirées film restent privées dans votre navigateur.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <Link
             to="/cinemas"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] active:translate-y-0.5"
+            className="btn-ghost !px-4 !py-2.5 text-xs font-semibold"
           >
             <Icon name="pin" className="w-3.5 h-3.5 text-emerald-400" />
             <span>Salles de cinéma</span>
           </Link>
-          <InstallButton className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] active:translate-y-0.5 cursor-pointer" />
+          <InstallButton className="btn-ghost !px-4 !py-2.5 text-xs font-semibold" />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 1. Suivi des séries */}
-        <SpotlightCard
-          as="article"
+        <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-indigo-950/25 via-[#0c0d15] to-[#08090e] border border-indigo-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(99, 102, 241, 0.16)"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
-            <div className="flex items-center justify-between gap-3 mb-5">
-              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-indigo-500/20 border border-indigo-500/35 text-indigo-300 font-semibold">
-                SÉRIES & SAISONS
-              </span>
-              <span className="text-[10px] font-mono text-indigo-300/80 tracking-wider uppercase font-semibold">
-                INTERACTIF
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/15 border border-indigo-500/25 text-indigo-300">
+                Séries & Saisons
               </span>
             </div>
 
-            <h3 className="font-display font-semibold text-2xl text-white mb-2">
-              Régie séries & suivi des épisodes
+            <h3 className="font-display font-semibold text-xl text-white mb-2">
+              Suivi des épisodes & saisons
             </h3>
-            <p className="text-sm text-white/75 leading-relaxed mb-6">
-              Émargez vos épisodes un à un. CineViseur calcule en direct le prochain épisode à regarder et l'avancement de chaque saison.
+            <p className="text-sm text-white/70 leading-relaxed mb-6">
+              Cochez vos épisodes un à un. CineViseur calcule automatiquement le prochain épisode à regarder.
             </p>
 
             <div className="mb-6">
@@ -234,33 +248,28 @@ function FeatureShowcase() {
             to="/watchlist"
             className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-indigo-200 transition-colors group mt-2"
           >
-            <span>Ouvrir le gestionnaire de séries</span>
+            <span>Ouvrir le suivi des séries</span>
             <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
-        </SpotlightCard>
+        </motion.article>
 
         {/* 2. Billets collectors */}
-        <SpotlightCard
-          as="article"
+        <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-amber-950/20 via-[#0c0d15] to-[#08090e] border border-amber-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(245, 158, 11, 0.16)"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
-            <div className="flex items-center justify-between gap-3 mb-5">
-              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-amber-500/20 border border-amber-500/35 text-amber-300 font-semibold">
-                SOUVENIR DE SÉANCE
-              </span>
-              <span className="text-[10px] font-mono text-white/60 tracking-wider uppercase">
-                35MM HD
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/15 border border-amber-500/25 text-amber-300">
+                Souvenir de séance
               </span>
             </div>
 
-            <h3 className="font-display font-semibold text-2xl text-white mb-2">
+            <h3 className="font-display font-semibold text-xl text-white mb-2">
               Billets de cinéma rétro en haute résolution
             </h3>
-            <p className="text-sm text-white/75 leading-relaxed mb-6">
-              Chaque film vu génère un ticket de cinéma rétro personnalisé avec date, note et perforation. Téléchargeable en HD pour vos souvenirs et stories.
+            <p className="text-sm text-white/70 leading-relaxed mb-6">
+              Chaque film vu génère un ticket de cinéma rétro personnalisé avec date et note, téléchargeable pour vos souvenirs.
             </p>
 
             <div className="mb-6">
@@ -272,32 +281,27 @@ function FeatureShowcase() {
             to="/watchlist"
             className="inline-flex items-center gap-2 text-sm font-semibold text-amber-300 hover:text-amber-200 transition-colors group mt-2"
           >
-            <span>Générer mes billets collectors</span>
+            <span>Créer mes billets collectors</span>
             <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
-        </SpotlightCard>
+        </motion.article>
 
         {/* 3. Soirée Duo */}
-        <SpotlightCard
-          as="article"
+        <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-purple-950/25 via-[#0c0d15] to-[#08090e] border border-purple-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(168, 85, 247, 0.16)"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
-            <div className="flex items-center justify-between gap-3 mb-5">
-              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-purple-500/20 border border-purple-500/35 text-purple-300 font-semibold">
-                À DEUX SUR LE CANAPÉ
-              </span>
-              <span className="text-[10px] font-mono text-white/60 tracking-wider uppercase">
-                SANS FRICTION
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/15 border border-purple-500/25 text-purple-300">
+                À deux sur le canapé
               </span>
             </div>
 
-            <h3 className="font-display font-semibold text-2xl text-white mb-2">
+            <h3 className="font-display font-semibold text-xl text-white mb-2">
               Le mode « Soirée Duo »
             </h3>
-            <p className="text-sm text-white/75 leading-relaxed mb-6">
+            <p className="text-sm text-white/70 leading-relaxed mb-6">
               Plus besoin de débattre pendant 40 minutes : rejoignez le même salon sur vos téléphones, swipez en direct et matchez instantanément.
             </p>
 
@@ -313,29 +317,24 @@ function FeatureShowcase() {
             <span>Lancer un match à deux</span>
             <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
-        </SpotlightCard>
+        </motion.article>
 
         {/* 4. Import Letterboxd & Trakt */}
-        <SpotlightCard
-          as="article"
+        <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-b from-emerald-950/25 via-[#0c0d15] to-[#08090e] border border-emerald-500/25 shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-          spotlightColor="rgba(16, 185, 129, 0.18)"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
-            <div className="flex items-center justify-between gap-3 mb-5">
-              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase bg-emerald-500/20 border border-emerald-500/35 text-emerald-300 font-semibold">
-                PASSERELLE UNIVERSELLE
-              </span>
-              <span className="text-[10px] font-mono text-white/60 tracking-wider uppercase">
-                CSV 1-CLIC
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/15 border border-emerald-500/25 text-emerald-300">
+                Passerelle 1-clic
               </span>
             </div>
 
-            <h3 className="font-display font-semibold text-2xl text-white mb-2">
+            <h3 className="font-display font-semibold text-xl text-white mb-2">
               Import Letterboxd & Trakt
             </h3>
-            <p className="text-sm text-white/75 leading-relaxed mb-6">
+            <p className="text-sm text-white/70 leading-relaxed mb-6">
               Vous avez des années d'historique ? Déposez simplement votre fichier CSV dans votre profil pour retrouver tous vos films en deux secondes.
             </p>
 
@@ -351,7 +350,7 @@ function FeatureShowcase() {
             <span>Importer ma collection</span>
             <Icon name="arrowRight" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
-        </SpotlightCard>
+        </motion.article>
       </div>
     </section>
   );
@@ -377,7 +376,6 @@ export default function Home() {
       .finally(() => setStreamingLoaded(true));
   }, []);
 
-  // Le hero montre les films à l'affiche, le carrousel les tendances
   const withBackdrop = nowPlaying.filter((t) => t.backdrop_path);
   const featured = withBackdrop.slice(0, 5);
 
@@ -398,9 +396,7 @@ export default function Home() {
         <UpcomingPan />
       </WhenNear>
 
-      <WhenNear minHeight="380px">
-        <VelocityMarquee items={GENRES} />
-      </WhenNear>
+      <CozyGenreShelf items={GENRES} />
 
       <FeatureShowcase />
 

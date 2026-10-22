@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Polices hébergées par le site (aucune requête vers Google Fonts ou Fontshare). */
+/* Polices hébergées localement */
 @font-face {
   font-family: "Clash Display";
   src: url("./assets/fonts/ClashDisplay-500.woff2") format("woff2");
@@ -22,15 +22,7 @@
   font-display: swap;
 }
 
-/*
-  Système visuel CineViseur
-  - Thème : sombre uniquement (identité "salle de cinéma").
-  - Accent : un seul, cine-violet. Le vert n'apparaît que dans le logo.
-  - Rayons : boutons et puces en pilule, affiches et champs 12px (rounded-xl), panneaux 16px+ (rounded-2xl).
-  - Z-index : navigation 40, menus/modales 50, grain 60.
-*/
-
-/* Neutralisation de tout filigrane ou iframe tiers (Netlify HUD, badges d'hébergeur) */
+/* Neutralisation des iframes tiers ou badges */
 #nl-badge-frame,
 #nl-hud-frame,
 iframe[id^="nl-"],
@@ -46,10 +38,6 @@ div[class*="netlify"] {
   right: -9999px !important;
   width: 0 !important;
   height: 0 !important;
-  max-width: 0 !important;
-  max-height: 0 !important;
-  clip: rect(0, 0, 0, 0) !important;
-  clip-path: circle(0) !important;
   z-index: -99999 !important;
 }
 
@@ -57,12 +45,12 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Direction artistique : bleu nuit cinématique riche avec contrastes OLED et lueurs violettes. */
+/* Direction artistique Cosy & Cocon : salle feutrée, velours nuit chaud et typographie apaisante. */
 body {
   margin: 0;
-  background-color: #08090e;
+  background-color: #0c0b12;
   color-scheme: dark;
-  color: #f4f4f6;
+  color: #f5f4ef;
   font-family: "Outfit Variable", "Outfit", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -81,138 +69,110 @@ select {
 }
 
 ::selection {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.35);
+  color: #ffffff;
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 @layer components {
-  /* .btn = forme de base, SANS plaque (contrôles segmentés, boutons transparents).
-     La plaque tactile n'existe que sur les variantes pleines ci-dessous. */
+  /* Boutons épurés, doux et tactiles (sans gimmicks de micro-plaques 3D) */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold rounded-full disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft focus-visible:ring-offset-2 focus-visible:ring-offset-cine-ink;
-    position: relative;
-    isolation: isolate;
-    transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out, transform 50ms ease-out;
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold rounded-2xl disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft/60 focus-visible:ring-offset-2 focus-visible:ring-offset-cine-ink;
+    transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
   }
+
   .btn-primary {
-    @apply btn px-6 py-3 text-[#031b0e] font-bold bg-gradient-to-b from-[#6ee7b7] via-[#10b981] to-[#059669] hover:brightness-105 active:brightness-95 border border-emerald-300/40 shadow-[0_8px_24px_-6px_rgba(16,185,129,0.5),inset_0_1px_0_rgba(255,255,255,0.6)] active:translate-y-0.5 active:scale-[0.98];
-    --plate-color: #064e3b;
-    --plate-x: 2px;
-    --plate-y: 3px;
+    @apply btn px-6 py-3 text-white font-semibold bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 shadow-[0_6px_20px_-4px_rgba(16,185,129,0.35)] hover:shadow-[0_8px_24px_-4px_rgba(16,185,129,0.45)] active:scale-[0.98];
   }
+
   .btn-light {
-    @apply btn px-6 py-3 text-cine-ink bg-[#f4f4f6] hover:bg-white shadow-[0_4px_16px_rgba(255,255,255,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-0.5;
-    --plate-color: #bbbbc8;
-    --plate-x: 2px;
-    --plate-y: 3px;
+    @apply btn px-6 py-3 text-[#0c0b12] font-semibold bg-[#f5f4ef] hover:bg-white shadow-[0_4px_16px_rgba(255,255,255,0.08)] active:scale-[0.98];
   }
+
   .btn-ghost {
-    @apply btn px-5 py-3 text-[#f4f4f6] font-medium bg-gradient-to-b from-white/[0.08] to-white/[0.03] ring-1 ring-inset ring-white/[0.14] hover:bg-white/[0.12] hover:ring-emerald-400/30 active:translate-y-0.5 active:scale-[0.98] backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)];
-    --plate-color: rgba(0, 0, 0, 0.55);
-    --plate-x: 2px;
-    --plate-y: 3px;
+    @apply btn px-5 py-3 text-[#f5f4ef] font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.14] active:scale-[0.98] shadow-sm;
   }
+
   .btn-danger {
-    @apply btn px-5 py-3 text-white bg-rose-600 hover:bg-rose-500 shadow-[0_6px_20px_rgba(225,29,72,0.4),inset_0_1px_0_rgba(255,255,255,0.2)] active:translate-y-0.5;
-    --plate-color: #8f1d3c;
-    --plate-x: 2px;
-    --plate-y: 3px;
+    @apply btn px-5 py-3 text-white bg-rose-600/90 hover:bg-rose-500 shadow-[0_6px_20px_rgba(225,29,72,0.3)] active:scale-[0.98];
   }
-  /* Puce de filtre : tactile inspiré d'OriginKit */
+
+  /* Puces de filtre adoucies et feutrées */
   .btn-chip {
-    @apply btn shrink-0 px-4 py-2 !font-medium text-white/75 bg-gradient-to-b from-white/[0.08] to-white/[0.03] ring-1 ring-inset ring-white/10 hover:bg-white/[0.12] hover:text-white active:scale-95 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.08)];
-    --plate-color: rgba(0, 0, 0, 0.5);
-    --plate-x: 1px;
-    --plate-y: 2px;
+    @apply btn shrink-0 px-4 py-2 !font-medium text-white/70 bg-white/[0.035] border border-white/[0.07] hover:bg-white/[0.07] hover:text-white active:scale-95 transition-all;
   }
   .btn-chip[aria-pressed="true"],
   .btn-chip.is-active {
-    @apply text-[#031b0e] !font-semibold bg-gradient-to-b from-emerald-300 to-emerald-500 ring-emerald-300/40 hover:brightness-105;
-    --plate-color: #047857;
-    box-shadow: 0 0 16px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    @apply text-emerald-300 !font-semibold bg-emerald-500/15 border-emerald-500/40 shadow-[0_0_16px_rgba(16,185,129,0.2)];
   }
+
   .btn-icon {
-    position: relative;
-    isolation: isolate;
-    transition: background-color 200ms ease-out, color 200ms ease-out, box-shadow 200ms ease-out, transform 50ms ease-out;
-    @apply flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/75 hover:bg-white/[0.13] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft;
-    --plate-color: rgba(0, 0, 0, 0.50);
-    --plate-x: 2px;
-    --plate-y: 3px;
+    @apply flex items-center justify-center w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/75 hover:bg-white/[0.09] hover:text-white transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft;
   }
+
   .link {
-    /* Toujours souligné : un lien ne doit pas se distinguer du texte par la seule couleur (WCAG 1.4.1). */
     @apply text-cine-soft underline underline-offset-4 decoration-cine-soft/40 hover:decoration-cine-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft rounded-sm;
   }
+
   .label {
     @apply block text-sm font-medium text-white/80;
   }
+
   .input {
-    @apply w-full bg-white/[0.05] ring-1 ring-inset ring-white/[0.14] rounded-xl px-4 py-3 outline-none text-[#f4f4f6] placeholder:text-white/50 transition focus:ring-2 focus:ring-cine-soft/70 focus:bg-white/[0.07];
-  }
-  .panel {
-    @apply bg-[#14162e]/90 ring-1 ring-inset ring-white/[0.14] rounded-2xl backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)];
-  }
-  .chip {
-    @apply inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-white/80;
-  }
-  /* Harmonisation : un seul gabarit pour les titres de page (h1) et de section (h2). */
-  .page-title {
-    @apply font-display font-semibold text-4xl md:text-5xl tracking-tighter;
-  }
-  .section-title {
-    @apply font-display font-semibold text-xl md:text-2xl tracking-tight;
+    @apply w-full bg-white/[0.035] border border-white/[0.08] rounded-2xl px-4 py-3 outline-none text-[#f5f4ef] placeholder:text-white/40 transition focus:border-cine-soft/50 focus:bg-white/[0.06];
   }
 
-  /* Chargement : un reflet balaie la forme du futur contenu (transform uniquement). */
+  .panel {
+    @apply bg-[#151322]/90 border border-white/[0.07] rounded-3xl backdrop-blur-xl shadow-[0_16px_40px_rgba(0,0,0,0.45)];
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/80;
+  }
+
+  .page-title {
+    @apply font-display font-semibold text-3xl sm:text-4xl md:text-5xl tracking-tight text-white;
+  }
+
+  .section-title {
+    @apply font-display font-semibold text-xl md:text-2xl tracking-tight text-white;
+  }
+
   .skeleton {
-    @apply relative overflow-hidden bg-white/[0.05];
+    @apply relative overflow-hidden bg-white/[0.04] rounded-2xl;
   }
   .skeleton::after {
     content: "";
     position: absolute;
     inset: 0;
     transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
-    animation: shimmer 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+    animation: shimmer 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
-  /* Apparition fluide des affiches (uniquement opacity + transform sur GPU, sans filter:blur coûteux). */
   .focus-in {
     opacity: 0;
     transform: scale(0.98);
-    transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .focus-in[data-sharp] {
     opacity: 1;
     transform: scale(1);
   }
-}
-
-/* Tactile Button : rebond ressort avec léger dépassement (spring overshoot) */
-@keyframes tactile-spring {
-  0%   { transform: translate(var(--plate-x), var(--plate-y)); }
-  100% { transform: translate(0, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [class*="btn-"].tk-pressed { transform: translate(0, 0) !important; }
-  [class*="btn-"].tk-spring  { animation: none !important; }
-  [class*="btn-"]::after     { display: none; }
 }
 
 @keyframes shimmer {
@@ -221,58 +181,21 @@ select {
   }
 }
 
-/* Aurora cinématique lumineuse */
-.aurora-layer {
-  background-image:
-    radial-gradient(ellipse 70% 60% at 75% 0%, rgba(124, 92, 224, 0.35), transparent 70%),
-    radial-gradient(ellipse 55% 50% at 20% 15%, rgba(79, 70, 229, 0.25), transparent 65%);
-  transform: translateZ(0);
-}
-
-/* Glowing Effect (Aceternity UI, adapté) : un arc de lumière suit le curseur le long du contour. */
-.glowing-effect::after {
-  content: "";
-  position: absolute;
-  inset: calc(-1 * var(--glow-border));
-  border-radius: inherit;
-  border: var(--glow-border) solid transparent;
-  background: conic-gradient(from 0deg, #7c5ce0, #ab98f2, #4f46e5, #7c5ce0) border-box;
-  opacity: var(--active);
-  transition: opacity 0.3s;
-  mask-clip: padding-box, border-box;
-  mask-composite: intersect;
-  mask-image: linear-gradient(#0000, #0000),
-    conic-gradient(from calc((var(--start) - var(--spread)) * 1deg), #0000 0deg, #fff, #0000 calc(var(--spread) * 2deg));
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* --- Changements de page (View Transitions) --------------------------------------------- */
-/* Fondu au noir : l'ancienne page s'éteint, la nouvelle s'allume, comme entre deux plans. */
+/* Changements de page fluides (View Transitions) */
 ::view-transition-old(root) {
-  animation: vt-out 0.32s cubic-bezier(0.4, 0, 1, 1) both;
+  animation: vt-out 0.28s cubic-bezier(0.4, 0, 1, 1) both;
 }
 ::view-transition-new(root) {
-  animation: vt-in 0.45s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: vt-in 0.38s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-/* Clic sur une affiche : le reste se fond vite, l'affiche vole jusqu'à la fiche. */
 html[data-vt="poster"]::view-transition-old(root) {
-  animation-duration: 0.25s;
+  animation-duration: 0.22s;
 }
 html[data-vt="poster"]::view-transition-new(root) {
-  animation: vt-in 0.4s 0.2s ease-out both;
+  animation: vt-in 0.35s 0.15s ease-out both;
 }
 ::view-transition-group(poster-hero) {
-  animation-duration: 0.6s;
+  animation-duration: 0.5s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 50;
 }
@@ -288,111 +211,33 @@ html[data-vt="poster"]::view-transition-new(root) {
 @keyframes vt-out {
   to {
     opacity: 0;
-    filter: brightness(0.3);
-    transform: scale(0.985);
+    filter: brightness(0.4);
+    transform: scale(0.99);
   }
 }
 @keyframes vt-in {
   from {
     opacity: 0;
-    transform: scale(1.015);
+    transform: scale(1.01);
   }
 }
-/* Navigateurs sans View Transitions : simple apparition. */
+
 @supports not (view-transition-name: none) {
   .page-in {
-    animation: page-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: page-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(8px);
   }
-}
-
-/* Bouton principal : une bande de pellicule perforée traverse le bouton au survol.
-   Animée via background-position (clippée par le rayon du ::before) : pas d'overflow:hidden,
-   sinon la plaque tactile du ::after serait rognée. */
-.btn-primary::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) -400px 0 / 100% 4px no-repeat,
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 6px, transparent 6px 14px) -400px 100% / 100% 4px no-repeat;
-  transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.btn-primary:hover::before {
-  background-position: 0 0, 0 100%;
-}
-
-/* Plaque tactile commune à toutes les variantes pleines (Originkit Tactile Keycap Button). */
-.btn-primary::after, .btn-light::after, .btn-ghost::after, .btn-danger::after, .btn-chip::after, .btn-icon::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--plate-color);
-  transform: translate(var(--plate-x), var(--plate-y));
-  z-index: -1;
-  pointer-events: none;
-}
-.btn-primary.tk-pressed, .btn-light.tk-pressed, .btn-ghost.tk-pressed, .btn-danger.tk-pressed, .btn-chip.tk-pressed, .btn-icon.tk-pressed {
-  transform: translate(var(--plate-x), var(--plate-y));
-}
-.btn-primary.tk-spring, .btn-light.tk-spring, .btn-ghost.tk-spring, .btn-danger.tk-spring, .btn-chip.tk-spring, .btn-icon.tk-spring {
-  animation: tactile-spring 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
-
-/* ─── Perforations de pellicule cinéma ───────────────────────────────────────── */
-
-
-/* Perforations de pellicule au-dessus et au-dessous d'une bobine (filmographie, roulette). */
-.reel-perforations {
-  height: 14px;
-  margin: 0 0 -2px;
-  background:
-    radial-gradient(circle at center, transparent 0, transparent 0) ,
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 10px, transparent 10px 22px) center / 100% 7px no-repeat,
-    linear-gradient(rgba(10, 14, 39, 0.9), rgba(10, 14, 39, 0.9));
-  border-block: 1px solid rgba(255, 255, 255, 0.06);
-}
-.reel-perforations--bottom {
-  margin: -2px 0 0;
-}
-
-/* Orbe Audio & 21st.dev & Originkit : styles cinématographiques haute fidélité */
-.hud-tag {
-  font-family: var(--font-mono, monospace);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 4px 10px;
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.glass-dock {
-  background: rgba(6, 7, 15, 0.82);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-}
-
