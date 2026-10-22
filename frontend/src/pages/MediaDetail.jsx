@@ -580,23 +580,23 @@ export default function MediaDetail() {
                 <div className="flex flex-wrap gap-3">
                   {providers[g.key].map((p) => {
                     const subscribed = isSubscribed(p.provider_id);
-                    const directUrl = getProviderDirectUrl(p, title, providers.link);
+                    const directUrl = getProviderDirectUrl(p, title);
                     return (
                       <a
                         key={p.provider_id}
                         href={directUrl}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className={`flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 ring-1 ring-inset transition-all ${
+                        className={`flex items-center gap-3 rounded-2xl py-2 pl-2 pr-4 border transition-all ${
                           subscribed
-                            ? "bg-emerald-500/15 ring-emerald-500/40 text-white shadow-sm"
-                            : "bg-white/[0.04] ring-white/[0.08] text-white/85 hover:bg-white/[0.09] hover:ring-cine-soft/50"
+                            ? "bg-emerald-500/15 border-emerald-500/40 text-white shadow-sm"
+                            : "bg-[#161423]/90 border-white/[0.07] text-white/85 hover:bg-[#1c192c] hover:border-white/[0.14]"
                         }`}
                       >
                         <img src={`https://image.tmdb.org/t/p/w92${p.logo_path}`} alt="" loading="lazy" className="h-10 w-10 rounded-xl" />
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-medium block">{p.provider_name}</span>
+                            <span className="text-sm font-medium block text-white">{p.provider_name}</span>
                             <span className="text-[10px] text-white/40">↗</span>
                           </div>
                           {subscribed ? (
@@ -605,7 +605,7 @@ export default function MediaDetail() {
                             </span>
                           ) : (
                             <span className="text-[10px] text-white/50 block">
-                              Accéder au film
+                              Accéder au programme
                             </span>
                           )}
                         </div>
@@ -617,9 +617,9 @@ export default function MediaDetail() {
             ))}
           </div>
 
-          <div className="mt-5 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-white/45">
-            <p>Disponibilités en France fournies par JustWatch.</p>
-            <p className="text-[11px] text-white/35">* Liens partenaires affiliés sans aucun surcoût pour l'utilisateur.</p>
+          <div className="mt-5 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-white/50">
+            <p>Disponibilités de streaming en France certifiées par JustWatch.</p>
+            <p className="text-[11px] text-white/40">* Liens directs vers les plateformes officielles sans surcoût.</p>
           </div>
         </section>
       )}
