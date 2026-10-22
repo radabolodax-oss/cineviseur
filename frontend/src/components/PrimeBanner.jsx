@@ -26,7 +26,7 @@ export default function PrimeBanner({ className = "" }) {
 
   if (dismissed) return null;
 
-  const affiliateUrl = `https://www.amazon.fr/gp/video/primesignup?tag=${encodeURIComponent(AFFILIATE.amazonTag || "cineviseur-21")}`;
+  const affiliateUrl = `https://www.amazon.fr/tryprimefree?tag=${encodeURIComponent(AFFILIATE.amazonTag || "cineviseur-21")}`;
 
   return (
     <aside
