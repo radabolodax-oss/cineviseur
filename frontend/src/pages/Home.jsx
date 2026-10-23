@@ -15,6 +15,7 @@ import AdSlot from "../components/AdSlot";
 import PrimeBanner from "../components/PrimeBanner";
 import HomeCinemaGear from "../components/HomeCinemaGear";
 import MoodInspirer from "../components/MoodInspirer";
+import PerspectiveTunnelSection from "../components/PerspectiveTunnelSection";
 import {
   InteractiveSeriesPreview,
   InteractiveTicketPreview,
@@ -393,6 +394,8 @@ export default function Home() {
         </div>
         <CarouselRow title="Nouveautés en streaming & VOD" staticItems={streaming} pending={!streamingLoaded} />
       </div>
+
+      <PerspectiveTunnelSection items={trending} />
 
       <WhenNear minHeight="100dvh">
         <UpcomingPan />
