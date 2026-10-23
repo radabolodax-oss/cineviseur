@@ -36,7 +36,7 @@ export default function Footer() {
               Films, séries, notes et coups de cœur. CineViseur garde la mémoire de vos écrans.
             </p>
             <p className="mt-2 text-xs text-white/40 leading-relaxed max-w-[34ch]">
-              Service 100% gratuit et indépendant, financé par une publicité discrète pour couvrir les coûts d'hébergement.
+              Service 100% gratuit et indépendant, financé par une publicité discrète pour couvrir le futur hébergement.
             </p>
             <Link
               to="/contact"

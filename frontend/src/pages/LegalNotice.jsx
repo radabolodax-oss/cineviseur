@@ -88,7 +88,7 @@ export default function LegalNotice() {
       title: "5. Affiliation et partenariats rémunérés",
       body: (
         <p>
-          En tant que Partenaire Amazon, CineViseur réalise un bénéfice sur les achats éligibles remplissant les conditions requises (identifiant partenaire <code>cineviseur-21</code>). Certains liens de redirection vers les catalogues légaux de streaming (Amazon Prime Video, Apple TV) ou le matériel home-cinéma sont des liens partenaires affiliés finançant l'hébergement gratuit de la plateforme sans coût additionnel pour l'utilisateur.
+          En tant que Partenaire Amazon, CineViseur réalise un bénéfice sur les achats éligibles remplissant les conditions requises (identifiant partenaire <code>cineviseur-21</code>). Certains liens de redirection vers les catalogues légaux de streaming (Amazon Prime Video, Apple TV) ou le matériel home-cinéma sont des liens partenaires affiliés finançant le futur hébergement de la plateforme sans coût additionnel pour l'utilisateur.
         </p>
       ),
     },

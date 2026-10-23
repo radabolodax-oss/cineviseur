@@ -231,7 +231,7 @@ export default function CookieConsent() {
             <span>🛡️</span> Protection de votre vie privée & Cookies
           </div>
           <p className="text-xs sm:text-sm text-white/80 leading-relaxed mb-4">
-            CineViseur fonctionne en <strong>local-first</strong> (vos listes restent sur votre appareil). Avec votre accord préalable (cadre CNIL / IAB TCF v2.2), nous affichons des annonces partenaires discrètes pour financer l'hébergement gratuit.
+            CineViseur fonctionne en <strong>local-first</strong> (vos listes restent sur votre appareil). Avec votre accord préalable (cadre CNIL / IAB TCF v2.2), nous affichons des annonces partenaires discrètes pour financer le futur hébergement.
           </p>
           <div className="grid grid-cols-2 gap-2.5">
             <button
