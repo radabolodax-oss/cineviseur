@@ -9,7 +9,7 @@ import Toast from "../components/Toast";
 import Icon from "../components/Icon";
 import SectionTitle from "../components/SectionTitle";
 import useSeo from "../hooks/useSeo";
-import { isSubscribed, getProviderDirectUrl } from "../lib/providers";
+import { isSubscribed, getProviderDirectUrl, sanitizeProviders } from "../lib/providers";
 import { AFFILIATE } from "../lib/site";
 import { setLibraryStatus } from "../lib/library";
 import RatingDial from "../components/RatingDial";
@@ -293,7 +293,8 @@ export default function MediaDetail() {
   const runtime = formatRuntime(item);
   const inTheaters = mediaType === "movie" && isInTheaters(item);
   const frProviders = item["watch/providers"]?.results?.FR;
-  const providers = frProviders && PROVIDER_GROUPS.some((g) => frProviders[g.key]?.length) ? frProviders : null;
+  const sanitized = sanitizeProviders(item, frProviders, mediaType);
+  const providers = sanitized && PROVIDER_GROUPS.some((g) => sanitized[g.key]?.length) ? sanitized : null;
 
   const allProvidersList = providers
     ? [...(providers.flatrate || []), ...(providers.rent || []), ...(providers.buy || []), ...(providers.free || [])]

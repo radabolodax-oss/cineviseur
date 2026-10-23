@@ -100,6 +100,46 @@ const OSM_FORMAT_TAGS = {
   "cinema:screenx": "ScreenX",
 };
 
+// Catalogue officiel des animes licenciés sur Disney+ en France
+const DISNEY_ANIME_IDS = new Set([
+  30984,  // Bleach
+  209867, // Bleach TYBW
+  105009, // Tokyo Revengers
+  117933, // Summer Time Rendering
+  208891, // Tengoku Daimakyo (Heavenly Delusion)
+  209077, // Undead Unluck
+  240498, // Sand Land: The Series
+  231575, // The Fable
+  217684, // Go! Go! Loser Ranger! (Ranger Reject)
+  228080, // Murai in Love
+  114461, // Star Wars: Visions
+  215437, // Phoenix: Eden17
+  133748, // Black Rock Shooter: Dawn Fall
+  135402, // Tatami Time Machine Blues
+  210879, // Synduality: Noir
+  220970, // Ishura
+  252974, // Code Geass: Rozé of the Recapture
+  255299, // Medaka Kuroiwa is Impervious to My Charms
+  258849, // Cat's Eye
+]);
+
+const DISNEY_ANIME_TITLE_REGEX =
+  /bleach|tokyo revengers|summer time rendering|time shadows|tengoku daimakyo|heavenly delusion|undead unluck|sand land|the fable|loser ranger|ranger reject|murai in love|visions|eden17|black rock shooter|tatami time|synduality|ishura|rozé of the recapture|macross|cat's eye/i;
+
+function isDisneyAnime(id, title, originalTitle) {
+  if (id && DISNEY_ANIME_IDS.has(Number(id))) return true;
+  const str = `${title || ""} ${originalTitle || ""}`.toLowerCase();
+  return DISNEY_ANIME_TITLE_REGEX.test(str);
+}
+
+const DISNEY_DIRECT_ORIGINAL_REGEX =
+  /soul|luca|turning red|alerte rouge|peter pan & wendy|hocus pocus 2|pinocchio|disenchanted|il était une fois 2|hamilton|taylor swift/i;
+
+function isDisneyDirectOriginal(id, title, originalTitle) {
+  const str = `${title || ""} ${originalTitle || ""}`.toLowerCase();
+  return DISNEY_DIRECT_ORIGINAL_REGEX.test(str);
+}
+
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const toRad = (d) => (d * Math.PI) / 180;
@@ -273,12 +313,45 @@ export default async function handler(req, res) {
       if (q.get("year")) {
         params[mediaType === "movie" ? "primary_release_year" : "first_air_date_year"] = q.get("year");
       }
-      if (q.get("provider")) {
-        params.with_watch_providers = q.get("provider");
+      const provider = q.get("provider");
+      if (provider) {
+        params.with_watch_providers = provider;
         params.watch_region = "FR";
         params.with_watch_monetization_types = "flatrate";
       }
       const result = await tmdbGet(`/discover/${mediaType}`, params);
+
+      // Filtrage de cohérence territoriale (France) pour éliminer les faux positifs TMDB/JustWatch
+      if (result.status === 200 && Array.isArray(result.data?.results)) {
+        const now = new Date();
+        result.data.results = result.data.results.filter((r) => {
+          const dateStr = r.release_date || r.first_air_date;
+          if (dateStr && new Date(dateStr) > now) return false;
+
+          if (provider === "337") {
+            const title = r.title || r.name || "";
+            const orig = r.original_title || r.original_name || "";
+
+            // Le Seigneur des Anneaux n'est pas sur Disney+
+            if (/seigneur des anneaux|lord of the rings/i.test(`${title} ${orig}`)) return false;
+
+            // Animes japonais : seuls les animes officiellement acquis par Disney en France sont gardés
+            const isAnime =
+              (r.genre_ids || []).includes(16) &&
+              ((r.origin_country || []).includes("JP") || r.original_language === "ja");
+            if (isAnime && !isDisneyAnime(r.id, title, orig)) return false;
+
+            // Chronologie des médias : films de cinéma < 17 mois (510 jours)
+            if (mediaType === "movie" && dateStr) {
+              const diffDays = (now.getTime() - new Date(dateStr).getTime()) / 86400000;
+              if (diffDays < 510 && !isDisneyDirectOriginal(r.id, title, orig)) return false;
+            }
+          }
+
+          return true;
+        });
+      }
+
       if (result.cacheControl) res.setHeader("Cache-Control", result.cacheControl);
       return res.status(result.status).json(result.data);
     }

@@ -62,66 +62,60 @@ export default function TvEpisodeTracker({ tvId, seasons = [], totalEpisodes = 0
   };
 
   return (
-    <div className="rounded-3xl bg-white/[0.03] border border-white/[0.08] p-5 sm:p-7 backdrop-blur-xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xl">📺</span>
-            <h3 className="font-display font-semibold text-lg text-white">Suivi des épisodes (Up Next)</h3>
-          </div>
-          <p className="text-xs sm:text-sm text-white/60">
-            Cochez les épisodes au fil de votre visionnage pour reprendre exactement là où vous vous êtes arrêté.
-          </p>
+    <div className="w-full">
+      {/* En-tête compact sans arrière-plan lourd */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">📺</span>
+          <h3 className="font-display font-semibold text-base sm:text-lg text-white">Suivi des épisodes</h3>
+          <span className="text-xs text-white/40 hidden sm:inline">• Reprenez où vous vous êtes arrêté</span>
         </div>
 
-        {/* Jauge globale de visionnage */}
-        <div className="flex items-center gap-3 bg-white/[0.04] px-4 py-2.5 rounded-2xl border border-white/10 shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-cine-violet/20 border border-cine-violet/40 grid place-items-center font-display font-bold text-cine-soft text-sm">
+        {/* Jauge compacte */}
+        <div className="flex items-center gap-2.5 bg-white/[0.04] px-3 py-1.5 rounded-xl border border-white/[0.08] shrink-0">
+          <div className="w-6 h-6 rounded-lg bg-cine-violet/25 border border-cine-violet/40 grid place-items-center font-mono font-bold text-cine-soft text-xs">
             {totalEpisodes > 0 ? Math.round((watchedCount / totalEpisodes) * 100) : 0}%
           </div>
-          <div>
-            <span className="block text-xs font-semibold uppercase tracking-wider text-white/50">Progression</span>
-            <span className="block text-sm font-medium text-white/90">
-              {watchedCount} {totalEpisodes > 0 ? `/ ${totalEpisodes}` : ""} vu{watchedCount > 1 ? "s" : ""}
-            </span>
-          </div>
+          <span className="text-xs text-white/75 font-medium">
+            {watchedCount}{totalEpisodes > 0 ? ` / ${totalEpisodes}` : ""} vu{watchedCount > 1 ? "s" : ""}
+          </span>
         </div>
       </div>
 
-      {/* Onglets des saisons */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
-        {validSeasons.map((s) => {
-          const isActive = activeSeason === s.season_number;
-          return (
-            <button
-              key={s.id}
-              onClick={() => setActiveSeason(s.season_number)}
-              className={`relative px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
-                isActive ? "text-white" : "text-white/60 hover:text-white bg-white/[0.03]"
-              }`}
-            >
-              {isActive && (
-                <motion.span
-                  layoutId="active-season-tab"
-                  transition={SPRING}
-                  className="absolute inset-0 rounded-xl bg-cine-violet shadow-lg shadow-cine-violet/30"
-                />
-              )}
-              <span className="relative z-10 flex items-center gap-1.5">
-                <span>{s.name}</span>
-                <span className="text-[10px] opacity-70">({s.episode_count})</span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Barre unifiée des saisons & actions */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2.5 mb-3 border-b border-white/[0.06]">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          {validSeasons.map((s) => {
+            const isActive = activeSeason === s.season_number;
+            return (
+              <button
+                key={s.id}
+                onClick={() => setActiveSeason(s.season_number)}
+                className={`relative px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
+                  isActive ? "text-white" : "text-white/60 hover:text-white bg-white/[0.02] hover:bg-white/[0.05]"
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="active-season-tab"
+                    transition={SPRING}
+                    className="absolute inset-0 rounded-lg bg-cine-violet shadow-md shadow-cine-violet/30"
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-1">
+                  <span>{s.name}</span>
+                  <span className="text-[10px] opacity-70">({s.episode_count})</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-      {/* Barre d'action de saison */}
-      <div className="flex items-center justify-between text-xs text-white/60 pb-3 border-b border-white/[0.06] mb-4">
-        <span>
-          Saison {activeSeason} : {currentSeasonEpisodesWatched} / {episodes.length} vus
-        </span>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 text-xs text-white/50 ml-auto">
+          <span>
+            Saison {activeSeason} : {currentSeasonEpisodesWatched} / {episodes.length} vus
+          </span>
+          <span>•</span>
           {currentSeasonEpisodesWatched < episodes.length ? (
             <button
               type="button"
@@ -142,53 +136,54 @@ export default function TvEpisodeTracker({ tvId, seasons = [], totalEpisodes = 0
         </div>
       </div>
 
-      {/* Liste des épisodes */}
+      {/* Grille compacte des épisodes */}
       {loading ? (
-        <div className="space-y-3 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 py-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-14 rounded-2xl skeleton" />
+            <div key={i} className="h-10 rounded-xl skeleton" />
           ))}
         </div>
       ) : episodes.length === 0 ? (
-        <p className="text-center text-sm text-white/40 py-6">Aucun épisode répertorié pour cette saison.</p>
+        <p className="text-center text-xs text-white/40 py-4">Aucun épisode répertorié pour cette saison.</p>
       ) : (
-        <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 max-h-[380px] overflow-y-auto pr-1">
           {episodes.map((ep) => {
             const isWatched = Boolean(progress.episodes?.[`s${activeSeason}e${ep.episode_number}`]?.watched);
             return (
               <div
                 key={ep.id}
                 onClick={() => handleToggle(ep)}
-                className={`group flex items-center gap-3 p-3 rounded-2xl cursor-pointer border transition-all ${
+                className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer border transition-all ${
                   isWatched
-                    ? "bg-cine-violet/10 border-cine-violet/30 text-white"
-                    : "bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05] text-white/70 hover:text-white"
+                    ? "bg-cine-violet/10 border-cine-violet/25 text-white/90"
+                    : "bg-white/[0.015] hover:bg-white/[0.04] border-white/[0.04] text-white/70 hover:text-white"
                 }`}
               >
-                {/* Case à cocher */}
+                {/* Case à cocher compacte */}
                 <div
-                  className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 transition-colors ${
-                    isWatched ? "bg-cine-violet border-cine-violet text-white" : "border-white/30 group-hover:border-white/60"
+                  className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                    isWatched ? "bg-cine-violet border-cine-violet text-white" : "border-white/30 group-hover:border-white/50"
                   }`}
                 >
-                  {isWatched && <Icon name="check" weight="bold" className="w-3.5 h-3.5" />}
+                  {isWatched && <Icon name="check" weight="bold" className="w-3 h-3" />}
                 </div>
 
-                {/* Numéro & Titre */}
-                <span className="font-mono text-xs text-white/40 w-7 shrink-0">
+                {/* Numéro */}
+                <span className="font-mono text-xs text-white/40 w-5 shrink-0">
                   {ep.episode_number.toString().padStart(2, "0")}
                 </span>
 
-                <div className="min-w-0 flex-1">
-                  <p className={`text-sm font-medium truncate ${isWatched ? "line-through opacity-70" : ""}`}>
-                    {ep.name || `Épisode ${ep.episode_number}`}
-                  </p>
-                  {ep.air_date && (
-                    <p className="text-[11px] text-white/45">
-                      Diffusé le {new Date(ep.air_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
-                    </p>
-                  )}
-                </div>
+                {/* Titre */}
+                <p className={`text-xs sm:text-sm font-medium truncate flex-1 ${isWatched ? "line-through opacity-60 text-white/50" : ""}`}>
+                  {ep.name || `Épisode ${ep.episode_number}`}
+                </p>
+
+                {/* Date discrète */}
+                {ep.air_date && (
+                  <span className="text-[11px] text-white/35 shrink-0 hidden sm:inline">
+                    {new Date(ep.air_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                )}
               </div>
             );
           })}

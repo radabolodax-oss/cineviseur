@@ -30,6 +30,8 @@ const PROVIDERS = [
   { label: "Netflix", id: 8 },
   { label: "Prime Video", id: 119 },
   { label: "Disney+", id: 337 },
+  { label: "Crunchyroll", id: 283 },
+  { label: "ADN", id: 415 },
   { label: "Canal+", id: 381 },
   { label: "Max", id: 1899 },
 ];

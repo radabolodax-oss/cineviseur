@@ -1,5 +1,5 @@
 // Informations de l'éditeur et du déploiement, lues depuis les variables d'environnement (.env).
-const env = import.meta.env;
+const env = import.meta.env || {};
 
 // Contact légal obfusqué contre le moissonnage automatisé de spams
 const defaultContact = typeof atob !== "undefined" ? atob("Y29udGFjdC5jaW5ldmlzZXVyQGdtYWlsLmNvbQ==") : "";
