@@ -94,13 +94,33 @@ async function request(path, { method = "GET", body, fallback } = {}) {
     return await fallback();
   }
 
-  try {
-    const res = await fetch(`${API_URL}${path}`, {
+  const PROD_FALLBACK_URL = "https://cineviseur.vercel.app";
+
+  async function executeFetch(baseUrl) {
+    return await fetch(`${baseUrl}${path}`, {
       method,
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: body ? JSON.stringify(body) : undefined,
     });
+  }
+
+  try {
+    let res;
+    try {
+      res = await executeFetch(API_URL);
+    } catch (fetchErr) {
+      // Si le backend local n'est pas démarré en développement, basculer instantanément sur l'API en ligne
+      if (API_URL && API_URL !== PROD_FALLBACK_URL && (path.startsWith("/api/tmdb") || path.startsWith("/api/cinemas"))) {
+        try {
+          res = await executeFetch(PROD_FALLBACK_URL);
+        } catch {
+          throw fetchErr;
+        }
+      } else {
+        throw fetchErr;
+      }
+    }
 
     if (res.status === 204) return null;
 

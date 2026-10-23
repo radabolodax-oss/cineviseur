@@ -5,11 +5,12 @@ import '@fontsource-variable/outfit'
 import '@fontsource/jetbrains-mono/500.css'
 import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 
 // Détection et purge automatique des anciens caches d'actifs pour garantir la fraîcheur immédiate du build
 try {
-  const BUILD_HASH = "2026-10-22-r3";
+  const BUILD_HASH = "2026-10-23-r1";
   if (localStorage.getItem("cv_build_rev") !== BUILD_HASH) {
     localStorage.setItem("cv_build_rev", BUILD_HASH);
     if ("caches" in window) {
@@ -26,10 +27,12 @@ try {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 )
