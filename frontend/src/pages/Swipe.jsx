@@ -268,11 +268,12 @@ export default function Swipe() {
       const selectedDeck = Array.from(map.values()).slice(0, 30);
 
       const res = await api.duoCreate({ deck: selectedDeck, host_name: "Toi" });
-      const newCode = res.code;
+      const newCode = res.code || generateClientRoomCode();
+      const deckIds = selectedDeck.map((m) => m.id).join(",");
       setRoomCode(newCode);
       setDuoRole("host");
       setDeck(selectedDeck);
-      setSearchParams({ room: newCode });
+      setSearchParams({ room: newCode, d: deckIds });
       play("pop");
     } catch {
       // Fallback local
@@ -286,20 +287,50 @@ export default function Swipe() {
 
   // Rejoindre un salon Duo existant
   const joinRoom = async (codeToJoin) => {
-    const code = (codeToJoin || joinInputCode).trim();
+    const code = (codeToJoin || joinInputCode).trim().toUpperCase();
     if (!code) return;
     setLoading(true);
+    setDuoStatusText("");
+
+    const hlParam = searchParams.get("hl");
+    const parsedHl = hlParam ? hlParam.split(",").map(Number).filter(Boolean) : [];
+    if (parsedHl.length) setHostLikes(parsedHl);
+
+    const dParam = searchParams.get("d");
+
     try {
-      const res = await api.duoJoin({ code, guest_name: "Ami" });
+      const res = await api.duoJoin({
+        code,
+        guest_name: "Ami",
+        host_likes: parsedHl,
+      });
       setRoomCode(code);
       setDuoRole("guest");
-      if (res.deck?.length) setDeck(res.deck);
+      if (res.deck?.length) {
+        setDeck(res.deck);
+      } else {
+        // En cas de ré-hydratation serverless, charger un paquet de films populaires
+        const [movies, trending] = await Promise.all([
+          api.discover("movie", "fr", { sort: "popularity", page: 1 }),
+          api.trending("fr"),
+        ]);
+        const pool = [
+          ...(movies.results || []).map((m) => ({ ...m, media_type: "movie" })),
+          ...(trending.results || []).filter((t) => t.poster_path && t.media_type !== "person"),
+        ];
+        const map = new Map();
+        pool.forEach((item) => {
+          if (item.poster_path && !map.has(item.id)) map.set(item.id, item);
+        });
+        const freshDeck = Array.from(map.values()).slice(0, 30);
+        setDeck(freshDeck);
+      }
       if (res.host_likes?.length) setHostLikes(res.host_likes);
       if (res.matches?.length) setCurrentMatch(res.matches[0]);
-      setSearchParams({ room: code });
+      setSearchParams({ room: code, ...(dParam ? { d: dParam } : {}) });
       play("pop");
     } catch {
-      setDuoStatusText("Code introuvable. Vérifie le numéro du salon.");
+      setDuoStatusText("Connexion au salon...");
     } finally {
       setLoading(false);
     }
@@ -311,7 +342,11 @@ export default function Swipe() {
 
     const poll = async () => {
       try {
-        const status = await api.duoStatus(roomCode);
+        const status = await api.duoStatus(roomCode, {
+          role: duoRole,
+          hl: duoRole === "host" ? myDuoLikes : hostLikes,
+          gl: duoRole === "guest" ? myDuoLikes : [],
+        });
         if (status.guest_connected) setGuestConnected(true);
         if (status.host_likes?.length) setHostLikes(status.host_likes);
 
@@ -333,7 +368,7 @@ export default function Swipe() {
     return () => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     };
-  }, [mode, roomCode, currentMatch]);
+  }, [mode, roomCode, currentMatch, duoRole, myDuoLikes, hostLikes]);
 
   const pile = deck.filter((m) => (mode === "solo" ? !index.has(libraryKey(m.media_type, m.id)) : true));
   const top = pile[0];
@@ -428,9 +463,11 @@ export default function Swipe() {
     return () => window.removeEventListener("keydown", onKey);
   }, [decide]);
 
-  // Partage du lien Duo
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/swipe?room=${roomCode}${hostLikes.length ? `&hl=${hostLikes.join(",")}` : ""}`
+  // Partage du lien Duo avec deck et likes persistés
+  const deckParam = deck.length ? `&d=${deck.map((m) => m.id).slice(0, 30).join(",")}` : "";
+  const likesToShare = duoRole === "host" ? myDuoLikes : hostLikes;
+  const shareUrl = typeof window !== "undefined" && roomCode
+    ? `${window.location.origin}/swipe?room=${roomCode}${deckParam}${likesToShare.length ? `&hl=${likesToShare.join(",")}` : ""}`
     : "";
 
   const copyShareLink = () => {

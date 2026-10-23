@@ -532,12 +532,37 @@ export default async function handler(req, res) {
       cleanOldRooms();
       const body = await getJsonBody(req);
       const code = String(body.code || "").trim().toUpperCase();
-      const room = DUO_ROOMS.get(code);
+      let room = DUO_ROOMS.get(code);
+
+      // Auto-création / ré-hydratation du salon si la lambda Vercel a redémarré
       if (!room) {
-        return res.status(404).json({ detail: "Salon introuvable ou expiré" });
+        const deck = Array.isArray(body.deck) ? body.deck.slice(0, 40) : [];
+        const hostLikes = Array.isArray(body.host_likes) ? body.host_likes.map(Number) : [];
+        room = {
+          code,
+          created_at: Date.now(),
+          host_name: body.host_name || "Hôte",
+          guest_name: body.guest_name || "Ami",
+          guest_connected: true,
+          deck,
+          host_likes: new Set(hostLikes),
+          host_dislikes: new Set(),
+          guest_likes: new Set(),
+          guest_dislikes: new Set(),
+          matches: [],
+        };
+        DUO_ROOMS.set(code, room);
+      } else {
+        room.guest_name = body.guest_name || "Ami";
+        room.guest_connected = true;
+        if (Array.isArray(body.deck) && body.deck.length > 0 && (!room.deck || room.deck.length === 0)) {
+          room.deck = body.deck.slice(0, 40);
+        }
+        if (Array.isArray(body.host_likes)) {
+          body.host_likes.forEach((id) => room.host_likes.add(Number(id)));
+        }
       }
-      room.guest_name = body.guest_name || "Ami";
-      room.guest_connected = true;
+
       return res.status(200).json({
         code,
         host_name: room.host_name,
@@ -553,33 +578,57 @@ export default async function handler(req, res) {
       const role = body.role === "guest" ? "guest" : "host";
       const action = body.action; // "like", "skip", "watched"
       const movieId = Number(body.movieId);
-      const room = DUO_ROOMS.get(code);
+      let room = DUO_ROOMS.get(code);
+
+      // Si le salon n'était pas dans cette instance lambda, le créer à la volée
       if (!room) {
-        return res.status(404).json({ detail: "Salon introuvable" });
+        room = {
+          code,
+          created_at: Date.now(),
+          host_name: "Hôte",
+          guest_name: "Ami",
+          guest_connected: true,
+          deck: Array.isArray(body.deck) ? body.deck : [],
+          host_likes: new Set(),
+          host_dislikes: new Set(),
+          guest_likes: new Set(),
+          guest_dislikes: new Set(),
+          matches: [],
+        };
+        DUO_ROOMS.set(code, room);
+      }
+
+      if (Array.isArray(body.all_likes)) {
+        body.all_likes.forEach((id) => {
+          if (role === "host") room.host_likes.add(Number(id));
+          else room.guest_likes.add(Number(id));
+        });
       }
 
       if (action === "like" && movieId) {
         if (role === "host") {
           room.host_likes.add(movieId);
-          if (room.guest_likes.has(movieId) && !room.matches.some((m) => m.id === movieId)) {
-            const movie = room.deck.find((m) => m.id === movieId) || { id: movieId };
-            room.matches.push(movie);
-          }
         } else {
           room.guest_likes.add(movieId);
-          if (room.host_likes.has(movieId) && !room.matches.some((m) => m.id === movieId)) {
-            const movie = room.deck.find((m) => m.id === movieId) || { id: movieId };
-            room.matches.push(movie);
-          }
         }
       } else if (action === "skip" && movieId) {
         if (role === "host") room.host_dislikes.add(movieId);
         else room.guest_dislikes.add(movieId);
       }
 
+      // Calcul des matches en temps réel (intersection des deux ensembles)
+      for (const hId of room.host_likes) {
+        if (room.guest_likes.has(hId) && !room.matches.some((m) => m.id === hId)) {
+          const movie = room.deck.find((m) => m.id === hId) || { id: hId };
+          room.matches.push(movie);
+        }
+      }
+
       return res.status(200).json({
         matches: room.matches,
         guest_connected: room.guest_connected,
+        host_likes: Array.from(room.host_likes),
+        guest_likes: Array.from(room.guest_likes),
         host_progress: room.host_likes.size + room.host_dislikes.size,
         guest_progress: room.guest_likes.size + room.guest_dislikes.size,
       });
@@ -587,20 +636,69 @@ export default async function handler(req, res) {
 
     if (path === "/api/duo/status") {
       const code = String(q.get("code") || "").trim().toUpperCase();
-      const room = DUO_ROOMS.get(code);
-      if (!room) {
-        return res.status(404).json({ detail: "Salon introuvable" });
+      let room = DUO_ROOMS.get(code);
+
+      // Synchronisation bidirectionnelle par paramètres URL si multi-lambda Vercel
+      const hlParam = q.get("hl");
+      const glParam = q.get("gl");
+      const clientRole = q.get("role");
+
+      if (!room && code) {
+        room = {
+          code,
+          created_at: Date.now(),
+          host_name: "Hôte",
+          guest_name: "Ami",
+          guest_connected: true,
+          deck: [],
+          host_likes: new Set(),
+          host_dislikes: new Set(),
+          guest_likes: new Set(),
+          guest_dislikes: new Set(),
+          matches: [],
+        };
+        DUO_ROOMS.set(code, room);
       }
+
+      if (room) {
+        if (hlParam) {
+          hlParam.split(",").map(Number).filter(Boolean).forEach((id) => room.host_likes.add(id));
+        }
+        if (glParam) {
+          glParam.split(",").map(Number).filter(Boolean).forEach((id) => room.guest_likes.add(id));
+          room.guest_connected = true;
+        }
+        if (clientRole === "guest") {
+          room.guest_connected = true;
+        }
+
+        // Recalcul des matches
+        for (const hId of room.host_likes) {
+          if (room.guest_likes.has(hId) && !room.matches.some((m) => m.id === hId)) {
+            const movie = room.deck.find((m) => m.id === hId) || { id: hId };
+            room.matches.push(movie);
+          }
+        }
+
+        return res.status(200).json({
+          code,
+          host_name: room.host_name,
+          guest_name: room.guest_name,
+          guest_connected: room.guest_connected,
+          matches: room.matches,
+          host_likes: Array.from(room.host_likes),
+          guest_likes: Array.from(room.guest_likes),
+          host_progress: room.host_likes.size + room.host_dislikes.size,
+          guest_progress: room.guest_likes.size + room.guest_dislikes.size,
+        });
+      }
+
       return res.status(200).json({
         code,
-        host_name: room.host_name,
-        guest_name: room.guest_name,
-        guest_connected: room.guest_connected,
-        matches: room.matches,
-        host_likes: Array.from(room.host_likes),
-        guest_likes: Array.from(room.guest_likes),
-        host_progress: room.host_likes.size + room.host_dislikes.size,
-        guest_progress: room.guest_likes.size + room.guest_dislikes.size,
+        guest_connected: false,
+        matches: [],
+        host_likes: [],
+        guest_likes: [],
       });
     }
 

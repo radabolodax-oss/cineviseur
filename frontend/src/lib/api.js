@@ -661,9 +661,14 @@ export const api = {
       body: data,
       fallback: async () => ({ matches: [] }),
     }),
-  duoStatus: (code) =>
-    request(`/api/duo/status?code=${encodeURIComponent(code)}`, {
+  duoStatus: (code, { hl = [], gl = [], role = "" } = {}) => {
+    let url = `/api/duo/status?code=${encodeURIComponent(code)}`;
+    if (hl?.length) url += `&hl=${encodeURIComponent(hl.join(","))}`;
+    if (gl?.length) url += `&gl=${encodeURIComponent(gl.join(","))}`;
+    if (role) url += `&role=${encodeURIComponent(role)}`;
+    return request(url, {
       method: "GET",
       fallback: async () => ({ guest_connected: false, matches: [] }),
-    }),
+    });
+  },
 };

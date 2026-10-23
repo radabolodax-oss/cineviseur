@@ -58,6 +58,8 @@ export default function Roulette() {
   // Duo Mode State
   const [partnerCode, setPartnerCode] = useState("");
   const [matchedFilms, setMatchedFilms] = useState([]);
+  const [proposedFilms, setProposedFilms] = useState([]);
+  const [selectedMatch, setSelectedMatch] = useState(null);
   const [duoCopied, setDuoCopied] = useState(false);
 
   const x = useMotionValue(0);
@@ -70,12 +72,19 @@ export default function Roulette() {
     if (duoParam) {
       setMode("duo");
       try {
-        const decoded = JSON.parse(atob(duoParam));
+        const decoded = JSON.parse(atob(decodeURIComponent(duoParam)));
         if (Array.isArray(decoded)) {
-          // Compare avec ma liste locale
-          const myToWatch = list.filter((i) => i.status !== "watched");
-          const matches = myToWatch.filter((m) => decoded.includes(Number(m.media_id)));
-          setMatchedFilms(matches);
+          if (decoded.length && typeof decoded[0] === "object") {
+            setProposedFilms(decoded);
+            const myToWatch = list.filter((i) => i.status !== "watched");
+            const matches = decoded.filter((d) => myToWatch.some((m) => Number(m.media_id) === Number(d.id)));
+            setMatchedFilms(matches);
+            if (matches.length > 0) setSelectedMatch(matches[0]);
+          } else {
+            const myToWatch = list.filter((i) => i.status !== "watched");
+            const matches = myToWatch.filter((m) => decoded.includes(Number(m.media_id)));
+            setMatchedFilms(matches);
+          }
         }
       } catch {
         // ignore
@@ -167,13 +176,21 @@ export default function Roulette() {
     play("stamp");
   }
 
-  // Générer le lien de partage Duo
+  // Générer le lien de partage Duo avec les films réels
   const handleShareDuo = () => {
-    const myToWatchIds = list.filter((i) => i.status !== "watched").map((i) => Number(i.media_id));
-    const encoded = btoa(JSON.stringify(myToWatchIds));
+    const myToWatch = list.filter((i) => i.status !== "watched");
+    const source = myToWatch.length > 0 ? myToWatch.slice(0, 16) : pool.slice(0, 16);
+    const payload = source.map((m) => ({
+      id: m.media_id || m.id,
+      title: m.title || m.name,
+      poster_path: m.poster_path,
+      media_type: m.media_type || kind || "movie",
+    }));
+    const encoded = encodeURIComponent(btoa(JSON.stringify(payload)));
     const shareUrl = `${window.location.origin}/ce-soir?duo=${encoded}`;
     navigator.clipboard.writeText(shareUrl);
     setDuoCopied(true);
+    play("pop");
     setTimeout(() => setDuoCopied(false), 3000);
   };
 
@@ -185,11 +202,20 @@ export default function Roulette() {
       if (raw.includes("duo=")) {
         raw = raw.split("duo=")[1].split("&")[0];
       }
-      const decoded = JSON.parse(atob(raw));
+      const decoded = JSON.parse(atob(decodeURIComponent(raw)));
       if (Array.isArray(decoded)) {
-        const myToWatch = list.filter((i) => i.status !== "watched");
-        const matches = myToWatch.filter((m) => decoded.includes(Number(m.media_id)));
-        setMatchedFilms(matches);
+        if (decoded.length && typeof decoded[0] === "object") {
+          setProposedFilms(decoded);
+          const myToWatch = list.filter((i) => i.status !== "watched");
+          const matches = decoded.filter((d) => myToWatch.some((m) => Number(m.media_id) === Number(d.id)));
+          setMatchedFilms(matches);
+          if (matches.length > 0) setSelectedMatch(matches[0]);
+        } else {
+          const myToWatch = list.filter((i) => i.status !== "watched");
+          const matches = myToWatch.filter((m) => decoded.includes(Number(m.media_id)));
+          setMatchedFilms(matches);
+        }
+        play("bell");
       }
     } catch {
       alert("Code ou lien invalide");
@@ -265,7 +291,78 @@ export default function Roulette() {
             </form>
           </div>
 
-          {matchedFilms.length > 0 ? (
+          {selectedMatch && (
+            <div className="mb-8 p-6 rounded-3xl bg-gradient-to-b from-pink-500/20 to-cine-violet/20 border border-pink-500/40 text-center shadow-[0_20px_50px_rgba(236,72,153,0.25)]">
+              <span className="text-4xl block mb-2 animate-bounce">🎉🍿</span>
+              <p className="text-xs uppercase font-mono tracking-widest text-pink-400 font-bold mb-1">C'est un Match Duo !</p>
+              <h3 className="font-display font-bold text-2xl text-white mb-2">{selectedMatch.title || selectedMatch.name}</h3>
+              <p className="text-xs text-white/70 mb-4">Vous êtes d'accord pour regarder ce film ce soir !</p>
+              <div className="flex justify-center gap-3">
+                <Link
+                  to={`/title/${selectedMatch.media_type || "movie"}/${selectedMatch.id || selectedMatch.media_id}`}
+                  className="btn-primary !px-5 !py-2.5 text-xs font-semibold"
+                >
+                  <Icon name="play" className="w-4 h-4" />
+                  <span>Voir la fiche & streaming</span>
+                </Link>
+                <button
+                  onClick={() => setSelectedMatch(null)}
+                  className="btn-ghost !px-4 !py-2.5 text-xs font-semibold text-white/60"
+                >
+                  Choisir un autre
+                </button>
+              </div>
+            </div>
+          )}
+
+          {proposedFilms.length > 0 && !selectedMatch && (
+            <div className="text-left mb-8">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xl">✨</span>
+                <h4 className="font-display font-bold text-base text-white">
+                  Films proposés par votre ami pour ce soir :
+                </h4>
+              </div>
+              <p className="text-xs text-white/60 mb-4">
+                Cliquez sur un film qui vous tente pour valider le match immédiat !
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {proposedFilms.map((m) => {
+                  const isAlreadyInMyList = list.some((i) => Number(i.media_id) === Number(m.id));
+                  return (
+                    <div
+                      key={m.id}
+                      onClick={() => {
+                        setSelectedMatch(m);
+                        play("bell");
+                        vibrate(40);
+                      }}
+                      className="group relative rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-pink-500/60 p-2.5 transition-all duration-300 hover:scale-[1.02] cursor-pointer hover:shadow-[0_8px_25px_rgba(236,72,153,0.3)]"
+                    >
+                      <div className="aspect-[2/3] rounded-xl overflow-hidden bg-white/10 mb-2 relative">
+                        {m.poster_path ? (
+                          <img src={tmdbImage(m.poster_path, "thumb")} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                        ) : (
+                          <div className="w-full h-full grid place-items-center text-xs">🎬</div>
+                        )}
+                        {isAlreadyInMyList && (
+                          <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-emerald-500 text-black font-bold text-[9px]">
+                            Déjà aimé !
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs font-semibold text-white truncate group-hover:text-pink-300">{m.title}</p>
+                      <span className="mt-1 text-[11px] font-semibold text-pink-400 group-hover:underline inline-flex items-center gap-1">
+                        <Icon name="heart" className="w-3 h-3" weight="fill" /> Chaud ce soir !
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {matchedFilms.length > 0 && !selectedMatch && proposedFilms.length === 0 ? (
             <div className="text-left">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">🎉</span>
@@ -292,7 +389,7 @@ export default function Roulette() {
                 ))}
               </div>
             </div>
-          ) : partnerCode ? (
+          ) : partnerCode && matchedFilms.length === 0 ? (
             <p className="text-sm text-white/50">Aucun film en commun trouvé pour l'instant. Ajoutez plus de films à vos listes !</p>
           ) : null}
         </div>
