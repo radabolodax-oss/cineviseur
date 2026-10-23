@@ -49,16 +49,35 @@ function TunnelPosterCard({ card, progress, pointer, total, stage }) {
   const staggerEnd = staggerStart + 0.55;
   const cardProgress = useTransform(progress, [staggerStart, staggerEnd], [0, 1]);
 
-  const minZ = stage.isMobile ? -1200 : -1750;
-  const maxZ = stage.isMobile ? 360 : 520;
+  const minZ = stage.isMobile ? -950 : -1750;
+  const maxZ = stage.isMobile ? 220 : 520;
   const z = useTransform(cardProgress, [0, 1], [minZ, maxZ]);
 
-  // Apparition progressive depuis le fond (0 -> 1) puis disparition après dépassement de la caméra
-  const opacity = useTransform(cardProgress, [0, 0.16, 0.82, 0.98], [0, 1, 1, 0]);
+  // Apparition progressive depuis le fond (0 -> 1) puis disparition avant collision caméra
+  const opacity = useTransform(
+    cardProgress,
+    [0, stage.isMobile ? 0.12 : 0.16, stage.isMobile ? 0.72 : 0.82, stage.isMobile ? 0.9 : 0.98],
+    [0, 1, 1, 0]
+  );
 
-  const baseOffsetX = card.angleCos * (stage.width * card.radiusFactorX);
-  const baseOffsetY = card.angleSin * (stage.height * card.radiusFactorY);
-  const parallaxMultiplier = stage.isMobile ? 18 : 42;
+  // Positionnement géométrique adaptatif (Portrait mobile 9:19 vs Paysage desktop 16:9)
+  let baseOffsetX;
+  let baseOffsetY;
+
+  if (stage.isMobile) {
+    // Sur smartphone : contrainte stricte pour que les affiches ne débordent JAMAIS de l'écran
+    const maxSafeX = Math.max(20, stage.width / 2 - stage.cardWidth / 2 - 14);
+    const safeRadiusX = maxSafeX * (0.62 + (card.index % 3) * 0.16);
+    const safeRadiusY = Math.min(stage.height * 0.28, 200) * (0.65 + (card.index % 2) * 0.25);
+    baseOffsetX = card.angleCos * safeRadiusX;
+    baseOffsetY = card.angleSin * safeRadiusY;
+  } else {
+    // Sur desktop : exploitation de la largeur panoramique
+    baseOffsetX = card.angleCos * (stage.width * card.radiusFactorX);
+    baseOffsetY = card.angleSin * (stage.height * card.radiusFactorY);
+  }
+
+  const parallaxMultiplier = stage.isMobile ? 0 : 42;
 
   const transform = useTransform([z, pointer.x, pointer.y], ([currentZ, px, py]) => {
     const currentX = baseOffsetX - px * parallaxMultiplier;
@@ -135,11 +154,17 @@ export default function UpcomingPan() {
   const shouldReduceMotion = useReducedMotion();
   const [items, setItems] = useState([]);
 
-  const [stage, setStage] = useState({
-    width: 1440,
-    height: 900,
-    isMobile: false,
-    cardWidth: 200,
+  const [stage, setStage] = useState(() => {
+    if (typeof window !== "undefined") {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const isMobile = w < 768;
+      const cardWidth = isMobile
+        ? Math.max(120, Math.min(160, Math.round(w * 0.35)))
+        : Math.max(190, Math.min(260, Math.round(w * 0.17)));
+      return { width: w, height: h, isMobile, cardWidth };
+    }
+    return { width: 390, height: 844, isMobile: true, cardWidth: 140 };
   });
 
   useEffect(() => {
@@ -161,8 +186,8 @@ export default function UpcomingPan() {
       const h = window.innerHeight;
       const isMobile = w < 768;
       const cardWidth = isMobile
-        ? Math.max(130, Math.min(170, w * 0.38))
-        : Math.max(190, Math.min(260, w * 0.17));
+        ? Math.max(120, Math.min(160, Math.round(w * 0.35)))
+        : Math.max(190, Math.min(260, Math.round(w * 0.17)));
       setStage({ width: w, height: h, isMobile, cardWidth });
     };
 
@@ -214,8 +239,8 @@ export default function UpcomingPan() {
       className="relative h-[280vh] bg-[#07080f] select-none"
       aria-label="Bientôt au cinéma - Vortex 3D"
     >
-      {/* Conteneur Sticky plein écran */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+      {/* Conteneur Sticky plein écran adaptatif (100dvh pour les barres d'adresse mobiles) */}
+      <div className="sticky top-0 h-[100dvh] min-h-[100dvh] w-full overflow-hidden flex items-center justify-center">
         {/* Lueur et anneaux géométriques d'ambiance spatiale */}
         <div
           className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,rgba(16,185,129,0.14)_0%,rgba(124,92,255,0.08)_40%,transparent_75%)]"
@@ -230,10 +255,10 @@ export default function UpcomingPan() {
           aria-hidden="true"
         />
 
-        {/* Scène 3D des affiches (transform-style: preserve-3d sans overflow-hidden destructeur) */}
+        {/* Scène 3D des affiches (perspective adoucie sur mobile) */}
         <div
           style={{
-            perspective: stage.isMobile ? "900px" : "1300px",
+            perspective: stage.isMobile ? "750px" : "1300px",
             transformStyle: "preserve-3d",
           }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -253,22 +278,22 @@ export default function UpcomingPan() {
         {/* Hub d'information central */}
         <motion.div
           style={{ opacity: centerTitleOpacity, scale: centerTitleScale }}
-          className="pointer-events-none relative z-10 flex flex-col items-center text-center px-6 max-w-xl"
+          className="pointer-events-none relative z-10 flex flex-col items-center text-center px-4 max-w-sm sm:max-w-xl"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 backdrop-blur-md text-emerald-400 text-xs font-mono font-semibold uppercase tracking-wider mb-4 shadow-lg shadow-emerald-500/10">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 backdrop-blur-md text-emerald-400 text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider mb-3 sm:mb-4 shadow-lg shadow-emerald-500/10">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-ping" />
             <span>Sorties en salle • Calendrier</span>
           </div>
 
-          <h2 className="font-display font-bold text-4xl sm:text-6xl md:text-7xl text-white tracking-tight leading-[0.98] drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)] mb-4">
+          <h2 className="font-display font-bold text-3xl sm:text-6xl md:text-7xl text-white tracking-tight leading-[1.05] sm:leading-[0.98] drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)] mb-3 sm:mb-4">
             Bientôt au cinéma
           </h2>
 
-          <p className="text-sm sm:text-base text-white/70 font-light max-w-md mx-auto leading-relaxed drop-shadow">
+          <p className="text-xs sm:text-base text-white/70 font-light max-w-xs sm:max-w-md mx-auto leading-relaxed drop-shadow">
             Faites défiler pour traverser les toiles à venir et découvrir leurs dates de sortie.
           </p>
 
-          <div className="mt-8 flex flex-col items-center gap-1.5 opacity-60 text-[11px] font-mono text-white/50">
+          <div className="mt-6 sm:mt-8 flex flex-col items-center gap-1.5 opacity-60 text-[10px] sm:text-[11px] font-mono text-white/50">
             <span>FAITES DÉFILER</span>
             <motion.div
               animate={{ y: [0, 5, 0] }}

@@ -94,7 +94,7 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
             className={`absolute bottom-2.5 right-2.5 z-[2] flex items-center justify-center w-8 h-8 rounded-full backdrop-blur-md border border-white/20 transition-all duration-300 ease-out focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 shadow-lg ${
               state !== "none"
                 ? "bg-emerald-500 text-black font-bold opacity-100 shadow-[0_0_12px_rgba(16,185,129,0.5)]"
-                : "bg-black/75 text-white hover:bg-white hover:text-black opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                : "bg-black/75 text-white hover:bg-white hover:text-black opacity-90 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0"
             }`}
           >
             <AnimatePresence mode="wait" initial={false}>

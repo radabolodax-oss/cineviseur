@@ -766,7 +766,7 @@ export default function CinemaOracle({ onSpin, spinning, winner, onReset, onAddW
       onPointerLeave={handlePointerLeave}
       onTouchMove={handleTouchMove}
       onTouchEnd={handlePointerLeave}
-      className="relative w-full min-h-[500px] flex flex-col items-center justify-center overflow-hidden select-none py-6"
+      className="relative w-full min-h-[440px] sm:min-h-[500px] flex flex-col items-center justify-center overflow-hidden select-none py-6"
     >
       {/* Canevas WebGL2 fluide d'arrière-plan */}
       <canvas

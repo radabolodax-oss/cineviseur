@@ -118,7 +118,7 @@ export default function CarouselRow({ title, mediaType, genre, sort, minRating, 
           ref={scrollerRef}
           className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scroll-px-4 sm:scroll-px-6 md:scroll-px-10 px-4 sm:px-6 md:px-10 pt-3 pb-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
-          <span ref={startRef} aria-hidden="true" className="shrink-0 w-px -mr-4" />
+          <span ref={startRef} aria-hidden="true" className="shrink-0 w-px pointer-events-none opacity-0" />
           {loading
             ? Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className={CARD_WIDTH} aria-hidden="true">
@@ -135,7 +135,7 @@ export default function CarouselRow({ title, mediaType, genre, sort, minRating, 
                   <MediaCard item={item} mediaType={mediaType || item.media_type} />
                 </div>
               ))}
-          <span ref={endRef} aria-hidden="true" className="shrink-0 w-px -ml-4" />
+          <span ref={endRef} aria-hidden="true" className="shrink-0 w-px pointer-events-none opacity-0" />
         </div>
 
         {!loading && (
