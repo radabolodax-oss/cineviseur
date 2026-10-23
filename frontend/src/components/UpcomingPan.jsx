@@ -25,6 +25,46 @@ function formatMonth(date) {
   return new Date(date).toLocaleDateString("fr-FR", { month: "short" }).replace(".", "");
 }
 
+/**
+ * Calcule dynamiquement le libellé de sortie en salle par rapport à la date/heure actuelle :
+ * - Plus de 4 jours : date de sortie complète (ex: "Sortie le 18 nov.")
+ * - De 1 à 4 jours : compte à rebours ("Dans 4 j", "Dans 3 j", "Dans 2 j", "Dans 1 j")
+ * - Le jour même : "Sortie aujourd'hui !"
+ */
+function getReleaseCountdown(dateStr, now) {
+  if (!dateStr) return { text: "Prochainement", urgent: false, isToday: false };
+  const parts = dateStr.split("-").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) {
+    return { text: "Prochainement", urgent: false, isToday: false };
+  }
+  const [y, m, d] = parts;
+  const targetMidnight = new Date(y, m - 1, d, 0, 0, 0);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysDiff = Math.round((targetMidnight.getTime() - startOfToday.getTime()) / msPerDay);
+
+  if (daysDiff < 0) {
+    return { text: "En salle actuellement", urgent: false, isToday: false };
+  }
+
+  if (daysDiff === 0) {
+    return { text: "Sortie aujourd'hui !", urgent: true, isToday: true };
+  }
+
+  if (daysDiff <= 4) {
+    return { text: `Dans ${daysDiff} j`, urgent: true, isToday: false };
+  }
+
+  const formattedDate = targetMidnight.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: targetMidnight.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+  });
+
+  return { text: `Sortie le ${formattedDate}`, urgent: false, isToday: false };
+}
+
 function useCameraParallax(enabled = true) {
   const targetX = useMotionValue(0);
   const targetY = useMotionValue(0);
@@ -44,7 +84,7 @@ function useCameraParallax(enabled = true) {
   return { x, y };
 }
 
-function TunnelPosterCard({ card, progress, pointer, total, stage }) {
+function TunnelPosterCard({ card, progress, pointer, total, stage, now }) {
   const staggerStart = (card.index / total) * 0.45;
   const staggerEnd = staggerStart + 0.55;
   const cardProgress = useTransform(progress, [staggerStart, staggerEnd], [0, 1]);
@@ -89,6 +129,7 @@ function TunnelPosterCard({ card, progress, pointer, total, stage }) {
   const title = mediaTitle(item);
   const day = formatDay(item.release_date);
   const month = formatMonth(item.release_date);
+  const countdown = getReleaseCountdown(item.release_date, now);
 
   return (
     <motion.div
@@ -104,13 +145,25 @@ function TunnelPosterCard({ card, progress, pointer, total, stage }) {
         to={`/title/movie/${item.id}`}
         className="group relative block h-full w-full overflow-hidden rounded-2xl bg-[#141624] shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/15 transition-all duration-500 hover:ring-emerald-400/80 hover:shadow-[0_0_35px_rgba(16,185,129,0.4)]"
       >
-        {/* Badge de date de sortie en salle (Jour + Mois) */}
+        {/* Badge de date de sortie en salle (Jour + Mois ou Compte à rebours) */}
         {day && (
-          <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/75 backdrop-blur-md border border-emerald-400/40 shadow-lg">
+          <div
+            className={`absolute top-2.5 left-2.5 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-xl backdrop-blur-md border shadow-lg ${
+              countdown.isToday
+                ? "bg-emerald-950/80 border-emerald-400 text-emerald-300"
+                : countdown.urgent
+                ? "bg-amber-950/80 border-amber-400/70 text-amber-300"
+                : "bg-black/75 border-emerald-400/40"
+            }`}
+          >
             <span className="font-display font-bold text-sm text-white tabular-nums leading-none">
               {day}
             </span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 leading-none">
+            <span
+              className={`text-[10px] font-mono font-bold uppercase tracking-wider leading-none ${
+                countdown.urgent ? "text-amber-400" : "text-emerald-400"
+              }`}
+            >
               {month}
             </span>
           </div>
@@ -132,14 +185,30 @@ function TunnelPosterCard({ card, progress, pointer, total, stage }) {
           <div className="h-full w-full grid place-items-center text-3xl bg-white/5">🎬</div>
         )}
 
-        {/* Dégradé et titre cinéma */}
+        {/* Dégradé et titre cinéma avec date / décompte dynamique en temps réel */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent flex flex-col justify-end p-3.5 sm:p-4 opacity-90 group-hover:opacity-100 transition-opacity">
           <span className="font-display font-bold text-xs sm:text-sm text-white line-clamp-1 drop-shadow-md">
             {title}
           </span>
-          <span className="text-[10px] text-white/60 font-mono mt-0.5 inline-flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-            En salle prochainement
+          <span
+            className={`text-[10px] font-mono mt-0.5 inline-flex items-center gap-1.5 transition-colors ${
+              countdown.isToday
+                ? "text-emerald-300 font-bold"
+                : countdown.urgent
+                ? "text-amber-300 font-semibold"
+                : "text-white/70"
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full inline-block ${
+                countdown.isToday
+                  ? "bg-emerald-400 animate-ping"
+                  : countdown.urgent
+                  ? "bg-amber-400 animate-pulse"
+                  : "bg-emerald-400"
+              }`}
+            />
+            <span>{countdown.text}</span>
           </span>
         </div>
 
@@ -154,6 +223,26 @@ export default function UpcomingPan() {
   const containerRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
   const [items, setItems] = useState([]);
+  const [now, setNow] = useState(() => new Date());
+
+  // Horloge continue : actualise les décomptes (jours/heures) chaque minute et au réveil de l'onglet
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        setNow(new Date());
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
 
   const [stage, setStage] = useState(() => {
     if (typeof window !== "undefined") {
@@ -271,6 +360,7 @@ export default function UpcomingPan() {
               pointer={pointer}
               total={tunnelCards.length}
               stage={stage}
+              now={now}
             />
           ))}
         </div>
