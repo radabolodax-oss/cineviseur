@@ -15,15 +15,13 @@ import AdSlot from "../components/AdSlot";
 import PrimeBanner from "../components/PrimeBanner";
 import HomeCinemaGear from "../components/HomeCinemaGear";
 import MoodInspirer from "../components/MoodInspirer";
-import PerspectiveTunnelSection from "../components/PerspectiveTunnelSection";
+import UpcomingPan from "../components/UpcomingPan";
 import {
   InteractiveSeriesPreview,
   InteractiveTicketPreview,
   InteractiveDuoPreview,
   InteractiveImportPreview,
 } from "../components/FeatureDemos";
-
-const UpcomingPan = lazy(() => import("../components/UpcomingPan"));
 import { EASE_OUT, riseItem } from "../lib/motionTokens";
 import { play } from "../lib/feedback";
 import useSeo from "../hooks/useSeo";
@@ -395,11 +393,7 @@ export default function Home() {
         <CarouselRow title="Nouveautés en streaming & VOD" staticItems={streaming} pending={!streamingLoaded} />
       </div>
 
-      <PerspectiveTunnelSection items={trending} />
-
-      <WhenNear minHeight="100dvh">
-        <UpcomingPan />
-      </WhenNear>
+      <UpcomingPan />
 
       <CozyGenreShelf items={GENRES} />
 
