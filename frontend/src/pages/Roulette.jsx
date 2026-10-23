@@ -10,6 +10,7 @@ import useSeo from "../hooks/useSeo";
 import Icon from "../components/Icon";
 import SegmentedControl from "../components/SegmentedControl";
 import SpotlightCard from "../components/SpotlightCard";
+import CinemaOracle from "../components/CinemaOracle";
 import { KineticTitle, Magnetic } from "../components/motion";
 import { EASE_OUT, SPRING } from "../lib/motionTokens";
 
@@ -44,7 +45,7 @@ export default function Roulette() {
   const { index, list } = useLibrary();
   const [searchParams] = useSearchParams();
 
-  const [mode, setMode] = useState("solo"); // "solo" ou "duo"
+  const [mode, setMode] = useState("oracle"); // "oracle", "reel", "duo"
   const [genre, setGenre] = useState(null);
   const [provider, setProvider] = useState(null);
   const [kind, setKind] = useState("movie");
@@ -141,6 +142,24 @@ export default function Roulette() {
     vibrate(20);
   }
 
+  async function spinOracle() {
+    if (!pool.length || spinning) return;
+    setWinner(null);
+    setAdded(false);
+    setSpinning(true);
+
+    const pickIndex = Math.floor(Math.random() * pool.length);
+    const chosen = pool[pickIndex];
+
+    // L'Oracle pulse et disperse ses particules pendant 2.4s
+    await new Promise((resolve) => setTimeout(resolve, 2400));
+
+    setSpinning(false);
+    setWinner(chosen);
+    play("stamp");
+    vibrate(30);
+  }
+
   async function addWinner() {
     if (!winner || added) return;
     await setLibraryStatus({ item: winner, mediaType: kind, existing: null }, "to_watch");
@@ -185,11 +204,12 @@ export default function Roulette() {
           La roulette choisit pour toi, ou compare ta liste avec celle d'un ami pour trouver le film parfait pour votre soirée.
         </p>
 
-        {/* Sélecteur de mode : Solo vs Soirée Duo (Originkit SegmentedControl) */}
+        {/* Sélecteur de mode : L'Oracle vs La Bobine vs Soirée Duo */}
         <div className="flex justify-center mb-8">
           <SegmentedControl
             options={[
-              { value: "solo", label: "La Bobine Solitaire", icon: "🎰" },
+              { value: "oracle", label: "L'Oracle Particulaire", icon: "✨" },
+              { value: "reel", label: "La Bobine Rétro", icon: "🎰" },
               { value: "duo", label: "Soirée Duo (Match à 2)", icon: "👥" },
             ]}
             value={mode}
@@ -321,82 +341,95 @@ export default function Roulette() {
             </div>
           </div>
 
-          {/* La bobine animée */}
-          <div ref={viewport} className="relative mt-8 py-8">
-            <div className="reel-perforations" aria-hidden="true" />
-            <div data-beam className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[176px] -translate-x-1/2 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(171,152,242,0.35),transparent_70%)] ring-2 ring-cine-soft/70" aria-hidden="true" />
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-1/4 bg-gradient-to-r from-cine-ink to-transparent" aria-hidden="true" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-1/4 bg-gradient-to-l from-cine-ink to-transparent" aria-hidden="true" />
-            {loading ? (
-              <div className="flex gap-2 justify-center" aria-hidden="true">
-                {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="w-40 shrink-0 aspect-[2/3] rounded-xl skeleton" />
-                ))}
-              </div>
-            ) : pool.length === 0 ? (
-              <p className="text-center text-white/60 py-24">Rien à proposer avec ces filtres. Essaie une autre plateforme ou un autre genre.</p>
-            ) : (
-              <motion.div className="flex gap-2 pl-2 will-change-transform" style={{ x }} aria-hidden="true">
-                {strip.map((m, i) => (
-                  <img
-                    key={`${m.id}-${i}`}
-                    data-reel-item
-                    src={tmdbImage(m.poster_path, "poster")}
-                    alt=""
-                    loading={i < 14 ? "eager" : "lazy"}
-                    draggable={false}
-                    className={`w-40 shrink-0 aspect-[2/3] object-cover rounded-xl transition-[filter] duration-300 ${spinning ? "blur-[1.5px]" : ""}`}
-                  />
-                ))}
-              </motion.div>
-            )}
-            <div className="reel-perforations reel-perforations--bottom" aria-hidden="true" />
-          </div>
-
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-8 flex flex-col items-center text-center">
-            <Magnetic>
-              <motion.button
-                onClick={spin}
-                disabled={spinning || loading || !pool.length}
-                className="btn-primary !px-10 !py-4 text-base"
-              >
-                <motion.span animate={spinning ? { rotate: 360 } : { rotate: 0 }} transition={spinning ? { duration: 0.8, repeat: Infinity, ease: "linear" } : SPRING} className="inline-flex">
-                  <Icon name="aperture" className="h-5 w-5" weight="bold" />
-                </motion.span>
-                {winner ? "Relancer la bobine" : "Lancer la bobine"}
-              </motion.button>
-            </Magnetic>
-
-            <AnimatePresence mode="wait">
-              {winner && (
-                <motion.div
-                  key={winner.id}
-                  initial={{ opacity: 0, y: 24, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 12 }}
-                  transition={{ duration: 0.6, ease: EASE_OUT }}
-                  className="mt-10 max-w-xl"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <p className="text-sm text-cine-soft mb-2">Ce soir, ce sera</p>
-                  <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">{mediaTitle(winner)}</h2>
-                  <p className="mt-1 text-sm text-white/60 tabular-nums">
-                    {mediaYear(winner)} {winner.vote_average ? `· ${winner.vote_average.toFixed(1)}/10` : ""}
-                  </p>
-                  <p className="mt-4 text-white/70 leading-relaxed line-clamp-4">{winner.overview || "Pas de synopsis disponible."}</p>
-                  <div className="mt-6 flex flex-wrap justify-center items-center gap-4">
-                    <button onClick={addWinner} disabled={added} className="btn-ghost">
-                      <Icon name={added ? "check" : "plus"} weight="bold" /> {added ? "Dans ma liste" : "Ajouter à ma liste"}
-                    </button>
-                    <Link to={`/title/${kind}/${winner.id}`} className="link text-sm font-medium">
-                      Voir la fiche
-                    </Link>
+          {mode === "oracle" ? (
+            <CinemaOracle
+              onSpin={spinOracle}
+              spinning={spinning}
+              winner={winner}
+              onReset={() => setWinner(null)}
+              onAddWinner={addWinner}
+              added={added}
+            />
+          ) : (
+            <>
+              {/* La bobine animée */}
+              <div ref={viewport} className="relative mt-8 py-8">
+                <div className="reel-perforations" aria-hidden="true" />
+                <div data-beam className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-[176px] -translate-x-1/2 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(171,152,242,0.35),transparent_70%)] ring-2 ring-cine-soft/70" aria-hidden="true" />
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-1/4 bg-gradient-to-r from-cine-ink to-transparent" aria-hidden="true" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-1/4 bg-gradient-to-l from-cine-ink to-transparent" aria-hidden="true" />
+                {loading ? (
+                  <div className="flex gap-2 justify-center" aria-hidden="true">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <div key={i} className="w-40 shrink-0 aspect-[2/3] rounded-xl skeleton" />
+                    ))}
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                ) : pool.length === 0 ? (
+                  <p className="text-center text-white/60 py-24">Rien à proposer avec ces filtres. Essaie une autre plateforme ou un autre genre.</p>
+                ) : (
+                  <motion.div className="flex gap-2 pl-2 will-change-transform" style={{ x }} aria-hidden="true">
+                    {strip.map((m, i) => (
+                      <img
+                        key={`${m.id}-${i}`}
+                        data-reel-item
+                        src={tmdbImage(m.poster_path, "poster")}
+                        alt=""
+                        loading={i < 14 ? "eager" : "lazy"}
+                        draggable={false}
+                        className={`w-40 shrink-0 aspect-[2/3] object-cover rounded-xl transition-[filter] duration-300 ${spinning ? "blur-[1.5px]" : ""}`}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+                <div className="reel-perforations reel-perforations--bottom" aria-hidden="true" />
+              </div>
+
+              <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-8 flex flex-col items-center text-center">
+                <Magnetic>
+                  <motion.button
+                    onClick={spin}
+                    disabled={spinning || loading || !pool.length}
+                    className="btn-primary !px-10 !py-4 text-base"
+                  >
+                    <motion.span animate={spinning ? { rotate: 360 } : { rotate: 0 }} transition={spinning ? { duration: 0.8, repeat: Infinity, ease: "linear" } : SPRING} className="inline-flex">
+                      <Icon name="aperture" className="h-5 w-5" weight="bold" />
+                    </motion.span>
+                    {winner ? "Relancer la bobine" : "Lancer la bobine"}
+                  </motion.button>
+                </Magnetic>
+
+                <AnimatePresence mode="wait">
+                  {winner && (
+                    <motion.div
+                      key={winner.id}
+                      initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 12 }}
+                      transition={{ duration: 0.6, ease: EASE_OUT }}
+                      className="mt-10 max-w-xl"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      <p className="text-sm text-cine-soft mb-2">Ce soir, ce sera</p>
+                      <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">{mediaTitle(winner)}</h2>
+                      <p className="mt-1 text-sm text-white/60 tabular-nums">
+                        {mediaYear(winner)} {winner.vote_average ? `· ${winner.vote_average.toFixed(1)}/10` : ""}
+                      </p>
+                      <p className="mt-4 text-white/70 leading-relaxed line-clamp-4">{winner.overview || "Pas de synopsis disponible."}</p>
+                      <div className="mt-6 flex flex-wrap justify-center items-center gap-4">
+                        <button onClick={addWinner} disabled={added} className="btn-ghost">
+                          <Icon name={added ? "check" : "plus"} weight="bold" /> {added ? "Dans ma liste" : "Ajouter à ma liste"}
+                        </button>
+                        <Link to={`/title/${kind}/${winner.id}`} className="link text-sm font-medium">
+                          Voir la fiche
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
