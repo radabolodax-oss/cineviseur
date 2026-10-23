@@ -106,17 +106,6 @@ export default defineConfig(({ mode }) => {
           globPatterns: ['**/*.{js,css,html,svg,png,jpg,woff2}'],
           navigateFallback: '/index.html',
           navigateFallbackDenylist: [/^\/api\//],
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/image\.tmdb\.org\//,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'affiches-tmdb',
-                expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 14 },
-                cacheableResponse: { statuses: [0, 200] },
-              },
-            },
-          ],
         },
       }),
       launchFiles(env),

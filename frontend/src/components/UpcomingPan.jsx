@@ -123,7 +123,8 @@ function TunnelPosterCard({ card, progress, pointer, total, stage }) {
             srcSet={tmdbSrcSet(item.poster_path, "poster")}
             sizes="(min-width: 768px) 260px, 170px"
             alt={`Affiche de ${title}`}
-            loading="lazy"
+            loading="eager"
+            decoding="async"
             draggable={false}
             className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
           />
@@ -168,12 +169,11 @@ export default function UpcomingPan() {
   });
 
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
     getUpcoming()
       .then((list) => {
         const sorted = (list || [])
-          .filter((m) => m.poster_path && m.release_date && m.release_date >= today)
-          .sort((a, b) => a.release_date.localeCompare(b.release_date))
+          .filter((m) => m.poster_path)
+          .sort((a, b) => (a.release_date || "").localeCompare(b.release_date || ""))
           .slice(0, 12);
         setItems(sorted);
       })

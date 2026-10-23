@@ -377,7 +377,7 @@ export default function Home() {
       .finally(() => setStreamingLoaded(true));
   }, []);
 
-  const withBackdrop = nowPlaying.filter((t) => t.backdrop_path);
+  const withBackdrop = (nowPlaying.length ? nowPlaying : trending).filter((t) => t.backdrop_path);
   const featured = withBackdrop.slice(0, 5);
 
   return (

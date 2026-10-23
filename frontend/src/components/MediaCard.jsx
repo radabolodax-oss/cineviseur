@@ -53,9 +53,12 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
             draggable={false}
             alt={`Affiche de ${title}`}
             loading="lazy"
+            ref={(el) => {
+              if (el?.complete && !loaded) setLoaded(true);
+            }}
             onLoad={() => setLoaded(true)}
-            data-sharp={loaded || undefined}
-            className="w-full h-full object-cover focus-in transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+            onError={() => setLoaded(true)}
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-white/55 text-xs px-3 text-center">
@@ -63,7 +66,7 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
             {title}
           </div>
         )}
-        {!loaded && item.poster_path && <div className="absolute inset-0 skeleton" />}
+        {!loaded && item.poster_path && <div className="absolute inset-0 skeleton pointer-events-none" />}
 
         {/* Reflet de brillance cinématique au survol (21st.dev) */}
         <div

@@ -8,16 +8,14 @@ import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 
-// Détection et purge automatique des anciens caches d'actifs pour garantir la fraîcheur immédiate du build
+// Détection et purge automatique de TOUS les anciens caches (y compris Service Worker & affiches corrompues)
 try {
-  const BUILD_HASH = "2026-10-23-r1";
+  const BUILD_HASH = "2026-10-23-img-v4";
   if (localStorage.getItem("cv_build_rev") !== BUILD_HASH) {
     localStorage.setItem("cv_build_rev", BUILD_HASH);
     if ("caches" in window) {
       caches.keys().then((keys) => {
-        keys.forEach((k) => {
-          if (!k.includes("affiches-tmdb")) caches.delete(k);
-        });
+        keys.forEach((k) => caches.delete(k));
       });
     }
   }
