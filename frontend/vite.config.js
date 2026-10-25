@@ -94,14 +94,16 @@ export default defineConfig(({ mode }) => {
       // Mode prompt : alerte l'utilisateur dès qu'un patch/mise à jour est disponible
       // sans l'obliger à vider son cache ou perdre ses données locales.
       VitePWA({
-        registerType: 'autoUpdate',
+        // Mode prompt : le nouveau service worker attend sagement que l'utilisateur
+        // clique sur « Mettre à jour » au lieu de recharger la page en pleine action.
+        registerType: 'prompt',
         manifest: false,
         devOptions: {
           enabled: false,
         },
         workbox: {
-          skipWaiting: true,
-          clientsClaim: true,
+          skipWaiting: false,
+          clientsClaim: false,
           cleanupOutdatedCaches: true,
           globPatterns: ['**/*.{js,css,html,svg,png,jpg,woff2}'],
           navigateFallback: '/index.html',
