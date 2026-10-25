@@ -553,7 +553,7 @@ export default function MediaDetail() {
                 href={`https://tv.apple.com/fr/search?term=${encodeURIComponent(title)}${AFFILIATE.appleToken ? `&at=${encodeURIComponent(AFFILIATE.appleToken)}` : ""}`}
                 target="_blank"
                 rel="noopener noreferrer nofollow"
-                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-white/10 via-white/5 to-white/[0.02] border border-white/15 hover:border-white/35 transition-all group shadow-sm hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)]"
+                className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-white/10 via-white/5 to-white/[0.02] border border-transparent hover:border-white/35 transition-all group shadow-sm hover:shadow-[0_8px_24px_rgba(255,255,255,0.08)]"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-lg shrink-0">

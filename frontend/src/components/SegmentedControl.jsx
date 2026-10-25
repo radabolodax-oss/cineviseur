@@ -29,7 +29,7 @@ export default function SegmentedControl({
   return (
     <div
       role="tablist"
-      className={`inline-flex items-center rounded-full bg-white/[0.04] p-1 border border-white/[0.08] backdrop-blur-xl shadow-inner ${sizeClasses[size] || sizeClasses.md} ${className}`}
+      className={`inline-flex items-center rounded-full bg-white/[0.04] p-1 border border-transparent backdrop-blur-xl shadow-inner ${sizeClasses[size] || sizeClasses.md} ${className}`}
     >
       {options.map((option) => {
         const isSelected = option.value === value;

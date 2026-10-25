@@ -72,7 +72,7 @@ export default function TvEpisodeTracker({ tvId, seasons = [], totalEpisodes = 0
         </div>
 
         {/* Jauge compacte */}
-        <div className="flex items-center gap-2.5 bg-white/[0.04] px-3 py-1.5 rounded-xl border border-white/[0.08] shrink-0">
+        <div className="flex items-center gap-2.5 bg-white/[0.04] px-3 py-1.5 rounded-xl border border-transparent shrink-0">
           <div className="w-6 h-6 rounded-lg bg-cine-violet/25 border border-cine-violet/40 grid place-items-center font-mono font-bold text-cine-soft text-xs">
             {totalEpisodes > 0 ? Math.round((watchedCount / totalEpisodes) * 100) : 0}%
           </div>

@@ -31,7 +31,7 @@ export default function AuthShell({ title, intro, children, footer }) {
       </motion.div>
 
       <motion.div
-        className="hidden lg:block relative aspect-[4/5] max-h-[640px] rounded-2xl overflow-hidden ring-1 ring-inset ring-white/[0.08]"
+        className="hidden lg:block relative aspect-[4/5] max-h-[640px] rounded-2xl overflow-hidden "
         aria-hidden="true"
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}

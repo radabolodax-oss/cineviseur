@@ -42,7 +42,7 @@ export default function MediaCard({ item, mediaType: typeOverride }) {
       className="group block rounded-2xl focus-visible:outline-none select-none [-webkit-touch-callout:none]"
       {...gestures}
     >
-      <div className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-white/[0.04] border border-white/[0.08] transition-all duration-300 group-hover:border-emerald-500/40 group-hover:shadow-[0_16px_40px_-12px_rgba(16,185,129,0.25)] group-focus-visible:ring-2 group-focus-visible:ring-emerald-400">
+      <div className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-white/[0.04] border border-transparent transition-all duration-300 group-hover:border-emerald-500/40 group-hover:shadow-[0_16px_40px_-12px_rgba(16,185,129,0.25)] group-focus-visible:ring-2 group-focus-visible:ring-emerald-400">
         {item.poster_path ? (
           <img
             data-poster

@@ -540,7 +540,7 @@ export default function CollectorTicketModal({ item, rating, onClose }) {
             </div>
 
             {/* Grille de métadonnées du Billet */}
-            <div className="grid grid-cols-2 gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-xs">
+            <div className="grid grid-cols-2 gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-transparent text-xs">
               <div>
                 <span className="block text-[10px] font-mono uppercase tracking-wider text-white/40">
                   Date de visionnage

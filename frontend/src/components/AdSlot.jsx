@@ -40,7 +40,7 @@ export default function AdSlot({ slotId, format = "auto", responsive = "true", c
   return (
     <div className={`w-full overflow-hidden flex flex-col items-center justify-center my-6 text-center ${className}`}>
       <span className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Publicité</span>
-      <div className="w-full flex justify-center min-h-[90px] bg-white/[0.02] border border-white/5 rounded-xl p-2">
+      <div className="w-full flex justify-center min-h-[90px] bg-white/[0.02] border border-transparent rounded-xl p-2">
         <ins
           ref={adRef}
           className="adsbygoogle"

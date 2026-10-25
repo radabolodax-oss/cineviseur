@@ -4,7 +4,7 @@ export default function VpnCallout() {
   const vpnUrl = AFFILIATE.vpnUrl || "https://nordvpn.com/fr/special-offer/?utm_medium=affiliate&utm_source=cineviseur";
 
   return (
-    <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-[#141220]/90 border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+    <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-[#141220]/90 border border-transparent flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
       <div className="flex items-start gap-3">
         <span className="text-xl shrink-0 mt-0.5" role="img" aria-hidden="true">🌍</span>
         <div>

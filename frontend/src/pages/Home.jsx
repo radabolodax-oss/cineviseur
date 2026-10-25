@@ -165,7 +165,7 @@ function Hero({ featured }) {
 function CozyGenreShelf({ items }) {
   return (
     <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-16" aria-label="Explorer par genre">
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#141220]/80 border border-white/[0.06] shadow-[0_12px_36px_rgba(0,0,0,0.3)]">
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#141220]/80 border border-transparent shadow-[0_12px_36px_rgba(0,0,0,0.3)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 className="font-display font-semibold text-xl text-white">Explorer par genre</h3>
@@ -181,7 +181,7 @@ function CozyGenreShelf({ items }) {
             <Link
               key={g}
               to="/discover"
-              className="px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.08] hover:border-white/[0.18] text-white/80 hover:text-white transition-all shadow-sm active:scale-95"
+              className="px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-white/[0.04] hover:bg-white/[0.09] border border-transparent hover:border-white/[0.18] text-white/80 hover:text-white transition-all shadow-sm active:scale-95"
             >
               {g}
             </Link>
@@ -224,7 +224,7 @@ function FeatureShowcase() {
         {/* 1. Suivi des séries */}
         <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-transparent shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-4">
@@ -257,7 +257,7 @@ function FeatureShowcase() {
         {/* 2. Billets collectors */}
         <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-transparent shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-4">
@@ -290,7 +290,7 @@ function FeatureShowcase() {
         {/* 3. Soirée Duo */}
         <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-transparent shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-4">
@@ -323,7 +323,7 @@ function FeatureShowcase() {
         {/* 4. Import Letterboxd & Trakt */}
         <motion.article
           variants={riseItem}
-          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
+          className="p-6 sm:p-8 flex flex-col justify-between rounded-3xl bg-[#161423]/90 border border-transparent shadow-[0_12px_36px_rgba(0,0,0,0.35)]"
         >
           <div>
             <div className="flex items-center justify-between gap-3 mb-4">

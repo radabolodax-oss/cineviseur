@@ -68,12 +68,12 @@ export default function HomeCinemaGear() {
               href={makeUrl(item.query)}
               target="_blank"
               rel="noopener noreferrer nofollow"
-              className="flex flex-col justify-between h-full p-5 sm:p-6 rounded-3xl bg-[#161423]/90 hover:bg-[#1d1a2f] border border-white/[0.07] hover:border-white/[0.14] hover:shadow-[0_12px_36px_rgba(0,0,0,0.35)] transition-all group"
+              className="flex flex-col justify-between h-full p-5 sm:p-6 rounded-3xl bg-[#161423]/90 hover:bg-[#1d1a2f] border border-transparent hover:border-white/[0.14] hover:shadow-[0_12px_36px_rgba(0,0,0,0.35)] transition-all group"
             >
               <div>
                 <div className="flex items-center justify-between gap-3 mb-3.5">
                   <span className="text-3xl" role="img" aria-hidden="true">{item.icon}</span>
-                  <span className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-white/70">
+                  <span className="text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-transparent text-white/70">
                     {item.badge}
                   </span>
                 </div>

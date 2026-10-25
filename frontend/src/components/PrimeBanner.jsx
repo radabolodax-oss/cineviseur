@@ -31,7 +31,7 @@ export default function PrimeBanner({ className = "" }) {
   return (
     <aside
       aria-label="Offre partenaire Prime Video"
-      className={`relative overflow-hidden rounded-3xl p-5 sm:p-7 bg-gradient-to-r from-[#121b2d]/90 via-[#19152b]/90 to-[#131726]/90 border border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.35)] backdrop-blur-md ${className}`}
+      className={`relative overflow-hidden rounded-3xl p-5 sm:p-7 bg-gradient-to-r from-[#121b2d]/90 via-[#19152b]/90 to-[#131726]/90 border border-transparent shadow-[0_12px_36px_rgba(0,0,0,0.35)] backdrop-blur-md ${className}`}
     >
       <button
         type="button"

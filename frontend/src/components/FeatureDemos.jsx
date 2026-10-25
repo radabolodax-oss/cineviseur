@@ -30,7 +30,7 @@ export function InteractiveSeriesPreview() {
   const progressPct = Math.round((watched.length / episodes.length) * 100);
 
   return (
-    <div className="rounded-2xl bg-black/40 border border-white/[0.08] p-4 text-xs font-sans shadow-xl">
+    <div className="rounded-2xl bg-black/40 border border-transparent p-4 text-xs font-sans shadow-xl">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-cine-soft animate-pulse" />
@@ -138,7 +138,7 @@ export function InteractiveDuoPreview() {
   const [liked, setLiked] = useState(false);
 
   return (
-    <div className="rounded-2xl bg-black/40 border border-white/[0.08] p-4 text-xs font-sans shadow-xl">
+    <div className="rounded-2xl bg-black/40 border border-transparent p-4 text-xs font-sans shadow-xl">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center -space-x-2">
           <div className="w-7 h-7 rounded-full bg-cine-violet border-2 border-cine-ink flex items-center justify-center font-bold text-white text-[10px]">
@@ -153,7 +153,7 @@ export function InteractiveDuoPreview() {
         </span>
       </div>
 
-      <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+      <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-transparent">
         <div className="min-w-0 pr-2">
           <span className="font-semibold text-white block text-sm truncate">Dune: Deuxième Partie</span>
           <span className="text-[11px] text-white/55">En commun dans vos 2 listes</span>

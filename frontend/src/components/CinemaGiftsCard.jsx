@@ -6,7 +6,7 @@ export default function CinemaGiftsCard() {
   const boxUrl = `https://www.amazon.fr/s?k=coffret+cinema+places+cultur+in+the+city+wonderbox&tag=${encodeURIComponent(tag)}`;
 
   return (
-    <section className="mt-12 overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-[#161424]/95 via-[#1a172c]/95 to-[#13111e]/95 border border-white/[0.08] shadow-[0_16px_40px_rgba(0,0,0,0.35)]" aria-label="Coffrets et places de cinéma">
+    <section className="mt-12 overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-[#161424]/95 via-[#1a172c]/95 to-[#13111e]/95 border border-transparent shadow-[0_16px_40px_rgba(0,0,0,0.35)]" aria-label="Coffrets et places de cinéma">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs font-medium mb-3">

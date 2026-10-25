@@ -260,7 +260,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
             </div>
 
             {/* Onglets de sélection de système */}
-            <div className="flex items-center gap-1.5 p-1 bg-white/[0.04] ring-1 ring-inset ring-white/[0.08] rounded-xl mb-6">
+            <div className="flex items-center gap-1.5 p-1 bg-white/[0.04] rounded-xl mb-6">
               {Object.entries(PLATFORM_CONFIG).map(([key, p]) => (
                 <button
                   key={key}
@@ -300,7 +300,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                   <p className="text-white/70 leading-relaxed">
                     Opera désactive l'icône d'installation automatique pour privilégier sa barre latérale.
                   </p>
-                  <div className="flex items-start gap-2.5 mt-1 bg-black/30 p-3 rounded-lg border border-white/[0.08]">
+                  <div className="flex items-start gap-2.5 mt-1 bg-black/30 p-3 rounded-lg border border-transparent">
                     <span className="text-lg shrink-0">🔒</span>
                     <p className="leading-relaxed">
                       <strong>Astuce en 1 seconde :</strong> Cliquez sur le <strong>cadenas 🔒</strong> (juste à gauche de l'adresse URL en haut) et <strong>glissez-le directement avec votre souris sur votre Bureau Windows</strong>. Le raccourci est créé instantanément !
@@ -309,7 +309,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                 </div>
 
                 {/* Bloc pour Chrome et Edge */}
-                <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3 text-xs text-white/80">
+                <div className="p-4 rounded-xl bg-white/[0.03] flex flex-col gap-3 text-xs text-white/80">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-white text-xs">Sur Google Chrome ou Microsoft Edge :</span>
                     {typeof navigator !== "undefined" && !/OPR\/|Opera\//.test(navigator.userAgent) && /Chrome\/|Edg\//.test(navigator.userAgent) && (
@@ -330,7 +330,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                   </div>
                 </div>
 
-                <p className="text-[11px] text-white/45 bg-white/[0.02] p-3 rounded-lg border border-white/[0.05] leading-relaxed">
+                <p className="text-[11px] text-white/45 bg-white/[0.02] p-3 rounded-lg border border-transparent leading-relaxed">
                   💡 <strong>Note :</strong> Si vous êtes en fenêtre de <em>navigation privée</em>, Chrome et Edge bloquent l'installation d'applications par sécurité. Ouvrez CineViseur dans une fenêtre classique pour créer le raccourci.
                 </p>
               </div>
@@ -345,7 +345,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
                   </button>
                 )}
 
-                <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3.5 text-xs text-white/80">
+                <div className="p-4 rounded-xl bg-white/[0.03] flex flex-col gap-3.5 text-xs text-white/80">
                   <div className="flex items-start gap-3">
                     <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
                     <p className="leading-relaxed">
@@ -363,7 +363,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
             )}
 
             {activePlatform === "ios" && (
-              <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3.5 text-xs text-white/80">
+              <div className="p-4 rounded-xl bg-white/[0.03] flex flex-col gap-3.5 text-xs text-white/80">
                 <div className="flex items-start gap-3">
                   <span className="w-7 h-7 rounded-lg bg-cine-violet/20 text-cine-soft grid place-items-center shrink-0 font-bold text-xs">1</span>
                   <p className="leading-relaxed">
@@ -386,7 +386,7 @@ function InstallModal({ open, onClose, platform, canInstall, onDirectInstall }) 
             )}
 
             {activePlatform === "mac" && (
-              <div className="p-4 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.08] flex flex-col gap-3 text-xs text-white/80">
+              <div className="p-4 rounded-xl bg-white/[0.03] flex flex-col gap-3 text-xs text-white/80">
                 <p className="leading-relaxed">
                   • <strong>Sur Safari :</strong> cliquez sur le menu <strong>Fichier</strong> en haut de l'écran, puis sur <strong>« Ajouter au Dock »</strong>.
                 </p>

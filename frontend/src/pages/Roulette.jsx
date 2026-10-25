@@ -248,7 +248,7 @@ export default function Roulette() {
 
       {mode === "duo" ? (
         <div className="max-w-xl mx-auto px-4 text-center">
-          <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-xl mb-8">
+          <div className="p-6 rounded-3xl bg-white/[0.03] border border-transparent backdrop-blur-xl mb-8">
             <span className="text-4xl block mb-3">🍿🤝</span>
             <h3 className="font-display font-bold text-xl text-white mb-2">Trouver un film en commun</h3>
             <p className="text-sm text-white/60 mb-6">
@@ -337,7 +337,7 @@ export default function Roulette() {
                         play("bell");
                         vibrate(40);
                       }}
-                      className="group relative rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-pink-500/60 p-2.5 transition-all duration-300 hover:scale-[1.02] cursor-pointer hover:shadow-[0_8px_25px_rgba(236,72,153,0.3)]"
+                      className="group relative rounded-2xl bg-white/[0.03] border border-transparent hover:border-pink-500/60 p-2.5 transition-all duration-300 hover:scale-[1.02] cursor-pointer hover:shadow-[0_8px_25px_rgba(236,72,153,0.3)]"
                     >
                       <div className="aspect-[2/3] rounded-xl overflow-hidden bg-white/10 mb-2 relative">
                         {m.poster_path ? (
@@ -375,7 +375,7 @@ export default function Roulette() {
                   <Link
                     key={m.id}
                     to={`/title/${m.media_type}/${m.media_id}`}
-                    className="group rounded-2xl bg-white/[0.03] border border-white/[0.08] p-2 hover:border-cine-violet/50 transition-colors"
+                    className="group rounded-2xl bg-white/[0.03] border border-transparent p-2 hover:border-cine-violet/50 transition-colors"
                   >
                     <div className="aspect-[2/3] rounded-xl overflow-hidden bg-white/10 mb-2">
                       {m.poster_path ? (

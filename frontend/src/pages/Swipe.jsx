@@ -671,7 +671,7 @@ export default function Swipe() {
               )}
             </AnimatePresence>
             {!top && (
-              <div className="absolute inset-0 grid place-items-center rounded-3xl bg-white/[0.03] border border-white/10 p-6 text-center">
+              <div className="absolute inset-0 grid place-items-center rounded-3xl bg-white/[0.03] border border-transparent p-6 text-center">
                 {!loading && (
                   <div>
                     <div className="w-12 h-12 rounded-full bg-white/10 mx-auto flex items-center justify-center mb-3 text-white/70">

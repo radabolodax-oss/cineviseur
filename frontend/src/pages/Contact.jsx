@@ -229,7 +229,7 @@ export default function Contact() {
               key="form"
               variants={riseItem}
               onSubmit={handleSubmit}
-              className="panel p-6 sm:p-8 md:p-10 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-cine-ink/85 backdrop-blur-md relative"
+              className="panel p-6 sm:p-8 md:p-10 !border-transparent shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-cine-ink/85 backdrop-blur-md relative"
               noValidate
             >
               {/* ============================================================== */}
@@ -344,7 +344,7 @@ export default function Contact() {
                 {/* ============================================================== */}
                 {/* DYNAMIC ANTI-BOT HUMAN CHALLENGE                               */}
                 {/* ============================================================== */}
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="p-4 rounded-xl bg-white/[0.02] border border-transparent flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-cine-emerald/15 border border-cine-emerald/25 text-cine-emerald flex items-center justify-center text-sm font-semibold">
                       🛡️

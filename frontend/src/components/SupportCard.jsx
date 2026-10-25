@@ -5,7 +5,7 @@ export default function SupportCard() {
   const kofiUrl = AFFILIATE.kofiUrl || "https://ko-fi.com/cineviseur";
 
   return (
-    <article className="p-6 sm:p-7 rounded-3xl bg-[#161423]/90 border border-white/[0.07] shadow-[0_12px_36px_rgba(0,0,0,0.35)] mt-8" aria-label="Soutenir CineViseur">
+    <article className="p-6 sm:p-7 rounded-3xl bg-[#161423]/90 border border-transparent shadow-[0_12px_36px_rgba(0,0,0,0.35)] mt-8" aria-label="Soutenir CineViseur">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div className="max-w-xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs font-medium mb-3">

@@ -183,13 +183,13 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("cv:open-command-menu"))}
-              className="group flex items-center justify-between gap-2.5 bg-white/[0.035] border border-white/[0.07] hover:border-white/[0.15] hover:bg-white/[0.06] rounded-full px-4 py-2 transition shadow-sm w-full text-left"
+              className="group flex items-center justify-between gap-2.5 bg-white/[0.035] border border-transparent hover:border-white/[0.15] hover:bg-white/[0.06] rounded-full px-4 py-2 transition shadow-sm w-full text-left"
             >
               <div className="flex items-center gap-2.5 text-white/50 group-hover:text-white/80 min-w-0">
                 <Icon name="search" className="w-4 h-4 text-white/45 group-hover:text-cine-soft transition-colors shrink-0" />
                 <span className="text-sm truncate">Recherche rapide, films, cinémas...</span>
               </div>
-              <kbd className="hidden lg:inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.08] text-white/45 select-none shrink-0">
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/[0.06] border border-transparent text-white/45 select-none shrink-0">
                 ⌘K
               </kbd>
             </button>

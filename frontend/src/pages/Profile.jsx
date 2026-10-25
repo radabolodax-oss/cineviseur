@@ -221,7 +221,7 @@ export default function Profile() {
             key={tile.key}
             as="div"
             variants={riseItem}
-            className={`rounded-2xl ring-1 ring-inset ring-white/[0.08] ${i === 0 ? "bg-[radial-gradient(120%_100%_at_0%_0%,rgba(124,92,224,0.28),transparent_60%)] bg-[#111116]" : "bg-white/[0.03]"}`}
+            className={`rounded-2xl ${i === 0 ? "bg-[radial-gradient(120%_100%_at_0%_0%,rgba(124,92,224,0.28),transparent_60%)] bg-[#111116]" : "bg-white/[0.03]"}`}
           >
             <TileBody to={tile.to}>
               <Icon name={tile.icon} className="w-5 h-5 text-cine-soft" />
@@ -241,19 +241,19 @@ export default function Profile() {
         <motion.section variants={riseItem} className="mt-12 max-w-4xl">
           <h2 className="section-title mb-4">Vos statistiques cinéphiles</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
+            <div className="p-4 rounded-2xl bg-white/[0.03] border border-transparent">
               <span className="text-xs uppercase tracking-wider text-white/50 block mb-1">Temps total</span>
               <p className="font-display font-bold text-2xl text-white">{detailedStats.timeString}</p>
               <span className="text-[11px] text-white/40">passés devant un écran</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
+            <div className="p-4 rounded-2xl bg-white/[0.03] border border-transparent">
               <span className="text-xs uppercase tracking-wider text-white/50 block mb-1">Épisodes de séries</span>
               <p className="font-display font-bold text-2xl text-cine-soft">{detailedStats.totalEpisodesWatched}</p>
               <span className="text-[11px] text-white/40">vus au total</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
+            <div className="p-4 rounded-2xl bg-white/[0.03] border border-transparent">
               <span className="text-xs uppercase tracking-wider text-white/50 block mb-1">Note moyenne</span>
               <p className="font-display font-bold text-2xl text-amber-300">
                 {detailedStats.avgScore ? `★ ${detailedStats.avgScore}` : "—"}
@@ -261,7 +261,7 @@ export default function Profile() {
               <span className="text-[11px] text-white/40">sur 10</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
+            <div className="p-4 rounded-2xl bg-white/[0.03] border border-transparent">
               <span className="text-xs uppercase tracking-wider text-white/50 block mb-1">Lieux de séance</span>
               <p className="font-display font-bold text-xl text-white">
                 {detailedStats.cinemaCount} 🍿 / {detailedStats.streamingCount} 📺
@@ -293,7 +293,7 @@ export default function Profile() {
           <button
             type="button"
             onClick={() => csvInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-transparent hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
           >
             <Icon name="download" className="w-4 h-4 text-cine-soft" />
             <span>Importer CSV (.csv)</span>
@@ -302,7 +302,7 @@ export default function Profile() {
           <button
             type="button"
             onClick={handleExport}
-            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-transparent hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
           >
             <Icon name="share" className="w-4 h-4 text-cine-soft" />
             <span>Sauvegarde (.json)</span>
@@ -311,7 +311,7 @@ export default function Profile() {
           <button
             type="button"
             onClick={handleExportCsv}
-            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-transparent hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
           >
             <Icon name="share" className="w-4 h-4 text-emerald-400" />
             <span>Exporter tableur (.csv)</span>
@@ -320,7 +320,7 @@ export default function Profile() {
           <button
             type="button"
             onClick={() => jsonInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
+            className="flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-transparent hover:bg-white/[0.06] hover:border-cine-soft/40 transition text-xs sm:text-sm font-medium text-white"
           >
             <Icon name="plus" className="w-4 h-4 text-cine-soft" />
             <span>Restaurer (.json)</span>
@@ -331,7 +331,7 @@ export default function Profile() {
       {/* Réglages */}
       <motion.section variants={riseItem} className="mt-14 max-w-xl">
         <h2 className="section-title mb-4">Réglages</h2>
-        <label className="flex items-center justify-between gap-6 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-inset ring-white/[0.07] cursor-pointer">
+        <label className="flex items-center justify-between gap-6 rounded-2xl bg-white/[0.03] p-4 cursor-pointer">
           <span>
             <span className="block font-medium">Sons du projecteur</span>
             <span className="block text-sm text-white/60">Cliquet de la molette, tampon du ticket, bobine qui tourne.</span>
@@ -350,7 +350,7 @@ export default function Profile() {
           </button>
         </label>
 
-        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white/[0.03] p-4 ring-1 ring-inset ring-white/[0.07]">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white/[0.03] p-4 ">
           <div>
             <span className="block font-medium">Mettre à jour CineViseur</span>
             <span className="block text-xs sm:text-sm text-white/60">
@@ -368,7 +368,7 @@ export default function Profile() {
           </button>
         </div>
 
-        <Link to="/recap" className="mt-4 flex items-center justify-between rounded-2xl bg-[radial-gradient(120%_120%_at_0%_0%,rgba(124,92,224,0.3),transparent_60%)] p-4 ring-1 ring-inset ring-white/[0.08] hover:ring-white/20 transition">
+        <Link to="/recap" className="mt-4 flex items-center justify-between rounded-2xl bg-[radial-gradient(120%_120%_at_0%_0%,rgba(124,92,224,0.3),transparent_60%)] p-4 hover:ring-white/20 transition">
           <span>
             <span className="block font-medium">Ton année ciné {new Date().getFullYear()}</span>
             <span className="block text-sm text-white/60">Ton récap en diapositives, à partager.</span>
