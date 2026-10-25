@@ -35,6 +35,7 @@ import {
   ArrowsClockwise,
   Sparkle,
   Heart,
+  Trophy,
 } from "@phosphor-icons/react";
 
 // Une seule famille d'icônes (Phosphor) pour tout le site, graisse "regular" par défaut.
@@ -75,6 +76,7 @@ const ICONS = {
   dots: DotsThreeVertical,
   mobile: DeviceMobile,
   heart: Heart,
+  trophy: Trophy,
 };
 
 export default function Icon({ name, className = "w-4 h-4", weight = "regular" }) {
