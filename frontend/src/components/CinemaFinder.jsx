@@ -179,7 +179,7 @@ export default function CinemaFinder({ filmTitle }) {
                         transition={{ duration: 0.4, delay: Math.min(i, 8) * 0.04, ease: EASE_OUT }}
                         onMouseEnter={() => setActive(cin.id)}
                         onMouseLeave={() => setActive(null)}
-                        className={`rounded-2xl p-5 transition-colors ${active === cin.id ? "bg-white/[0.10] shadow-lg" : "bg-white/[0.03]"}`}
+                        className={`rounded-2xl p-5 transition-colors ${active === cin.id ? "bg-white/[0.10] shadow-lg" : "surface-quiet"}`}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">

@@ -514,7 +514,7 @@ export default function MediaDetail() {
       )}
 
       {providers && (
-        <section id="plateformes" className="scroll-mt-24 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16">
+        <section id="plateformes" className="scroll-mt-24 max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-16 section-glow">
           <Reveal y={16}>
             <SectionTitle>Où le regarder</SectionTitle>
           </Reveal>

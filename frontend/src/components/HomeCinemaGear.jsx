@@ -68,7 +68,7 @@ export default function HomeCinemaGear() {
               href={makeUrl(item.query)}
               target="_blank"
               rel="noopener noreferrer nofollow"
-              className="flex flex-col justify-between h-full p-5 sm:p-6 rounded-3xl bg-[#161423]/90 hover:bg-[#1d1a2f] border border-transparent hover:border-white/[0.14] hover:shadow-[0_12px_36px_rgba(0,0,0,0.35)] transition-all group"
+              className="flex flex-col justify-between h-full p-5 sm:p-6 rounded-3xl surface surface-emerald hover:shadow-[0_20px_48px_-26px_rgba(0,0,0,0.9)] transition-all group"
             >
               <div>
                 <div className="flex items-center justify-between gap-3 mb-3.5">

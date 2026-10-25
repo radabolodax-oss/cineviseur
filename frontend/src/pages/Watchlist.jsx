@@ -41,7 +41,7 @@ function QueueRow({ item, position, onWatched, onRemove }) {
       value={item}
       dragListener={false}
       dragControls={controls}
-      className="group relative flex items-center gap-4 rounded-2xl bg-white/[0.03] p-3 hover:bg-white/[0.06]"
+      className="group relative flex items-center gap-4 rounded-2xl surface-quiet p-3 hover:bg-white/[0.055]"
       whileDrag={{ scale: 1.03, boxShadow: "0 24px 48px -16px rgba(0,0,0,0.8)", zIndex: 5 }}
       exit={{ opacity: 0, x: 60, transition: { duration: 0.25 } }}
     >
@@ -126,7 +126,7 @@ function DiaryRow({ item, onSelectTicket }) {
   const tagLabel = item.viewing_tag === "cinema" ? "🍿 Cinéma" : item.viewing_tag === "rewatch" ? "🔄 Re-visionnage" : "📺 Streaming";
 
   return (
-    <div className="flex items-center justify-between gap-4 p-3.5 rounded-2xl bg-white/[0.03] border border-transparent hover:bg-white/[0.06] transition-colors">
+    <div className="flex items-center justify-between gap-4 p-3.5 rounded-2xl surface-quiet hover:bg-white/[0.055] transition-colors">
       <div className="flex items-center gap-3.5 min-w-0">
         <Link to={href} className="w-12 h-16 rounded-lg overflow-hidden shrink-0 bg-white/10">
           {item.poster_path ? (
@@ -181,7 +181,7 @@ function UpNextCard({ item, onEpisodeWatched }) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-3xl bg-white/[0.03] border border-transparent hover:border-cine-violet/40 transition-colors">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-3xl surface">
       <div className="flex items-center gap-4 min-w-0">
         <Link to={href} className="w-16 sm:w-20 aspect-[2/3] rounded-xl overflow-hidden shrink-0 bg-white/10 shadow-md">
           {item.poster_path ? (
@@ -352,7 +352,7 @@ export default function Watchlist() {
             </div>
 
             {seriesList.length === 0 ? (
-              <div className="py-10 text-center rounded-3xl bg-white/[0.02] border border-transparent p-8">
+              <div className="py-10 text-center rounded-3xl surface-quiet p-8">
                 <span className="text-3xl block mb-3">📺</span>
                 <p className="text-white/80 font-medium">Aucune série dans votre liste pour l'instant.</p>
                 <p className="text-sm text-white/50 mt-1 mb-6">Ajoutez des séries pour suivre vos épisodes sans jamais vous perdre.</p>

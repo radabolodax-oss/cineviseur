@@ -181,7 +181,7 @@ export default function Discover() {
 
   return (
     <div className="pt-10 pb-16">
-      <motion.div className="px-4 sm:px-6 md:px-10 mb-8" initial="hidden" animate="show" variants={stagger(0.08)}>
+      <motion.div className="px-4 sm:px-6 md:px-10 mb-8 section-glow" initial="hidden" animate="show" variants={stagger(0.08)}>
         <motion.div variants={riseItem} className="flex items-center gap-2 mb-3">
           <span className="w-1.5 h-1.5 rounded-full bg-cine-soft animate-ping" />
           <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-cine-soft font-semibold">

@@ -142,7 +142,7 @@ export default function MoodInspirer() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="p-8 rounded-2xl bg-white/[0.02] border border-transparent flex items-center justify-center gap-3 text-white/60 text-sm"
+              className="p-8 rounded-2xl surface-quiet flex items-center justify-center gap-3 text-white/60 text-sm"
             >
               <span className="animate-spin text-xl">⏳</span>
               <span>Recherche de la meilleure pépite...</span>
@@ -156,7 +156,7 @@ export default function MoodInspirer() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={SPRING}
-              className="p-5 sm:p-6 rounded-2xl bg-[#0f0e18]/90 border border-transparent flex flex-col md:flex-row items-center md:items-start gap-6 shadow-[0_12px_32px_rgba(0,0,0,0.4)]"
+              className="p-5 sm:p-6 rounded-2xl surface-quiet flex flex-col md:flex-row items-center md:items-start gap-6"
             >
               <Link
                 to={`/title/movie/${movie.id}`}

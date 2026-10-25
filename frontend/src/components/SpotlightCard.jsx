@@ -34,7 +34,7 @@ export default function SpotlightCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative overflow-hidden rounded-3xl bg-[#161423]/90 backdrop-blur-xl border border-transparent transition-all duration-300 shadow-[0_12px_36px_rgba(0,0,0,0.35)] ${className}`}
+      className={`relative overflow-hidden rounded-3xl surface backdrop-blur-xl transition-all duration-300 ${className}`}
       {...rest}
     >
       {finePointer && isHovered && (

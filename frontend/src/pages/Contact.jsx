@@ -172,7 +172,7 @@ export default function Contact() {
 
   return (
     <motion.article
-      className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pt-12 pb-24"
+      className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pt-12 pb-24 section-glow"
       initial="hidden"
       animate="show"
       variants={stagger(0.06)}
@@ -344,7 +344,7 @@ export default function Contact() {
                 {/* ============================================================== */}
                 {/* DYNAMIC ANTI-BOT HUMAN CHALLENGE                               */}
                 {/* ============================================================== */}
-                <div className="p-4 rounded-xl bg-white/[0.02] border border-transparent flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="p-4 rounded-xl surface-quiet flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-cine-emerald/15 border border-cine-emerald/25 text-cine-emerald flex items-center justify-center text-sm font-semibold">
                       🛡️

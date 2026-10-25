@@ -9,7 +9,7 @@ export default function Cinemas() {
   useSeo("Cinémas à proximité", "Les cinémas autour de toi, leurs formats (Dolby Cinema, IMAX, 4DX, 3D...), leur programme et l'itinéraire.");
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pt-12 pb-16">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 pt-12 pb-16 section-glow">
       <motion.div initial="hidden" animate="show" variants={stagger(0.08)} className="mb-10 max-w-2xl">
         <motion.h1 variants={riseItem} className="page-title mb-3">
           Cinémas à proximité

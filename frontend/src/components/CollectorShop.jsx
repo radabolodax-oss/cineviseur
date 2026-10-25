@@ -71,7 +71,7 @@ export default function CollectorShop({ title, mediaType = "movie" }) {
               href={makeAmazonUrl(item.query)}
               target="_blank"
               rel="noopener noreferrer nofollow"
-              className="flex flex-col justify-between h-full p-5 rounded-3xl bg-[#161423]/90 hover:bg-[#1c192c] border border-transparent hover:border-white/[0.14] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all group"
+              className="flex flex-col justify-between h-full p-5 rounded-3xl surface surface-amber hover:shadow-[0_18px_44px_-24px_rgba(0,0,0,0.85)] transition-all group"
             >
               <div>
                 <div className="flex items-center justify-between gap-3 mb-3">
