@@ -292,7 +292,8 @@ export function sanitizeProviders(item, rawProviders, mediaType) {
         continue;
       }
 
-      const canonical = CANONICAL_PROVIDERS[pid] || {
+      // Always use the logo_path from TMDB response (now .png), not the hardcoded CANONICAL_PROVIDERS.
+      const canonical = {
         id: pid,
         name: p.provider_name,
         logo_path: p.logo_path,
@@ -303,7 +304,7 @@ export function sanitizeProviders(item, rawProviders, mediaType) {
         result.push({
           provider_id: canonical.id,
           provider_name: canonical.name,
-          logo_path: canonical.logo_path || p.logo_path,
+          logo_path: canonical.logo_path,
         });
       }
     }

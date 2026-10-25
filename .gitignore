@@ -2,6 +2,7 @@
 .env
 !.env.example
 backend/.env
+.tmdb-key
 
 # Dépendances et builds
 node_modules/

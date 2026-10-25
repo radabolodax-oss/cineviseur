@@ -54,7 +54,23 @@ async function getJsonBody(req) {
 }
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_API_KEY = process.env.TMDB_API_KEY || process.env.VITE_TMDB_API_KEY || "21bd7c2bfbde3a1cd4f82dfbe7781f76";
+
+// La clé TMDB est un secret de déploiement : elle ne doit jamais être écrite dans le dépôt.
+// Sans elle, on échoue avec un message explicite plutôt que de retomber sur une clé partagée.
+class MissingTmdbKeyError extends Error {
+  constructor() {
+    super(
+      "TMDB_API_KEY manquante : ajoute cette variable d'environnement dans les réglages du projet (Vercel → Settings → Environment Variables), puis redéploie."
+    );
+    this.code = "TMDB_KEY_MISSING";
+  }
+}
+
+function tmdbApiKey() {
+  const key = (process.env.TMDB_API_KEY || "").trim();
+  if (!key) throw new MissingTmdbKeyError();
+  return key;
+}
 
 const SORT_FIELDS = {
   movie: {
@@ -170,7 +186,7 @@ async function tmdbGet(tmdbPath, params = {}) {
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
   }
-  url.searchParams.set("api_key", TMDB_API_KEY);
+  url.searchParams.set("api_key", tmdbApiKey());
 
   const resp = await fetch(url.toString(), {
     headers: { Accept: "application/json" },
@@ -703,7 +719,11 @@ export default async function handler(req, res) {
     }
 
     return res.status(404).json({ detail: "Route introuvable" });
-  } catch {
+  } catch (err) {
+    if (err?.code === "TMDB_KEY_MISSING") {
+      console.error(`[CineViseur] ${err.message}`);
+      return res.status(500).json({ detail: err.message });
+    }
     return res.status(500).json({ detail: "Erreur interne du serveur" });
   }
 }
