@@ -7,6 +7,7 @@ import useLibrary from "../hooks/useLibrary";
 import useSeo from "../hooks/useSeo";
 import Icon from "../components/Icon";
 import { EASE_OUT } from "../lib/motionTokens";
+import { AFFILIATE } from "../lib/site";
 
 const MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 const SLIDE_MS = 6000;
