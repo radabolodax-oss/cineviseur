@@ -14,13 +14,12 @@ export const SITE = {
   lastLegalUpdate: "22 octobre 2026",
 };
 
-// Mesure d'audience : désactivée tant que le fournisseur n'est pas configuré.
+// Mesure d'audience : Plausible par défaut (sans cookie, aucun consentement requis).
+// Le script est chargé directement depuis index.html ; ces valeurs servent de repli et de garde-fou.
 export const ANALYTICS = {
-  provider: env.VITE_ANALYTICS_PROVIDER || null,
-  id: env.VITE_ANALYTICS_ID || null,
-  src:
-    env.VITE_ANALYTICS_SRC ||
-    (env.VITE_ANALYTICS_PROVIDER === "plausible" ? "https://plausible.io/js/script.js" : null),
+  provider: env.VITE_ANALYTICS_PROVIDER || "plausible",
+  id: env.VITE_ANALYTICS_ID || "cineviseur.vercel.app",
+  src: env.VITE_ANALYTICS_SRC || "https://plausible.io/js/script.js",
 };
 
 export const analyticsEnabled = Boolean(ANALYTICS.provider && ANALYTICS.id && ANALYTICS.src);

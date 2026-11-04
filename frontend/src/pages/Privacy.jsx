@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import LegalPage from "../components/LegalPage";
-import { SITE, analyticsEnabled } from "../lib/site";
+import { SITE } from "../lib/site";
 
 export default function Privacy() {
   const sections = [
@@ -48,9 +48,9 @@ export default function Privacy() {
             <strong>Mode Soirée Duo (Swipe à deux)</strong> : lors d'une session partagée, un code de salon temporaire (6 caractères cryptographiques) est généré pour synchroniser les votes en direct. Ces salons expirent automatiquement après 2 heures et aucune donnée n'est conservée.
           </li>
           <li>
-            <strong>Mesure d'audience et cookies</strong> : {analyticsEnabled
-              ? "une mesure d'audience anonymisée peut être activée après votre accord explicite."
-              : "aucune mesure d'audience intrusive n'est active par défaut. Vos choix sont modifiables à tout moment via la bannière de consentement."}
+            <strong>Mesure d'audience</strong> : la fréquentation est mesurée avec <strong>Plausible Analytics</strong>, un outil
+            sans cookie et sans identifiant personnel (ni empreinte numérique, ni profilage, ni revente). Il ne permet pas de vous
+            reconnaître et ne nécessite donc pas de consentement ; un bloqueur de scripts suffit à le désactiver.
           </li>
         </ul>
       ),
@@ -60,7 +60,7 @@ export default function Privacy() {
       body: (
         <>
           <p>
-            Conformément aux directives de la CNIL, à la directive ePrivacy et aux spécifications <strong>IAB TCF v2.2</strong>, <strong>aucun cookie publicitaire ni traceur tiers n'est déposé avant votre accord explicite</strong> :
+            Conformément aux directives de la CNIL, à la directive ePrivacy et aux spécifications <strong>IAB TCF v2.2</strong>, <strong>aucun cookie publicitaire ni traceur tiers n'est déposé avant votre accord explicite</strong>. Seule la mesure d'audience décrite plus haut fonctionne sans cookie :
           </p>
           <ul className="list-disc pl-5 mt-2 space-y-1.5">
             <li>
@@ -91,6 +91,9 @@ export default function Privacy() {
           </li>
           <li>
             <strong>YouTube (Google LLC)</strong> : lecture des bandes-annonces officielles à la demande.
+          </li>
+          <li>
+            <strong>Plausible Analytics (Plausible Insights OÜ, Estonie)</strong> : mesure d'audience agrégée, sans cookie ni donnée personnelle.
           </li>
           <li>
             <strong>Vercel Inc.</strong> : hébergement de l'infrastructure web, fonctions serverless et distribution CDN sécurisée HTTPS.

@@ -158,6 +158,8 @@ export function loadAnalytics() {
   if (typeof document === "undefined") return;
   if (document.getElementById("cv-analytics")) return;
   if (!analyticsEnabled) return;
+  // Déjà chargé depuis index.html (Plausible, sans cookie) : pas de second script, pas de double comptage.
+  if (document.querySelector('script[src*="plausible.io"]') || window.plausible) return;
   if (readConsentChoice() !== "granted" || !verifyTcfConsentProof()) return;
 
   const script = document.createElement("script");
