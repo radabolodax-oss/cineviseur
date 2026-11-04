@@ -17,7 +17,7 @@ import CastCarousel from "../components/CastCarousel";
 import CinemaFinder from "../components/CinemaFinder";
 import CollectorTicketModal from "../components/CollectorTicketModal";
 import TvEpisodeTracker from "../components/TvEpisodeTracker";
-import AdSlot from "../components/AdSlot";
+import SponsorSlot from "../components/SponsorSlot";
 import CollectorShop from "../components/CollectorShop";
 import VpnCallout from "../components/VpnCallout";
 import { KineticTitle, Reveal, TiltCard } from "../components/motion";
@@ -641,7 +641,7 @@ export default function MediaDetail() {
       <CollectorShop title={title} mediaType={mediaType} />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
-        <AdSlot slotId="detail-mid-banner" />
+        <SponsorSlot placement="detail" />
       </div>
 
       {similar.length > 0 && (

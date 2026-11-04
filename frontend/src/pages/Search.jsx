@@ -5,7 +5,7 @@ import { api } from "../lib/api";
 import MediaCard from "../components/MediaCard";
 import PosterGrid, { PosterSkeleton } from "../components/PosterGrid";
 import Icon from "../components/Icon";
-import AdSlot from "../components/AdSlot";
+import SponsorSlot from "../components/SponsorSlot";
 import { TextShimmer } from "../components/backgrounds";
 import { riseItem } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
@@ -102,7 +102,7 @@ export default function Search() {
             render={(item) => <MediaCard item={item} mediaType={item.media_type} />}
           />
           <div className="mt-12">
-            <AdSlot slotId="search-bottom-banner" />
+            <SponsorSlot placement="search" />
           </div>
         </>
       )}

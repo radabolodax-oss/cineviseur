@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useAnimationFrame, useMotionValue, useReducedM
 import Icon from "../components/Icon";
 import SegmentedControl from "../components/SegmentedControl";
 import PrimeBanner from "../components/PrimeBanner";
-import AdSlot from "../components/AdSlot";
+import SponsorSlot from "../components/SponsorSlot";
 import { SPRING, riseItem, stagger } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
 
@@ -276,7 +276,7 @@ export default function Discover() {
           )}
           {index === 4 && (
             <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 my-8">
-              <AdSlot slotId="discover-mid-banner" />
+              <SponsorSlot placement="discover" />
             </div>
           )}
         </div>

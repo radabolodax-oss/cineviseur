@@ -11,7 +11,7 @@ import InstallButton from "../components/InstallButton";
 import CarouselRow from "../components/CarouselRow";
 import Icon from "../components/Icon";
 import WhenNear from "../components/WhenNear";
-import AdSlot from "../components/AdSlot";
+import SponsorSlot from "../components/SponsorSlot";
 import PrimeBanner from "../components/PrimeBanner";
 import HomeCinemaGear from "../components/HomeCinemaGear";
 import MoodInspirer from "../components/MoodInspirer";
@@ -404,7 +404,7 @@ export default function Home() {
       <MoodInspirer />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10">
-        <AdSlot slotId="home-bottom-banner" />
+        <SponsorSlot placement="home" />
       </div>
     </div>
   );
