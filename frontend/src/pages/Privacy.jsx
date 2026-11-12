@@ -64,7 +64,7 @@ export default function Privacy() {
           </p>
           <ul className="list-disc pl-5 mt-2 space-y-1.5">
             <li>
-              <strong>Google AdSense</strong> : strictement subordonné à votre consentement actif via notre CMP. Tant que vous n'avez pas cliqué sur « Tout accepter » ou en cas de refus (« Continuer sans accepter »), les scripts de la régie sont intégralement bloqués et aucun identifiant n'est transmis.
+              <strong>Google AdSense</strong> : configuré via <strong>Google Consent Mode v2</strong>. Tant que vous n'avez pas cliqué sur « Tout accepter » ou en cas de refus (« Continuer sans accepter »), tous les signaux publicitaires restent en statut refusé (<code>denied</code>) et aucun cookie de ciblage ni de personnalisation n'est activé.
             </li>
             <li>
               <strong>Journalisation de la preuve de consentement</strong> : vos choix sont horodatés et conservés localement sous la clé <code>cv_consent_proof</code> afin de justifier de la conformité CNIL sans collecter de données nominatives.

@@ -19,8 +19,10 @@ export default function AdSlot({ slotId, format = "auto", responsive = "true", c
     return () => window.removeEventListener(CONSENT_CHANGED_EVENT, onConsentChanged);
   }, []);
 
+  const isNumericSlot = /^\d+$/.test(String(slotId || "").trim());
+
   useEffect(() => {
-    if (!ADSENSE.pubId || !hasConsent) return;
+    if (!ADSENSE.pubId || !isNumericSlot || !hasConsent) return;
 
     try {
       if (typeof window !== "undefined") {
@@ -30,10 +32,10 @@ export default function AdSlot({ slotId, format = "auto", responsive = "true", c
       // Ignorer silencieusement si bloqué par AdBlock
       console.debug("AdSlot: AdSense script blocked or not loaded yet.", err);
     }
-  }, [slotId, hasConsent]);
+  }, [slotId, isNumericSlot, hasConsent]);
 
-  if (!ADSENSE.pubId || !hasConsent) {
-    // Si pas de pubId ou si le consentement n'est pas accordé, zéro pub affichée
+  if (!ADSENSE.pubId || !isNumericSlot || !hasConsent) {
+    // Si pas de pubId, slotId non numérique, ou consentement non accordé, zéro pub affichée
     return null;
   }
 

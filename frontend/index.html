@@ -29,8 +29,39 @@
     <meta name="twitter:description" content="Listes de films et séries, alertes de sortie et cinémas près de chez vous." />
     <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.jpg" />
 
-    <!-- Google AdSense -->
+    <!-- Google AdSense + Consent Mode v2 -->
     <meta name="google-adsense-account" content="ca-pub-4993578792461847" />
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+      window.gtag = gtag;
+      (function () {
+        var granted = false;
+        try {
+          if (localStorage.getItem("cv_consent") === "granted") {
+            var proof = JSON.parse(localStorage.getItem("cv_consent_proof") || "null");
+            granted = !!(proof && proof.status === "granted" && proof.purposes && proof.purposes[1] === true);
+          }
+        } catch (e) {
+          granted = false;
+        }
+        var state = granted ? "granted" : "denied";
+        gtag("consent", "default", {
+          ad_storage: state,
+          ad_user_data: state,
+          ad_personalization: state,
+          analytics_storage: state,
+          wait_for_update: 500,
+        });
+      })();
+    </script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4993578792461847"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- Privacy-friendly analytics by Plausible -->
     <link rel="preconnect" href="https://plausible.io" />

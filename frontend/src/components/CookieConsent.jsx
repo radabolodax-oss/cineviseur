@@ -138,13 +138,41 @@ export function logConsentProof(status) {
   }
 }
 
+export function updateGoogleConsent(granted) {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  const gtag =
+    typeof window.gtag === "function"
+      ? window.gtag
+      : function () {
+          window.dataLayer.push(arguments);
+        };
+  window.gtag = gtag;
+  const state = granted ? "granted" : "denied";
+  gtag("consent", "update", {
+    ad_storage: state,
+    ad_user_data: state,
+    ad_personalization: state,
+    analytics_storage: state,
+  });
+}
+
 export function loadAdSense() {
   if (typeof document === "undefined") return;
-  if (document.getElementById("cv-adsense")) return;
   if (!ADSENSE.pubId) return;
 
   // Sécurité absolue : double verrou (statut explicite + preuve TCF v2.2 Purpose 1 décodée)
-  if (readConsentChoice() !== "granted" || !verifyTcfConsentProof()) return;
+  const granted = readConsentChoice() === "granted" && verifyTcfConsentProof();
+  updateGoogleConsent(granted);
+  if (!granted) return;
+
+  // Si déjà présent dans index.html (Consent Mode v2) ou injecté dynamiquement, ne pas dupliquer
+  if (
+    document.getElementById("cv-adsense") ||
+    document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')
+  ) {
+    return;
+  }
 
   const script = document.createElement("script");
   script.id = "cv-adsense";
@@ -196,6 +224,7 @@ export default function CookieConsent() {
   }, []);
 
   function decide(value) {
+    const prevChoice = choice;
     try {
       localStorage.setItem(CONSENT_KEY, value);
     } catch {
@@ -210,8 +239,9 @@ export default function CookieConsent() {
       loadAdSense();
       loadAnalytics();
     } else {
-      // Si l'utilisateur refuse et que les scripts étaient chargés, recharge propre sans scripts
-      if (document.getElementById("cv-adsense") || document.getElementById("cv-analytics")) {
+      updateGoogleConsent(false);
+      // Si l'utilisateur révoque un consentement précédemment accordé, recharge propre en mode refusé
+      if (prevChoice === "granted" || document.getElementById("cv-adsense") || document.getElementById("cv-analytics")) {
         window.location.reload();
       }
     }
