@@ -5,6 +5,7 @@ import NotificationBell from "./NotificationBell";
 import Icon from "./Icon";
 import { SPRING } from "../lib/motionTokens";
 import { AFFILIATE } from "../lib/site";
+import { SOUNDS_CHANGED_EVENT, play, setSoundsEnabled, soundsEnabled, unlockAudio } from "../lib/feedback";
 
 const CLAP = "[transform-origin:88px_182px] -rotate-[14deg] group-hover:rotate-0 transition-transform duration-300 ease-[cubic-bezier(0.3,1.6,0.5,1)] motion-reduce:transition-none motion-reduce:rotate-0";
 const PLAY = "origin-center [transform-box:fill-box] transition-transform duration-300 ease-out group-hover:scale-125 motion-reduce:transition-none motion-reduce:transform-none";
@@ -33,6 +34,55 @@ function LogoMark() {
       </g>
       <path className={PLAY} d="M228 284v84l72-42z" fill={paint} stroke={paint} strokeWidth="14" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+function SoundToggle() {
+  const [on, setOn] = useState(() => soundsEnabled());
+
+  useEffect(() => {
+    const sync = (e) => setOn(e.detail?.enabled ?? soundsEnabled());
+    window.addEventListener(SOUNDS_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(SOUNDS_CHANGED_EVENT, sync);
+  }, []);
+
+  function toggle() {
+    const next = !on;
+    setSoundsEnabled(next);
+    setOn(next);
+    if (next) {
+      unlockAudio();
+      play("hanger", 3);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-pressed={on}
+      aria-label={on ? "Couper tous les sons du site" : "Activer tous les sons du site"}
+      title={on ? "Sons du site activés (cliquer pour couper)" : "Sons du site coupés (cliquer pour activer)"}
+      className={`btn-icon transition-colors ${
+        on
+          ? "!text-emerald-300 !border-emerald-400/35 !bg-emerald-500/15 hover:!bg-emerald-500/25"
+          : "!text-white/50 hover:!text-white/85"
+      }`}
+    >
+      {on ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <line x1="23" y1="9" x2="17" y2="15" />
+          <line x1="17" y1="9" x2="23" y2="15" />
+        </svg>
+      )}
+    </button>
   );
 }
 
@@ -210,6 +260,7 @@ export default function Navbar() {
               <span className="text-sm transition-transform duration-300 group-hover:scale-125">☕</span>
               <span className="hidden sm:inline">Offrir un café</span>
             </a>
+            <SoundToggle />
             <NotificationBell />
           </div>
         </div>

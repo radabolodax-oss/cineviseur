@@ -1,14 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api";
-import {
-  SOUNDS_CHANGED_EVENT,
-  play,
-  setSoundsEnabled,
-  soundsEnabled,
-  unlockAudio,
-  vibrate,
-} from "../lib/feedback";
+import { play, unlockAudio, vibrate } from "../lib/feedback";
 import { mediaTitle, mediaYear, tmdbImage } from "../lib/tmdb";
 import Icon from "./Icon";
 
@@ -143,19 +136,31 @@ export default function PosterRack({
   const [focusedBadge, setFocusedBadge] = useState(null);
   const [savedIds, setSavedIds] = useState(() => new Set());
   const [heroSpin, setHeroSpin] = useState({ rx: 0, ry: 0, gx: 50, gy: 50 });
-  const [soundOn, setSoundOn] = useState(() => soundsEnabled());
 
   const stageRef = useRef(null);
   const itemRefs = useRef([]);
   const shadeRefs = useRef([]);
   const pointerRef = useRef({
     active: false,
+    isTouch: false,
     clientX: 0,
     relX: 0,
     normX: 0.5,
     focusSmooth: -1,
     lastIdx: -1,
     lastSoundAt: 0,
+  });
+  const touchRef = useRef({
+    active: false,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastTime: 0,
+    velocity: 0,
+    startScroll: 0,
+    axis: null,
+    moved: false,
+    lastTouchEndAt: 0,
   });
   const scrollRef = useRef({ current: 0, target: 0, max: 0, lastLoadCount: -1 });
   const physRef = useRef([]);
@@ -184,16 +189,11 @@ export default function PosterRack({
     }
   }, [items.length]);
 
-  // Synchronise le réglage sonore + déverrouille WebAudio au premier geste
+  // Déverrouille WebAudio au premier geste utilisateur
   useEffect(() => {
-    const onChanged = (e) => setSoundOn(e.detail?.enabled ?? soundsEnabled());
     const onFirstGesture = () => unlockAudio();
-    window.addEventListener(SOUNDS_CHANGED_EVENT, onChanged);
     window.addEventListener("pointerdown", onFirstGesture, { once: true, passive: true });
-    return () => {
-      window.removeEventListener(SOUNDS_CHANGED_EVENT, onChanged);
-      window.removeEventListener("pointerdown", onFirstGesture);
-    };
+    return () => window.removeEventListener("pointerdown", onFirstGesture);
   }, []);
 
   // Ajoute les états physiques uniquement pour les nouveaux films chargés (jamais de reset brutal en plein défilement)
@@ -270,8 +270,8 @@ export default function PosterRack({
       const scr = scrollRef.current;
       const isModalOpen = activeRef.current !== null;
 
-      // Auto-défilement fluide quand le curseur approche le bord droit (ou gauche) du portant
-      if (ptr.active && !isModalOpen && !reducedMotion) {
+      // Auto-défilement fluide aux bords UNIQUEMENT à la souris (jamais en tactile où le doigt pilote le rail 1:1)
+      if (ptr.active && !ptr.isTouch && !isModalOpen && !reducedMotion) {
         if (ptr.normX > 0.78) {
           const edgeStrength = (ptr.normX - 0.78) / 0.22; // 0 -> 1
           scr.target += edgeStrength * edgeStrength * 640 * dt;
@@ -412,19 +412,101 @@ export default function PosterRack({
   }, []);
 
   function handleRailMove(e) {
+    // Ignore les mousemove émulés juste après un geste tactile sur mobile
+    if (performance.now() - touchRef.current.lastTouchEndAt < 650) return;
     const stage = stageRef.current;
     if (!stage || items.length === 0) return;
     const rect = stage.getBoundingClientRect();
     const relX = clamp(e.clientX - rect.left, 0, rect.width);
     pointerRef.current.active = true;
+    pointerRef.current.isTouch = false;
     pointerRef.current.relX = relX;
     pointerRef.current.normX = relX / Math.max(1, rect.width);
   }
 
   function handleRailLeave() {
+    if (pointerRef.current.isTouch) return;
     pointerRef.current.active = false;
     pointerRef.current.lastIdx = -1;
     setFocusedBadge(null);
+  }
+
+  function handleTouchStart(e) {
+    const t = e.touches?.[0];
+    const stage = stageRef.current;
+    if (!t || !stage || items.length === 0) return;
+    unlockAudio();
+    touchRef.current = {
+      active: true,
+      startX: t.clientX,
+      startY: t.clientY,
+      lastX: t.clientX,
+      lastTime: performance.now(),
+      velocity: 0,
+      startScroll: scrollRef.current.target,
+      axis: null,
+      moved: false,
+      lastTouchEndAt: touchRef.current.lastTouchEndAt,
+    };
+    pointerRef.current.isTouch = true;
+  }
+
+  function handleTouchMove(e) {
+    const t = e.touches?.[0];
+    const stage = stageRef.current;
+    const touch = touchRef.current;
+    if (!t || !stage || !touch.active) return;
+
+    const dx = t.clientX - touch.startX;
+    const dy = t.clientY - touch.startY;
+
+    // Verrouille la direction : vertical = scroll de page naturel, horizontal = glissement 1:1 du portant
+    if (!touch.axis) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      touch.axis = Math.abs(dy) > Math.abs(dx) ? "y" : "x";
+    }
+    if (touch.axis === "y") return;
+
+    touch.moved = true;
+    const now = performance.now();
+    const dtMs = Math.max(8, now - touch.lastTime);
+    touch.velocity = (t.clientX - touch.lastX) / dtMs;
+    touch.lastX = t.clientX;
+    touch.lastTime = now;
+
+    // Suit le doigt 1:1 et ouvre l'affiche qui passe au centre du portant
+    const nextScroll = clamp(touch.startScroll - dx * 1.15, 0, scrollRef.current.max);
+    scrollRef.current.target = nextScroll;
+    pointerRef.current.active = true;
+    pointerRef.current.isTouch = true;
+    pointerRef.current.relX = stage.clientWidth * 0.5;
+    pointerRef.current.normX = 0.5;
+  }
+
+  function handleTouchEnd() {
+    const touch = touchRef.current;
+    if (!touch.active) return;
+    touch.active = false;
+    touch.lastTouchEndAt = performance.now();
+
+    if (touch.axis === "x") {
+      // Inertie douce au lâcher du doigt
+      if (Math.abs(touch.velocity) > 0.12) {
+        scrollRef.current.target = clamp(
+          scrollRef.current.target - touch.velocity * 220,
+          0,
+          scrollRef.current.max
+        );
+      }
+      // Déclenche le chargement infini si on approche de la fin
+      if (
+        scrollRef.current.target >= scrollRef.current.max - 420 &&
+        loadMoreRef.current.hasMore &&
+        loadMoreRef.current.fn
+      ) {
+        loadMoreRef.current.fn();
+      }
+    }
   }
 
   const panRail = useCallback((dir) => {
@@ -582,29 +664,6 @@ export default function PosterRack({
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
-              onClick={() => {
-                const next = !soundOn;
-                setSoundsEnabled(next);
-                setSoundOn(next);
-                if (next) {
-                  unlockAudio();
-                  play("hanger", 3);
-                }
-              }}
-              aria-pressed={soundOn}
-              aria-label={soundOn ? "Couper les sons du portant" : "Activer les sons du portant"}
-              title={soundOn ? "Sons actifs (cliquer pour couper)" : "Sons coupés (cliquer pour activer)"}
-              className={`h-8 px-3 rounded-full border text-xs font-mono flex items-center gap-1.5 transition-colors ${
-                soundOn
-                  ? "border-emerald-400/35 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25"
-                  : "border-white/15 bg-black/40 text-white/50 hover:text-white/80"
-              }`}
-            >
-              <span aria-hidden="true">{soundOn ? "🔊" : "🔇"}</span>
-              <span>{soundOn ? "Son" : "Muet"}</span>
-            </button>
-            <button
-              type="button"
               onClick={() => panRail(-1)}
               aria-label={`Faire défiler ${sectionTitle} vers la gauche`}
               className="w-8 h-8 rounded-full border border-white/15 bg-black/40 hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors"
@@ -647,10 +706,11 @@ export default function PosterRack({
           onMouseMove={handleRailMove}
           onMouseLeave={handleRailLeave}
           onWheel={handleWheel}
-          onTouchMove={(e) => {
-            if (e.touches?.[0]) handleRailMove(e.touches[0]);
-          }}
-          className={`relative w-full h-[370px] sm:h-[400px] overflow-hidden select-none transition-all duration-500 ${
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+          className={`relative w-full h-[370px] sm:h-[400px] overflow-hidden select-none touch-pan-y transition-all duration-500 ${
             active ? "opacity-25 scale-[0.97] blur-[1.5px] pointer-events-none" : "opacity-100"
           }`}
           style={{ perspective: "1350px", perspectiveOrigin: "50% 42px" }}
@@ -706,6 +766,10 @@ export default function PosterRack({
                       scrollRef.current.target = clamp(targetScroll, 0, scrollRef.current.max);
                     }}
                     onClick={() => {
+                      if (touchRef.current.moved) {
+                        touchRef.current.moved = false;
+                        return;
+                      }
                       unlockAudio();
                       play("hangerPull");
                       vibrate(14);
