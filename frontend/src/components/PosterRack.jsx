@@ -266,6 +266,12 @@ export default function PosterRack({
       }
 
       const stageW = elStage.clientWidth || 1100;
+      const isNarrow = stageW < 560;
+      const slotBase = isNarrow ? 42 : BASE_SLOT_W;
+      const openExtra = isNarrow ? 92 : OPEN_EXTRA_W;
+      const padLeft = isNarrow ? 56 : PAD_LEFT;
+      const baseScale = isNarrow ? 0.84 : 1;
+
       const ptr = pointerRef.current;
       const scr = scrollRef.current;
       const isModalOpen = activeRef.current !== null;
@@ -285,7 +291,7 @@ export default function PosterRack({
       let rawFocus = -1;
       if (ptr.active && !isModalOpen) {
         const worldX = ptr.relX + scr.current;
-        rawFocus = clamp((worldX - PAD_LEFT) / BASE_SLOT_W, 0, count - 1);
+        rawFocus = clamp((worldX - padLeft) / slotBase, 0, count - 1);
       }
 
       if (rawFocus >= 0) {
@@ -308,7 +314,7 @@ export default function PosterRack({
       // Calcule les positions mondiales cumulées le long du rail infini
       const influences = new Array(count);
       const targetXs = new Array(count);
-      let cursorX = PAD_LEFT;
+      let cursorX = padLeft;
 
       for (let i = 0; i < count; i++) {
         let inf = 0;
@@ -317,12 +323,12 @@ export default function PosterRack({
           inf = Math.exp(-(d * d) / (2 * 1.15 * 1.15));
         }
         influences[i] = inf;
-        const slotW = BASE_SLOT_W + inf * OPEN_EXTRA_W;
+        const slotW = slotBase + inf * openExtra;
         targetXs[i] = cursorX + slotW * 0.5;
         cursorX += slotW;
       }
 
-      const totalRailW = cursorX + PAD_LEFT;
+      const totalRailW = cursorX + padLeft;
       const maxScroll = Math.max(0, totalRailW - stageW);
       scr.max = maxScroll;
       scr.target = clamp(scr.target, 0, maxScroll);
@@ -345,8 +351,8 @@ export default function PosterRack({
         const tX = targetXs[i];
         const sideSign = ptr.focusSmooth >= 0 ? (i < ptr.focusSmooth ? 1 : -1) : 1;
         const tRotY = ptr.focusSmooth >= 0 ? sideSign * 74 * (1 - inf) : 74;
-        const tZ = inf * 36;
-        const tScale = 1 + inf * 0.08;
+        const tZ = inf * (isNarrow ? 24 : 36);
+        const tScale = baseScale * (1 + inf * 0.08);
 
         const screenApprox = tX - scr.current;
         if (screenApprox < -280 || screenApprox > stageW + 280) {
@@ -617,51 +623,55 @@ export default function PosterRack({
         }}
       />
 
-      {/* Bandeau supérieur façon casier / vestiaire */}
-      <div className="relative z-10 flex flex-col gap-3 px-5 sm:px-8 pt-5 pb-4 border-b border-white/[0.07] bg-black/25 backdrop-blur-sm">
-        <div className="flex items-center gap-3.5 min-w-0">
-          <span className="font-mono text-[11px] font-bold tracking-[0.22em] px-2.5 py-1 rounded-md border bg-black/50 border-white/15 text-white/80">
+      {/* Bandeau supérieur façon casier / vestiaire (hauteur fixe anti-saut sur tous les écrans) */}
+      <div className="relative z-10 flex flex-col gap-2.5 px-4 sm:px-8 pt-4 sm:pt-5 pb-3.5 sm:pb-4 border-b border-white/[0.07] bg-black/25 backdrop-blur-sm">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="shrink-0 font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.2em] px-2 sm:px-2.5 py-1 rounded-md border bg-black/50 border-white/15 text-white/80">
             {sectionIndex}
           </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={`font-mono text-[10px] tracking-[0.26em] uppercase font-semibold ${theme.label}`}>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-hidden whitespace-nowrap">
+              <span className={`shrink-0 font-mono text-[10px] tracking-[0.22em] uppercase font-semibold ${theme.label}`}>
                 {sectionLabel}
               </span>
-              <span className="text-white/25">•</span>
-              <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/45">
+              <span className="shrink-0 text-white/25">•</span>
+              <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/45 truncate">
                 {pending
                   ? "CHARGEMENT..."
-                  : `${items.length}${hasMore ? "+" : ""} AFFICHES SUR LE PORTANT`}
+                  : `${items.length}${hasMore ? "+" : ""} AFFICHES`}
+                <span className="hidden sm:inline"> SUR LE PORTANT</span>
               </span>
               {loadingMore && (
-                <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-emerald-300/80 animate-pulse">
-                  · Chargement de la suite…
+                <span className="shrink-0 font-mono text-[10px] uppercase text-emerald-300/80 animate-pulse">
+                  · …
                 </span>
               )}
             </div>
-            <h2 className="font-display text-lg sm:text-2xl font-semibold text-white tracking-tight truncate">
+            <h2 className="font-display text-base sm:text-2xl font-semibold text-white tracking-tight truncate">
               {sectionTitle}
             </h2>
-            {subtitle && <p className="text-xs text-white/50 truncate mt-0.5">{subtitle}</p>}
+            {subtitle && <p className="text-[11px] sm:text-xs text-white/50 truncate mt-0.5">{subtitle}</p>}
           </div>
         </div>
 
-        {/* Barre inférieure fixe : indicateur en direct + son + flèches */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-white/[0.06]">
-          <span className="inline-flex items-center gap-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.16em] text-white/65 min-w-0 truncate">
-            {focusedItem ? (
-              <>
-                <span className={`font-bold ${theme.label}`}>#{String(focusedBadge + 1).padStart(2, "0")}</span>
-                <span className="truncate">{mediaTitle(focusedItem)}</span>
-              </>
-            ) : (
-              <span className="text-white/45 truncate">
-                Glissez vers la droite pour dérouler à l'infini · Cliquez pour sortir
-              </span>
-            )}
-          </span>
-          <div className="flex items-center gap-2 shrink-0">
+        {/* Barre inférieure à hauteur fixe (flex-nowrap) : ne saute jamais quelle que soit la longueur du titre */}
+        <div className="flex flex-nowrap items-center justify-between gap-3 pt-2 border-t border-white/[0.06] h-10">
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <span className="flex items-center gap-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-white/65 min-w-0">
+              {focusedItem ? (
+                <>
+                  <span className={`shrink-0 font-bold ${theme.label}`}>#{String(focusedBadge + 1).padStart(2, "0")}</span>
+                  <span className="truncate">{mediaTitle(focusedItem)}</span>
+                </>
+              ) : (
+                <span className="text-white/45 truncate">
+                  <span className="sm:hidden">Glissez pour dérouler · Touchez pour ouvrir</span>
+                  <span className="hidden sm:inline">Glissez vers la droite pour dérouler à l'infini · Cliquez pour sortir</span>
+                </span>
+              )}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={() => panRail(-1)}
@@ -710,7 +720,7 @@ export default function PosterRack({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchEnd}
-          className={`relative w-full h-[370px] sm:h-[400px] overflow-hidden select-none touch-pan-y transition-all duration-500 ${
+          className={`relative w-full h-[315px] sm:h-[385px] overflow-hidden select-none touch-pan-y transition-all duration-500 ${
             active ? "opacity-25 scale-[0.97] blur-[1.5px] pointer-events-none" : "opacity-100"
           }`}
           style={{ perspective: "1350px", perspectiveOrigin: "50% 42px" }}
