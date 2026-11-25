@@ -11,6 +11,7 @@ import CollectorTicketModal from "../components/CollectorTicketModal";
 import SegmentedControl from "../components/SegmentedControl";
 import TrophyCabinet from "../components/TrophyCabinet";
 import SupportCard from "../components/SupportCard";
+import PosterRack from "../components/PosterRack";
 import { SPRING, riseItem, stagger } from "../lib/motionTokens";
 
 const ORDER_KEY = "cv_queue_order";
@@ -297,6 +298,26 @@ export default function Watchlist() {
           <Link to="/recap" className="link">Mon année ciné</Link>
         </motion.div>
       </motion.div>
+
+      {/* Portant 3D de la collection personnelle */}
+      {loaded && items.filter((it) => it.poster_path).length > 0 && (
+        <div className="mb-10">
+          <PosterRack
+            sectionIndex="MA"
+            sectionLabel="MA COLLECTION"
+            sectionTitle="Votre portant personnel"
+            subtitle={`${items.length} titre${items.length > 1 ? "s" : ""} dans votre espace CineViseur`}
+            accent="emerald"
+            items={items
+              .filter((it) => it.poster_path)
+              .slice(0, 16)
+              .map((it) => ({
+                ...it,
+                id: it.media_id || it.tmdb_id || it.id,
+              }))}
+          />
+        </div>
+      )}
 
       {/* Onglets principaux tactiles (Originkit) */}
       <div className="mb-10 overflow-x-auto max-w-full pb-2">

@@ -6,6 +6,7 @@ import { libraryKey } from "../lib/library";
 import useLibrary from "../hooks/useLibrary";
 import useSeo from "../hooks/useSeo";
 import MediaCard from "../components/MediaCard";
+import PosterRack from "../components/PosterRack";
 import Icon from "../components/Icon";
 import { KineticTitle } from "../components/motion";
 import { EASE_OUT, riseItem, stagger } from "../lib/motionTokens";
@@ -145,18 +146,19 @@ export default function Person() {
         </motion.section>
       )}
 
-      <section className="mt-14">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 flex flex-wrap items-end justify-between gap-3">
-          <h2 className="section-title">Filmographie</h2>
-          <p className="text-sm text-white/60 tabular-nums">
-            {credits.length} titres
-            {seenCount > 0 && <span className="text-cine-soft"> · tu en as vu {seenCount}</span>}
-          </p>
-        </div>
+      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-14">
         {credits.length > 0 ? (
-          <Reel credits={credits} index={index} />
+          <PosterRack
+            sectionIndex="FIL"
+            sectionLabel="FILMOGRAPHIE"
+            sectionTitle={`Filmographie de ${person.name}`}
+            subtitle={`${credits.length} titres${seenCount > 0 ? ` · tu en as vu ${seenCount}` : ""}`}
+            accent="purple"
+            items={credits.filter((c) => c.poster_path).slice(0, 16)}
+            getSubtext={(c) => [year(c), c.character].filter(Boolean).join(" · ") || "À venir"}
+          />
         ) : (
-          <p className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-6 text-white/60">Aucun titre avec affiche pour le moment.</p>
+          <p className="mt-6 text-white/60">Aucun titre avec affiche pour le moment.</p>
         )}
       </section>
     </div>

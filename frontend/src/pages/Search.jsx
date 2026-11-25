@@ -6,6 +6,7 @@ import MediaCard from "../components/MediaCard";
 import PosterGrid, { PosterSkeleton } from "../components/PosterGrid";
 import Icon from "../components/Icon";
 import SponsorSlot from "../components/SponsorSlot";
+import PosterRack from "../components/PosterRack";
 import { TextShimmer } from "../components/backgrounds";
 import { riseItem } from "../lib/motionTokens";
 import useSeo from "../hooks/useSeo";
@@ -96,11 +97,22 @@ export default function Search() {
 
       {!loading && results.length > 0 && (
         <>
-          <PosterGrid
-            items={results}
-            getKey={(item) => `${item.media_type}-${item.id}`}
-            render={(item) => <MediaCard item={item} mediaType={item.media_type} />}
+          <PosterRack
+            sectionIndex="01"
+            sectionLabel="RECHERCHE"
+            sectionTitle={`Résultats pour « ${query} »`}
+            accent="emerald"
+            items={results.filter((it) => it.poster_path).slice(0, 16)}
           />
+          {results.length > 16 && (
+            <div className="mt-10">
+              <PosterGrid
+                items={results.slice(16)}
+                getKey={(item) => `${item.media_type}-${item.id}`}
+                render={(item) => <MediaCard item={item} mediaType={item.media_type} />}
+              />
+            </div>
+          )}
           <div className="mt-12">
             <SponsorSlot placement="search" />
           </div>

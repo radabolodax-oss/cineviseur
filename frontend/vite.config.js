@@ -88,6 +88,14 @@ function launchFiles(env) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
+    server: {
+      proxy: {
+        '/api': {
+          target: 'https://cineviseur.vercel.app',
+          changeOrigin: true,
+        },
+      },
+    },
     plugins: [
       react(),
       // Service worker : sans lui, les navigateurs ne proposent pas « Installer ».

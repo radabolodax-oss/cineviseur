@@ -384,13 +384,40 @@ export default function Home() {
     <div>
       <Hero featured={featured} />
 
-      <div className="-mt-10 relative z-10 flex flex-col gap-6">
-        <CarouselRow title="Tendances de la semaine" staticItems={trending} pending={!trendingLoaded} />
-        <CarouselRow title="À l'affiche au cinéma" staticItems={nowPlaying} pending={nowPlaying.length === 0} />
+      <div className="-mt-10 relative z-10 flex flex-col gap-2">
+        <CarouselRow
+          sectionIndex="01"
+          sectionLabel="TENDANCES"
+          accent="crimson"
+          mediaType="movie"
+          sort="popularity"
+          title="Tendances de la semaine"
+          staticItems={trending}
+          pending={!trendingLoaded}
+        />
+        <CarouselRow
+          sectionIndex="02"
+          sectionLabel="EN SALLE"
+          accent="emerald"
+          mediaType="movie"
+          listKind="now_playing"
+          title="À l'affiche au cinéma"
+          staticItems={nowPlaying}
+          pending={nowPlaying.length === 0}
+        />
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 w-full my-2">
           <PrimeBanner />
         </div>
-        <CarouselRow title="Nouveautés en streaming & VOD" staticItems={streaming} pending={!streamingLoaded} />
+        <CarouselRow
+          sectionIndex="03"
+          sectionLabel="STREAMING & VOD"
+          accent="indigo"
+          mediaType="movie"
+          listKind="streaming"
+          title="Nouveautés en streaming & VOD"
+          staticItems={streaming}
+          pending={!streamingLoaded}
+        />
       </div>
 
       <UpcomingPan />

@@ -38,7 +38,11 @@ function LogoMark() {
 
 export function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2.5 group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft">
+    <Link
+      to="/"
+      data-intro-brand-target=""
+      className="flex items-center gap-2.5 group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cine-soft"
+    >
       <LogoMark />
       <span className="font-display font-semibold text-lg tracking-tight">
         CINE<span className="bg-gradient-to-r from-emerald-400 to-indigo-400 bg-clip-text text-transparent">VISEUR</span>

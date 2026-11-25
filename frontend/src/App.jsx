@@ -4,6 +4,7 @@ import { MotionConfig } from "motion/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
+import IntroClap from "./components/IntroClap";
 import CinemaLayer from "./components/CinemaLayer";
 import UpdatePrompt from "./components/UpdatePrompt";
 import { InstallProvider } from "./components/InstallGuide";
@@ -34,6 +35,8 @@ const Terms = lazy(() => import("./pages/Terms"));
 const LegalNotice = lazy(() => import("./pages/LegalNotice"));
 const Contact = lazy(() => import("./pages/Contact"));
 const QuickPreview = lazy(() => import("./components/QuickPreview"));
+const TestPortant = lazy(() => import("./pages/TestPortant"));
+const Labo = lazy(() => import("./pages/Labo"));
 
 function Page({ children }) {
   return (
@@ -89,6 +92,8 @@ function App() {
               <Route path="/cgu" element={page(<Terms />)} />
               <Route path="/mentions-legales" element={page(<LegalNotice />)} />
               <Route path="/contact" element={page(<Contact />)} />
+              <Route path="/test-portant" element={page(<TestPortant />)} />
+              <Route path="/labo" element={page(<Labo />)} />
               <Route path="*" element={page(<NotFound />)} />
             </Routes>
           </main>
@@ -102,6 +107,7 @@ function App() {
             <QuickPreview />
           </Suspense>
           <CookieConsent />
+          <IntroClap />
         </div>
       </InstallProvider>
     </MotionConfig>

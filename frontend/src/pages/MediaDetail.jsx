@@ -18,6 +18,7 @@ import CinemaFinder from "../components/CinemaFinder";
 import CollectorTicketModal from "../components/CollectorTicketModal";
 import TvEpisodeTracker from "../components/TvEpisodeTracker";
 import SponsorSlot from "../components/SponsorSlot";
+import PosterRack from "../components/PosterRack";
 import CollectorShop from "../components/CollectorShop";
 import VpnCallout from "../components/VpnCallout";
 import { KineticTitle, Reveal, TiltCard } from "../components/motion";
@@ -646,10 +647,14 @@ export default function MediaDetail() {
 
       {similar.length > 0 && (
         <section className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 mt-14">
-          <Reveal y={16}>
-            <SectionTitle>Titres similaires</SectionTitle>
-          </Reveal>
-          <GlassCarousel items={similar} mediaType={mediaType} />
+          <PosterRack
+            sectionIndex="SIM"
+            sectionLabel="RECOMMANDATIONS"
+            sectionTitle="Titres similaires"
+            accent="indigo"
+            mediaType={mediaType}
+            items={similar.filter((s) => s.poster_path).slice(0, 16)}
+          />
         </section>
       )}
 
